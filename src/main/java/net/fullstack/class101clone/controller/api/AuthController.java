@@ -22,8 +22,7 @@ public class AuthController {
 		boolean authenticated =  userService.authenticate(userDTO.getUserId(), userDTO.getUserPwd()) ;
 		if (!authenticated) {
 			return ResponseEntity.status(401)
-					.header("No-Data", "가입되지 않은 회원정보입니다.")
-					.body(null);
+					.body(null); // 인증 실패 시 401 Unauthorized 응답
 		}
 
 //		// 2. JWT 토큰 생성 (예시: jwtTokenProvider.createToken)
