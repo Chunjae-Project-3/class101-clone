@@ -19,13 +19,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString
 @SuperBuilder(toBuilder = true)
-public abstract class BbsBaseEntity {
+public class BaseEntity {
     @CreatedDate
-    @Column(name = "reg_date", updatable = false, columnDefinition = "datetime not null default current_timestamp comment '등록일'")
-    private LocalDateTime reg_date;
+    @Column(nullable = false, updatable = false, columnDefinition = "datetime not null default current_timestamp()")
+    private LocalDateTime createdAt;
 
-    @Setter
     @LastModifiedDate
-    @Column(name = "modify_date", nullable = true, insertable = false, updatable = true, columnDefinition = "datetime null default current_timestamp comment '수정일'")
-    private LocalDateTime modify_date;
+    @Column(insertable = false, columnDefinition = "datetime null default null on update current_timestamp()")
+    private LocalDateTime updatedAt;
 }
