@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net/nz/thymeleaf/layout"
 >
 <head>
     <meta charset="UTF-8">
@@ -14,8 +13,7 @@
 <div class="container d-flex align-items-center justify-content-center min-vh-100">
     <div class="card shadow p-4" style="min-width: 350px; max-width: 400px; width: 100%;">
         <h1 class="h1 mb-4 text-center">로그인 페이지</h1>
-        <!-- login.html -->
-        <form th:action="@{/api/auth/login}" method="post">
+        <form th:action="@{/login}" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">ID</label>
                 <input type="text" id="username" name="userId" class="form-control" required>
@@ -25,7 +23,7 @@
                 <input type="password" id="password" name="userPwd" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary w-100 mb-2">로그인</button>
-            <a href="/register" class="btn btn-outline-secondary w-100">회원가입</a>
+            <a href="/signup" class="btn btn-outline-secondary w-100">회원가입</a>
         </form>
     </div>
 </div>

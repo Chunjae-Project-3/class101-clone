@@ -63,7 +63,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.auth0/java-jwt
     implementation 'com.auth0:java-jwt:4.5.0'
 
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-security:3.4.6'
 }
 
 tasks.named('test') {
