@@ -19,18 +19,18 @@ import java.util.List;
 public class ClassEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "int(11) not null comment '클래스 인덱스'")
+    @Column(name = "class_idx", columnDefinition = "int(11) not null comment '클래스 인덱스'")
     private int classIdx;
-    @Column(columnDefinition = "varchar(100) not null comment '클래스 제목'")
+    @Column(name = "class_title", columnDefinition = "varchar(100) not null comment '클래스 제목'")
     private String classTitle;
-    @Column(columnDefinition = "text null default null comment '클래스 소개'")
+    @Column(name = "class_description",columnDefinition = "text null default null comment '클래스 소개'")
     private String classDescription;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "class_thumbnail_img", foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_file"))
     private FileEntity classThumbnailImg;
 
-    @ManyToOne // default 이미지
+    @ManyToOne(fetch = FetchType.LAZY) // default 이미지
     @JoinColumn(name = "class_category_idx", foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_category"))
     private CategoryEntity classCategory;
 
