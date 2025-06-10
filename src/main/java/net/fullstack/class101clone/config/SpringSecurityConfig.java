@@ -45,30 +45,15 @@ public class SpringSecurityConfig {
 				.csrf(csrf -> csrf.disable())
 				.formLogin(form -> form
 						.loginPage("/login") // 커스텀 로그인 페이지 경로
-						.loginProcessingUrl("/login") // 로그인 form의 action과 일치
+						.loginProcessingUrl("/api/auth/login") // 로그인 form의 action과 일치
 						.defaultSuccessUrl("/") // 로그인 성공 시 이동할 경로
 						.permitAll()
 				)
 				.addFilter(corsConfig.corsFilter())
-				// TODO: ADD JWT authentication Filter Setting
-//				.addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-				// TODO: ADD JWT authorization Filter Setting
-//				.addFilter(jwtAuthorizationFilter())
-				.sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+				.sessionManagement(sessionManagement ->
+						sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		return http.build();
 	}
-
-//	@Bean // 인증
-//	public JWTAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-//		JWTAuthenticationFilter filter = new JWTAuthenticationFilter(authenticationManager());
-//		return filter;
-//	}
-//
-//	@Bean // 인가
-//	public JWTAuthorizationFilter jwtAuthorizationFilter() throws Exception {
-//		return new JWTAuthorizationFilter(authenticationManager(), myUserRepository);
-//	}
-
 
 }
