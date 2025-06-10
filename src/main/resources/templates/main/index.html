@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMMB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #0c0c0c;
+            font-size: 0.8rem;
+        }
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+        }
+        .card-img-top {
+            height: 160px;
+            object-fit: cover;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+        }
+        .category-btn {
+            background-color: #f5f5f5;
+            border-radius: 24px;
+            padding: 8px 16px;
+            margin: 4px;
+            font-size: 0.9rem;
+            border: none;
+            font-weight: 500;
+        }
+        .category-btn:hover {
+            background-color: #e2e2e2;
+        }
+        header, footer {
+            background-color: #ffffff;
+            border-bottom: 1px solid #eee;
+        }
+        footer {
+            border-top: 1px solid #eee;
+        }
+        a {
+            color: #0c0c0c;
+            text-decoration: none;
+        }
+        a:hover {
+            color: #0c0c0c;
+            text-decoration: underline;
+        }
+        section {
+            margin-top: 48px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-1">
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <!-- 고정 헤더 -->
+    <header class="position-sticky top-0 bg-white border-bottom" style="z-index: 1020;">
+        <div class="container py-3 position-relative">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <div>
+                    <a href="#" class="me-3 fw-bold">클래스</a>
+                    <a href="#" class="me-3 fw-bold">클럽</a>
+                    <a href="#" class="me-3 fw-bold">커뮤니티</a>
+                    <a href="#" class="fw-bold" id="categoryToggle" onclick="event.preventDefault(); toggleCategoryMenu();">
+                        카테고리 <i id="categoryIcon" class="bi bi-caret-down-fill small"></i>
+                    </a>
+                </div>
+                <div>
+                    <input type="text" id="search-input" class="form-control" placeholder="관심 주제, 클래스, 크리에이터 찾기" style="height: 34px; width: 300px; font-weight: 400; font-size: 0.8rem;">
+                </div>
+            </div>
+            <!-- 카테고리 드롭다운 메뉴 -->
+            <div id="categoryMenu" class="border p-4 bg-white shadow position-absolute w-100" style="top: 100%; left: 0; display: none; z-index: 1040;">
+                <div class="row row-cols-2 row-cols-md-4">
+                    <div>
+                        <p>디지털 드로잉</p>
+                        <p>드로잉</p>
+                        <p>공예</p>
+                        <p>요리 · 음료</p>
+                        <p>베이킹 · 디저트</p>
+                        <p>음악</p>
+                        <p>운동</p>
+                        <p>라이프스타일</p>
+                        <p>사진 · 영상</p>
+                    </div>
+                    <div>
+                        <p>금융 · 재테크</p>
+                        <p>창업 · 부업</p>
+                        <p>성공 마인드</p>
+                        <p>프로그램밍</p>
+                        <p>데이터사이언스</p>
+                        <p>제품 기획</p>
+                        <p>비즈니스</p>
+                        <p>생산성</p>
+                        <p>마케팅</p>
+                    </div>
+                    <div>
+                        <p>디자인</p>
+                        <p>영상/3D</p>
+                        <p>영어</p>
+                        <p>외국어 시험</p>
+                        <p>제2 외국어</p>
+                    </div>
+                    <div>
+                        <p>아이 교육</p>
+                        <p>부모 교육</p>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="toggleCategoryMenu()">✕ 닫기</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 상단 홍보 캐러셀 -->
+    <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active bg-dark" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="1" class="bg-dark" aria-label="Slide 2"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="bg-light rounded p-4">
+                    <div class="d-flex align-items-center mx-auto" style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
+                        <img src="https://via.placeholder.com/160" class="me-4" alt="프로모션 이미지">
+                        <div>
+                            <h4 class="fw-bold">클래스 완강자만 모아 캐스퍼 추천!</h4>
+                            <p class="text-muted">재파와 함께 연령대별 투자전략 GO</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="bg-light rounded p-4">
+                    <div class="d-flex align-items-center mx-auto" style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
+                        <img src="https://via.placeholder.com/160" class="me-4" alt="프로모션 이미지">
+                        <div>
+                            <h4 class="fw-bold">새로운 클래스 오픈!</h4>
+                            <p class="text-muted">지금 등록하고 빠르게 시작하세요</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <script>
+        function toggleCategoryMenu() {
+            const menu = document.getElementById('categoryMenu');
+            const icon = document.getElementById('categoryIcon');
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+                icon.classList.remove('bi-caret-down-fill');
+                icon.classList.add('bi-caret-up-fill');
+            } else {
+                menu.style.display = 'none';
+                icon.classList.remove('bi-caret-up-fill');
+                icon.classList.add('bi-caret-down-fill');
+            }
+        }
+
+        document.addEventListener('click', function (e) {
+            const toggle = document.getElementById('categoryToggle');
+            const menu = document.getElementById('categoryMenu');
+            if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                menu.style.display = 'none';
+                document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
+                document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
+            }
+        });
+    </script>
+
+    <!-- 반복 섹션 렌더링 함수 with 캐러셀 -->
+    <div th:with="sections=${T(java.util.List).of(
+    '주간101',
+    '실시간 인기 클래스',
+    '새로 오픈한 클래스',
+    '오늘의 BEST 클래스',
+    '금융 · 재테크 인기 클래스',
+    '음악 인기 클래스',
+    '창업 · 부업 인기 클래스',
+    '생산성 인기 클래스',
+    '외국어 시험 인기 클래스',
+    '브랜딩 인기 클래스',
+    '트렌드가 뭔데, 지금 BUY 인기 클래스',
+    '스마트한 일상을 위한 클래스',
+    '클로저 HOT 클래스'
+)}">
+        <div th:each="section, secStat : ${sections}">
+            <section>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" th:text="${section}"></h5>
+                    <div>
+                        <button class="btn p-0 me-2 fw-bold small" style="font-size: 0.8rem;">더 보기</button>
+                        <button class="btn btn-sm" type="button" th:attr="data-bs-target='#carousel-' + ${secStat.index}" data-bs-slide="prev">
+                            <i class="bi bi-chevron-left fs-5 text-dark"></i>
+                        </button>
+                        <button class="btn btn-sm" type="button" th:attr="data-bs-target='#carousel-' + ${secStat.index}" data-bs-slide="next">
+                            <i class="bi bi-chevron-right fs-5 text-dark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div th:attr="id='carousel-' + ${secStat.index}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        <div th:each="slide : ${#numbers.sequence(0,1)}" th:class="${slide == 0} ? 'carousel-item active' : 'carousel-item'">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                                <div class="col" th:each="i : ${#numbers.sequence(slide * 5 + 1, slide * 5 + 5)}">
+                                    <div class="card h-100">
+                                        <img src="https://via.placeholder.com/160x100" class="card-img-top" alt="썸네일">
+                                        <div class="card-body">
+                                            <p class="card-text fw-semibold">[[${section}]] 더미 클래스 [[${i}]]</p>
+                                            <p class="card-text text-muted">크리에이터 [[${i}]]</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 중간 카테고리 검색 추가 -->
+    <div class="text-center py-5">
+        <h5 class="fw-bold mb-3">관심 클래스를 발견하지 못하셨나요?</h5>
+        <p class="text-muted mb-4">아래 카테고리들도 탐색해 보세요</p>
+        <div class="d-flex flex-wrap justify-content-center">
+            <button class="category-btn">💰 금융 · 재테크</button>
+            <button class="category-btn">🏋️ 운동</button>
+            <button class="category-btn">🔤 영어</button>
+            <button class="category-btn">🍜 요리 · 음료</button>
+            <button class="category-btn">🧑‍🎨 디자인</button>
+            <button class="category-btn">🎵 음악</button>
+            <button class="category-btn">📸 사진 · 영상</button>
+            <button class="category-btn">💻 프로그래밍</button>
+            <button class="category-btn">📊 데이터사이언스</button>
+            <button class="category-btn">🏀 공예</button>
+            <button class="category-btn">💃 라이프스타일</button>
+            <button class="category-btn">🖌️ 디지털드로잉</button>
+            <button class="category-btn">✨ 마케팅</button>
+            <button class="category-btn">📈 생산성</button>
+            <button class="category-btn">💡 창업 · 부업</button>
+            <button class="category-btn">👶 아이 교육</button>
+        </div>
+    </div>
+
+    <!-- 하단 고정 CTA 바 -->
+    <div class="position-fixed bottom-0 start-0 end-0 bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center" style="z-index: 1050;">
+        <div class="fw-bold">듣고 싶은 클래스를 다 들어보세요<br><a href="#" class="text-decoration-underline text-dark">구독 더 알아보기</a></div>
+        <button class="btn btn-warning fw-bold px-4 py-2">바로 시작하기</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 pt-4 border-top">
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="fw-bold">고객센터</h6>
+                <p>support@class101.net</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">회사 정보</h6>
+                <p>서울특별시 성동구 왕십리로 125</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">앱 다운로드</h6>
+                <a href="#">App Store</a> | <a href="#">Google Play</a>
+            </div>
+        </div>
+        <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
+    </footer>
+    <!-- 푸터 하단 공간 확보 -->
+    <div style="height: 80px;"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
