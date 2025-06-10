@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserServiceIf {
 	}
 
 	@Override
-	public void register(UserDTO userDTO) {
+	public void signup(UserDTO userDTO) {
 		UserEntity user = UserEntity.builder()
 				.userId(userDTO.getUserId())
 				.userPwd(userDTO.getUserPwd()) // 암호화 필요

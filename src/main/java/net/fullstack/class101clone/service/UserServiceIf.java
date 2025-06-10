@@ -7,5 +7,5 @@ public interface UserServiceIf {
 
 	UserEntity findByUserId(String userId);
 
-	void register(UserDTO userDTO);
+	void signup(UserDTO userDTO);
 }

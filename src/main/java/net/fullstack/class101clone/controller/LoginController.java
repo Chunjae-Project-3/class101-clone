@@ -44,23 +44,23 @@ public class LoginController {
 		}
 	}
 
-	@GetMapping("/register")
-	public String registerPage() {
-		return "login/register";
+	@GetMapping("/signup")
+	public String signupPage() {
+		return "login/signup";
 	}
 
-	@PostMapping("/register")
-	public String register(
+	@PostMapping("/signup")
+	public String signup(
 			@ModelAttribute UserDTO userDTO,
 			RedirectAttributes ra
 	) {
 		log.info("Registering user: {}", userDTO);
 		if(userService.findByUserId(userDTO.getUserId()) != null) {
 			log.warn("User ID already exists: {}", userDTO.getUserId());
-			return "redirect:/register?error"; // Redirect to register page with error
+			return "redirect:/signup?error"; // Redirect to signup page with error
 		}
-		userService.register(userDTO);
-		log.info("User registered successfully: {}", userDTO.getUserName());
+		userService.signup(userDTO);
+		log.info("User signuped successfully: {}", userDTO.getUserName());
 		return "redirect:/login"; // Redirect to login page after registration
 	}
 }
