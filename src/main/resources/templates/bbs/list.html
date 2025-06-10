@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{bbs/layout/layout}"
+>
+
+<body class="container py-4">
+
+<div layout:fragment="top-content" class="mb-4">
+    <h1 class="text-center">게시판 목록</h1>
+</div>
+
+<form th:action="@{/bbs/list}" method="get" class="row mb-4">
+    <div class="col-md-3">
+        <select name="search_category" class="form-select">
+            <option value="" disabled selected>검색 조건 선택</option>
+            <option value="title" th:selected="${param.search_category == 'title'}">제목</option>
+            <option value="content" th:selected="${param.search_category == 'content'}">내용</option>
+            <option value="user_id" th:selected="${param.search_category == 'user_id'}">작성자</option>
+        </select>
+    </div>
+    <div class="col-md-6">
+        <input type="text" name="search_word" th:value="${param.search_word}" class="form-control" placeholder="검색어 입력">
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-outline-primary w-100">검색</button>
+    </div>
+</form>
+
+<div layout:fragment="content">
+    <table class="table table-striped table-hover text-center">
+        <thead class="table-dark">
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="dto : ${responseDTO.dtoList}">
+            <td th:text="${dto.idx}"></td>
+            <td class="text-start">
+                <a th:href="@{/bbs/view(idx=${dto.idx})}" class="text-decoration-none text-dark">
+                    <span th:text="${dto.title}"></span>
+                    <span th:text="'[' + ${dto.reply_count} + ']'" class="text-muted"></span>
+                </a>
+            </td>
+            <td th:text="${dto.user_id}"></td>
+            <td th:text="${dto.display_date}"></td>
+            <td th:text="${dto.read_cnt}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="text-end mb-3">
+        <a th:href="@{/bbs/register}" class="btn btn-primary">글쓰기</a>
+    </div>
+</div>
+
+<div layout:fragment="page-content" class="d-flex justify-content-center">
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" th:if="${responseDTO.pageNo > 1}">
+                <a class="page-link" th:href="@{/bbs/list(pageNo=1, pageSize=${responseDTO.pageSize})}">처음</a>
+            </li>
+
+            <li class="page-item" th:if="${responseDTO.pageBlockStart > 1}">
+                <a class="page-link"
+                   th:href="@{/bbs/list(pageNo=${responseDTO.pageBlockStart - 1}, pageSize=${responseDTO.pageSize})}">이전</a>
+            </li>
+
+            <li class="page-item"
+                th:each="i : ${#numbers.sequence(responseDTO.pageBlockStart, responseDTO.pageBlockEnd)}"
+                th:classappend="${i == responseDTO.pageNo} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/bbs/list(pageNo=${i}, pageSize=${responseDTO.pageSize}, search_category=${param.search_category}, search_word=${param.search_word})}"
+                   th:text="${i}"></a>
+            </li>
+
+            <li class="page-item" th:if="${responseDTO.pageBlockEnd < responseDTO.totalPage}">
+                <a class="page-link"
+                   th:href="@{/bbs/list(pageNo=${responseDTO.pageBlockEnd + 1}, pageSize=${responseDTO.pageSize})}">다음</a>
+            </li>
+
+            <li class="page-item" th:if="${responseDTO.pageNo < responseDTO.totalPage}">
+                <a class="page-link"
+                   th:href="@{/bbs/list(pageNo=${responseDTO.totalPage}, pageSize=${responseDTO.pageSize})}">끝</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+<th:block layout:fragment="script" th:inline="javascript">
+    <script>
+        const successMsg = [[${success}]];
+        if (successMsg !== null) {
+            alert(successMsg);
+        }
+    </script>
+</th:block>
+</body>
+</html>
