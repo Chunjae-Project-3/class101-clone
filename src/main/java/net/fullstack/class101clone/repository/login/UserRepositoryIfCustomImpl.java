@@ -106,11 +106,14 @@ public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implem
 	@Override
 	@Transactional
 	public UserEntity updateUserInfo(UserDTO userDTO) {
+		log.info("NEW user info {}", userDTO);
+
 		QUserEntity user = QUserEntity.userEntity;
 		// userId로 기존 사용자 조회
 		JPQLQuery<UserEntity> query = from(user)
 				.where(user.userId.eq(userDTO.getUserId()));
 		UserEntity originalUser = query.fetchOne();
+		log.info("Original user info {}", originalUser);
 
 		if (originalUser != null) {
 			// 비밀번호가 변경된 경우
