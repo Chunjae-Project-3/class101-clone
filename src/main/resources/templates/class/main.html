@@ -320,9 +320,10 @@
                 </a>
                 <div class="d-flex justify-content-center gap-5 mt-4">
                     <div class="text-center">
-                        <i class="bi bi-bookmark fs-5"></i>
-                        <div class="small">1356</div>
+                        <i id="like-icon" class="bi bi-bookmark fs-5" style="cursor:pointer;"></i>
+                        <div class="small" id="like-count">1356</div>
                     </div>
+
                     <div class="text-center">
                         <i class="bi bi-upload fs-5"></i>
                         <div class="small">공유</div>
@@ -352,6 +353,50 @@
         </div>
     </div>
     <!-- JS 렌더링 스크립트 -->
+    <script>
+        const likeIcon = document.getElementById("like-icon");
+        const likeCount = document.getElementById("like-count");
+        const classId = location.pathname.split("/").pop();
+
+        // 초기 찜 상태 조회 (선택사항: 서버에서 liked 상태 제공 시)
+        (async () => {
+            const res = await fetch(`/api/class-like/status/${classId}`, {
+                credentials: "same-origin"
+            });
+            if (res.ok) {
+                const result = await res.json();
+                if (result.liked) {
+                    likeIcon.classList.remove("bi-bookmark");
+                    likeIcon.classList.add("bi-bookmark-fill");
+                }
+                likeCount.textContent = result.likeCount;
+            }
+        })();
+
+        // 찜 토글 클릭
+        likeIcon.addEventListener("click", async () => {
+            const res = await fetch(`/api/class-like/${classId}`, {
+                method: "POST",
+                credentials: "same-origin" // 세션 유지
+            });
+
+            if (res.status === 401) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+
+            const result = await res.json();
+            if (result.liked) {
+                likeIcon.classList.remove("bi-bookmark");
+                likeIcon.classList.add("bi-bookmark-fill");
+            } else {
+                likeIcon.classList.remove("bi-bookmark-fill");
+                likeIcon.classList.add("bi-bookmark");
+            }
+            likeCount.textContent = result.likeCount;
+        });
+    </script>
+
     <script>
         (async () => {
             const classId = location.pathname.split("/").pop();
