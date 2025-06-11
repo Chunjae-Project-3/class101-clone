@@ -4,9 +4,9 @@ import net.fullstack.class101clone.domain.UserEntity;
 import net.fullstack.class101clone.dto.UserDTO;
 
 public interface UserServiceIf {
-	boolean authenticate(String userId, String userPwd);
+	boolean existsByUserId(String userId);
 
-	UserEntity findByUserId(String userId);
+	UserDTO login(UserDTO userDTO);
 
-	void register(UserDTO userDTO);
+	boolean signup(UserDTO userDTO);
 }
