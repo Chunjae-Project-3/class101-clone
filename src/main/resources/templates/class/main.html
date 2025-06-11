@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMMB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+            crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #0c0c0c;
+            font-size: 0.8rem;
+            word-break: keep-all;
+        }
+
+        a {
+            color: #0c0c0c;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0c0c0c;
+            text-decoration: underline;
+        }
+
+        section {
+            margin-top: 48px;
+        }
+
+        .nav-pills .nav-link {
+            font-weight: bold;
+            color: #000;
+            padding-bottom: 6px;
+        }
+
+        .nav-pills .nav-link.active {
+            color: #000;
+            border-bottom: 3px solid #000;
+            border-radius: 0;
+            background-color: transparent;
+        }
+
+        .carousel-inner img {
+            object-fit: cover;
+            height: 100%;
+        }
+
+        h5 {
+            font-size: 1rem;
+        }
+
+        h6 {
+            font-size: 0.9rem;
+        }
+
+        span {
+            font-size: 0.7rem;
+        }
+
+        #classCarousel {
+            position: relative;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 1;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .carousel-control-prev {
+            left: 4rem;
+        }
+
+        .carousel-control-next {
+            right: 4rem;
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-size: 100% 100%;
+            width: 20px;
+            height: 20px;
+            filter: invert(0%) sepia(100%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
+        }
+
+        .overflow-auto::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+
+        .overflow-auto {
+            -ms-overflow-style: none; /* IE, Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#scrollNav" data-bs-offset="140" tabindex="0">
+<!-- 고정 헤더 -->
+<header class="position-sticky top-0 bg-white" style="z-index: 1020;">
+    <div class="container py-3 position-relative">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="me-1 fw-bold">클래스</a>
+                <a href="#" class="me-1 fw-bold">클럽</a>
+                <a href="#" class="me-1 fw-bold">커뮤니티</a>
+                <a href="#" class="fw-bold" id="categoryToggle"
+                   onclick="event.preventDefault(); toggleCategoryMenu();">
+                    카테고리 <i id="categoryIcon" class="bi bi-caret-down-fill small"></i>
+                </a>
+                <div class="position-relative" style="width: 300px; margin-left: 10px;">
+                    <input type="text" class="form-control ps-3 pe-5"
+                           placeholder="관심 주제, 클래스, 크리에이터 찾기"
+                           style="height: 34px; font-size: 0.8rem; background-color: #F7F7F7; border: none;">
+                    <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                       style="font-size: 0.9rem;"></i>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="/login" class="text-dark small fw-bold">로그인</a>
+                <a href="/signup" class="text-dark small fw-bold">회원가입</a>
+            </div>
+        </div>
+
+        <!-- 카테고리 드롭다운 메뉴 -->
+        <div id="categoryMenu" class="border p-4 bg-white shadow position-absolute w-100"
+             style="top: 100%; left: 0; display: none; z-index: 1040;">
+            <div class="row row-cols-2 row-cols-md-4">
+                <div>
+                    <p><a href="/classes?categoryIdx=1" class="text-dark text-decoration-none">디지털 드로잉</a></p>
+                    <p><a href="/classes?categoryIdx=2" class="text-dark text-decoration-none">드로잉</a></p>
+                    <p><a href="/classes?categoryIdx=3" class="text-dark text-decoration-none">공예</a></p>
+                    <p><a href="/classes?categoryIdx=4" class="text-dark text-decoration-none">요리 · 음료</a></p>
+                    <p><a href="/classes?categoryIdx=5" class="text-dark text-decoration-none">베이킹 · 디저트</a></p>
+                    <p><a href="/classes?categoryIdx=6" class="text-dark text-decoration-none">음악</a></p>
+                    <p><a href="/classes?categoryIdx=7" class="text-dark text-decoration-none">운동</a></p>
+                    <p><a href="/classes?categoryIdx=8" class="text-dark text-decoration-none">라이프스타일</a></p>
+                    <p><a href="/classes?categoryIdx=9" class="text-dark text-decoration-none">사진 · 영상</a></p>
+                </div>
+                <div>
+                    <p><a href="/classes?categoryIdx=10" class="text-dark text-decoration-none">금융 · 재테크</a></p>
+                    <p><a href="/classes?categoryIdx=11" class="text-dark text-decoration-none">창업 · 부업</a></p>
+                    <p><a href="/classes?categoryIdx=12" class="text-dark text-decoration-none">성공 마인드</a></p>
+                    <p><a href="/classes?categoryIdx=13" class="text-dark text-decoration-none">프로그래밍</a></p>
+                    <p><a href="/classes?categoryIdx=14" class="text-dark text-decoration-none">데이터사이언스</a></p>
+                    <p><a href="/classes?categoryIdx=15" class="text-dark text-decoration-none">제품 기획</a></p>
+                    <p><a href="/classes?categoryIdx=16" class="text-dark text-decoration-none">비즈니스</a></p>
+                    <p><a href="/classes?categoryIdx=17" class="text-dark text-decoration-none">생산성</a></p>
+                    <p><a href="/classes?categoryIdx=18" class="text-dark text-decoration-none">마케팅</a></p>
+                </div>
+                <div>
+                    <p><a href="/classes?categoryIdx=19" class="text-dark text-decoration-none">디자인</a></p>
+                    <p><a href="/classes?categoryIdx=20" class="text-dark text-decoration-none">영상/3D</a></p>
+                    <p><a href="/classes?categoryIdx=21" class="text-dark text-decoration-none">영어</a></p>
+                    <p><a href="/classes?categoryIdx=22" class="text-dark text-decoration-none">외국어 시험</a></p>
+                    <p><a href="/classes?categoryIdx=23" class="text-dark text-decoration-none">제2 외국어</a></p>
+                </div>
+                <div>
+                    <p><a href="/classes?categoryIdx=24" class="text-dark text-decoration-none">아이 교육</a></p>
+                    <p><a href="/classes?categoryIdx=25" class="text-dark text-decoration-none">부모 교육</a></p>
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button class="btn btn-sm border-0 small" onclick="toggleCategoryMenu()"
+                        style="font-size: 0.75rem;">
+                    ✕ 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 캐러셀: 화면 전체 너비 -->
+<div id="classCarousel" class="carousel slide w-100 mb-4" data-bs-ride="carousel">
+    <div id="carouselCounter"
+         class="position-absolute top-0 end-0 mt-2 me-2 px-2 py-1 bg-white text-dark rounded-pill small"
+         style="z-index: 20;">
+        1 / 3
+    </div>
+    <div class="carousel-inner" style="height: 420px;">
+        <div class="carousel-item active">
+            <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드1">
+        </div>
+        <div class="carousel-item">
+            <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드2">
+        </div>
+        <div class="carousel-item">
+            <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드3">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#classCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon custom-carousel-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">이전</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#classCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon custom-carousel-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">다음</span>
+    </button>
+
+    <script>
+        const carousel = document.getElementById('classCarousel');
+        const counter = document.getElementById('carouselCounter');
+        const items = carousel.querySelectorAll('.carousel-item');
+        const total = items.length;
+
+        carousel.addEventListener('slide.bs.carousel', function (event) { // 슬라이드 시작 직전에 숫자 바꿈
+            const nextIndex = event.to + 1;
+            counter.textContent = `${nextIndex} / ${total}`;
+        });
+
+        // 초기값 설정
+        counter.textContent = `1 / ${total}`;
+    </script>
+</div>
+<div class="container d-flex mt-2">
+    <!-- 왼쪽: 스크롤스파이 + 본문 콘텐츠 -->
+    <div class="w-100 w-lg-60 me-lg-5">
+        <!-- ScrollSpy 내비게이션 바 -->
+        <nav id="scrollNav" class="navbar navbar-light mb-4 bg-white"
+             style="position: sticky; top: 70px; z-index: 1010;">
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a class="nav-link" href="#intro">클래스 소개</a></li>
+                <li class="nav-item"><a class="nav-link" href="#curriculum">커리큘럼</a></li>
+                <!--                <li class="nav-item"><a class="nav-link" href="#reviews">수강 후기</a></li>-->
+                <li class="nav-item"><a class="nav-link" href="#creator">크리에이터</a></li>
+            </ul>
+        </nav>
+
+        <!-- 본문 콘텐츠 -->
+        <section id="intro" class="mb-5">
+            <h5 class="fw-bold">클래스 소개</h5>
+            <p id="class-description">로딩 중...</p>
+            <img id="class-intro-image" src="/images/default-image.png" class="img-fluid rounded" alt="소개 이미지">
+        </section>
+
+        <section id="curriculum" class="mb-5">
+            <h5 class="fw-bold pb-2">클래스 커리큘럼</h5>
+
+            <div class="border rounded px-2 py-2 d-flex align-items-center gap-3 mb-4">
+                <img id="class-main-thumbnail" src="/images/default-image.png" width="48" height="48" class="rounded">
+                <span id="class-title" class="fw-semibold">클래스 타이틀</span>
+            </div>
+
+            <h6 class="fw-bold mb-3">클래스 정보</h6>
+            <div class="row gy-2 mb-5">
+                <div class="col-md-6 d-flex align-items-center">
+                    <i class="bi bi-calendar3 me-2 text-primary"></i>
+                    <span class="text-primary fw-semibold small">2023년 3월 3일 수강 시작</span>
+                    <!--createdAt으로 수정해야 됨-->
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <i class="bi bi-play-btn-fill me-2"></i>
+                    <span class="small" id="lecture-count">영상 0개</span>
+                    <!--                     · 첨부 파일 29개-->
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <i class="bi bi-clock me-2"></i>
+                    <span class="small" id="total-duration">총 0시간 0분</span>
+                </div>
+                <div class="col-md-6 d-flex align-items-center">
+                    <i class="bi bi-globe me-2"></i>
+                    <span class="small">한국어 음성</span>
+                    <span class="ms-3"><i class="bi bi-cc-circle"></i> <span class="small">한국어 자막</span></span>
+                </div>
+            </div>
+
+            <!-- 커리큘럼 JS 렌더링 영역 -->
+            <div id="curriculum-wrapper" class="border"></div>
+        </section>
+
+        <!--        <section id="reviews" class="mb-5">-->
+        <!--            <h5 class="fw-bold">수강 후기</h5>-->
+        <!--            <p class="text-muted">실제 수강생들의 리뷰가 들어갑니다.</p>-->
+        <!--        </section>-->
+
+        <section id="creator" class="mb-5" style="padding-bottom: 30px;">
+            <h5 class="fw-bold mb-3">크리에이터 소개</h5>
+            <div class="d-flex align-items-center">
+                <img id="creator-image" src="/images/default-image.png" width="60" height="60"
+                     class="rounded-circle me-3">
+                <div><strong id="creator-name">크리에이터명</strong></div>
+            </div>
+            <div style="padding-left: 0.5rem; padding-top: 0.8rem;">
+                <small id="creator-bio" class="text-muted" style="word-break: keep-all;">로딩 중...</small>
+            </div>
+        </section>
+    </div>
+
+    <!-- 오른쪽: 고정 결제 정보 패널 -->
+    <div class="d-none d-lg-block mt-2" style="width: 55%;">
+        <div class="position-sticky" style="top: 100px;">
+            <div class="text-center p-2">
+                <h5 id="sidebar-class-title" class="fw-bold mb-3"
+                    style="text-align: left; font-weight: 800; font-size: 1.4rem;">클래스 타이틀</h5>
+
+                <div class="d-flex align-items-center mb-3">
+                    <img id="sidebar-creator-img" src="/images/default-image.png" width="32" height="32"
+                         class="rounded-circle me-2">
+                    <span id="sidebar-creator-name" class="fw-semibold">크리에이터명</span>
+                </div>
+                <a href="#" class="btn btn-danger w-100 py-2 fw-bold"
+                   style="font-size: 0.9rem; background-color: #FE5D01; border-radius: 3px;">
+                    <i class="bi bi-play-fill me-1"></i> 무료로 시청하기
+                </a>
+                <div class="d-flex justify-content-center gap-5 mt-4">
+                    <div class="text-center">
+                        <i class="bi bi-bookmark fs-5"></i>
+                        <div class="small">1356</div>
+                    </div>
+                    <div class="text-center">
+                        <i class="bi bi-upload fs-5"></i>
+                        <div class="small">공유</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 모바일용 구독 패널 -->
+    <div class="d-block d-lg-none fixed-bottom bg-white shadow-sm py-2 px-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="text-center">
+                <i class="bi bi-bookmark fs-5"></i>
+                <div class="small">1356</div>
+            </div>
+
+            <a href="#"
+               class="btn fw-bold d-flex align-items-center justify-content-center flex-grow-1 mx-3"
+               style="background-color: #FE5D01; color: white; font-size: 0.9rem; border-radius: 3px;">
+                <i class="bi bi-play-fill me-2"></i> 구독으로 시작하기
+            </a>
+
+            <div class="text-center">
+                <i class="bi bi-upload fs-5"></i>
+                <div class="small">공유</div>
+            </div>
+        </div>
+    </div>
+    <!-- JS 렌더링 스크립트 -->
+    <script>
+        (async () => {
+            const classId = location.pathname.split("/").pop();
+
+            const res = await fetch(`/api/classes/${classId}`);
+            const data = await res.json();
+            const {class: classInfo, lectureCurriculum} = data;
+            const {
+                classTitle,
+                classDescription,
+                thumbnailUrl,
+                creatorName,
+                creatorDescription,
+                creatorProfileImg
+            } = classInfo;
+
+            // 클래스 및 크리에이터 정보 렌더링
+            document.querySelector("#class-title").textContent = classTitle;
+            document.querySelector("#class-description").textContent = classDescription;
+            document.querySelector("#class-intro-image").src = thumbnailUrl || "/images/default-image.png";
+            document.querySelector("#class-main-thumbnail").src = thumbnailUrl || "/images/default-image.png";
+            document.querySelector("#sidebar-class-title").textContent = classTitle;
+
+            document.querySelector("#creator-name").textContent = creatorName || "크리에이터명";
+            document.querySelector("#creator-bio").textContent = creatorDescription || "크리에이터 소개를 여기에 입력하세요.";
+            document.querySelector("#creator-image").src = creatorProfileImg || "/images/default-image.png";
+            document.querySelector("#sidebar-creator-name").textContent = creatorName || "크리에이터명";
+            document.querySelector("#sidebar-creator-img").src = creatorProfileImg || "/images/default-image.png";
+
+            // 총 시간 및 강의 수 계산
+            let totalMinutes = 0;
+            let totalLectureCount = 0;
+
+            if (lectureCurriculum && typeof lectureCurriculum === 'object') {
+                Object.values(lectureCurriculum).forEach(lectures => {
+                    lectures.forEach(lec => {
+                        if (!lec.duration) return;
+                        const parts = lec.duration.split(":").map(Number);
+                        if (parts.length === 3) {
+                            const [hh, mm, ss] = parts;
+                            totalMinutes += hh * 60 + mm + Math.floor(ss / 60);
+                        } else if (parts.length === 2) {
+                            const [mm, ss] = parts;
+                            totalMinutes += mm + Math.floor(ss / 60);
+                        }
+                    });
+                    totalLectureCount += lectures.length;
+                });
+            }
+
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            document.querySelector("#total-duration").textContent = `총 ${hours}시간 ${minutes}분`;
+            document.querySelector("#lecture-count").textContent = `영상 ${totalLectureCount}개`;
+
+            // 커리큘럼 + 썸네일 렌더링
+            const wrapper = document.getElementById("curriculum-wrapper");
+            const curriculumEntries = Object.entries(lectureCurriculum);
+
+            curriculumEntries.forEach(([section, lectures], idx) => {
+                // 썸네일 이미지 가로 스크롤
+                const scrollRow = document.createElement("div");
+                scrollRow.className = "scroll-row d-flex overflow-auto gap-2 px-3 pb-2 mt-3";
+                lectures.forEach(lec => {
+                    const thumb = document.createElement("div");
+                    thumb.style.flex = "0 0 auto";
+                    thumb.style.width = "130px";
+                    thumb.innerHTML = `
+                    <div class="overflow-hidden" style="aspect-ratio: 16 / 9; border-radius: 5px;">
+                        <img src="${lec.thumbnailUrl || '/images/default-image.png'}"
+                             class="w-100 h-100 object-fit-cover"
+                             alt="강의 썸네일"
+                             onerror="this.onerror=null; this.src='/images/default-image.png';">
+                    </div>`;
+                    scrollRow.appendChild(thumb);
+                });
+
+                wrapper.appendChild(scrollRow);
+
+                // 섹션 제목 및 강의 목록
+                const sectionBlock = document.createElement("div");
+                sectionBlock.classList.add("my-4");
+
+                const sectionTitle = document.createElement("h6");
+                sectionTitle.className = "fw-bold px-3 mb-1";
+                sectionTitle.textContent = section;
+                sectionBlock.appendChild(sectionTitle);
+
+                const ul = document.createElement("ul");
+                ul.className = "list-group px-3";
+
+                lectures.forEach((lec, i) => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item d-flex justify-content-between border-0 px-0 py-1";
+                    li.innerHTML = `
+                    <span>${i + 1}. ${lec.title}</span>
+                    <span>
+                        <span>${lec.duration}</span>
+                        <i class="bi bi-lock-fill text-muted"></i>
+                    </span>`;
+                    ul.appendChild(li);
+                });
+
+                sectionBlock.appendChild(ul);
+                wrapper.appendChild(sectionBlock);
+            });
+        })();
+    </script>
+
+</div>
+</body>
+</html>

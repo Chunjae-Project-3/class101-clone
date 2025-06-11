@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.repository;
+package net.fullstack.class101clone.repository.classes;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -39,4 +39,26 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .orderBy(cls.createdAt.desc())
                 .fetch();
     }
+
+    @Override
+    public ClassDTO getClassDetailById(Integer classId) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+
+        return queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .where(cls.classIdx.eq(classId))
+                .fetchOne();
+    }
+
 }

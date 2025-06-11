@@ -14,6 +14,10 @@ public class ClassDTO {
     private String thumbnailUrl;
     private String categoryName;
 
+    private String creatorName;
+    private String creatorProfileImg;
+    private String creatorDescription;
+
     public ClassDTO(Integer classIdx, String classTitle, String classDescription, String thumbnailUrl, String categoryName) {
         this.classIdx = classIdx;
         this.classTitle = classTitle;
