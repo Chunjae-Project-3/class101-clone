@@ -37,4 +37,9 @@ public class ClassEntity extends BaseEntity {
     @OneToMany(mappedBy = "lectureRef", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 20)
     private List<LectureEntity> lectureList = new ArrayList<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id", foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_creator"))
+    private CreatorEntity creator;
+
 }

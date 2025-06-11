@@ -18,7 +18,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
         QFileEntity file = QFileEntity.fileEntity;
 
         return queryFactory
-                .select(file.filePath)
+                .select(file.filePath.concat("/").concat(file.fileName))
                 .from(lec)
                 .join(lec.lectureVideo, file)
                 .where(lec.lectureRef.classIdx.eq(classId))

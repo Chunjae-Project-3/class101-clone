@@ -1,6 +1,7 @@
 package net.fullstack.class101clone.service;
 
 import lombok.RequiredArgsConstructor;
+import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.LectureEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
@@ -25,7 +26,18 @@ public class ClassService {
     }
 
     public ClassDTO getClassDetail(Integer classId) {
-        return classRepository.getClassDetailById(classId);
+        ClassEntity entity = classRepository.findWithCreatorByClassIdx(classId)
+                .orElseThrow(() -> new RuntimeException("클래스를 찾을 수 없습니다."));
+
+        ClassDTO dto = new ClassDTO();
+        dto.setClassTitle(entity.getClassTitle());
+        dto.setClassDescription(entity.getClassDescription());
+        dto.setCreatorName(entity.getCreator().getCreatorName());
+        dto.setCreatorDescription(entity.getCreator().getCreatorDescription());
+        dto.setCreatorProfileImg(entity.getCreator().getCreatorProfileImg());
+        dto.setThumbnailUrl(entity.getClassThumbnailImg().getFilePath());
+
+        return dto;
     }
 
     public List<String> getClassImageList(Integer classId) {
@@ -39,10 +51,18 @@ public class ClassService {
                 lec -> lec.getLectureSection() != null ? lec.getLectureSection() : "기타",
                 LinkedHashMap::new,
                 Collectors.mapping(
-                        lec -> Map.of(
-                                "title", lec.getLectureTitle(),
-                                "duration", formatDuration(lec.getLectureDurationSec())
-                        ),
+                        lec -> {
+                            String duration = formatDuration(lec.getLectureDurationSec());
+                            String thumbnailUrl = (lec.getLectureThumbnail() != null)
+                                    ? lec.getLectureThumbnail().getFilePath()
+                                    : "/images/default-image.png";
+
+                            return Map.of(
+                                    "title", lec.getLectureTitle(),
+                                    "duration", duration,
+                                    "thumbnailUrl", thumbnailUrl
+                            );
+                        },
                         Collectors.toList()
                 )
         ));

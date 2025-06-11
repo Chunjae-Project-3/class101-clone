@@ -100,9 +100,17 @@
             filter: invert(0%) sepia(100%) saturate(0%) hue-rotate(0deg) brightness(0%) contrast(100%);
         }
 
+        .overflow-auto::-webkit-scrollbar {
+            display: none; /* Chrome, Safari */
+        }
+
+        .overflow-auto {
+            -ms-overflow-style: none; /* IE, Edge */
+            scrollbar-width: none; /* Firefox */
+        }
     </style>
 </head>
-<body data-bs-spy="scroll" data-bs-target="#scrollNav" data-bs-offset="100" tabindex="0">
+<body data-bs-spy="scroll" data-bs-target="#scrollNav" data-bs-offset="140" tabindex="0">
 <!-- 고정 헤더 -->
 <header class="position-sticky top-0 bg-white" style="z-index: 1020;">
     <div class="container py-3 position-relative">
@@ -237,7 +245,7 @@
         <!-- 본문 콘텐츠 -->
         <section id="intro" class="mb-5">
             <h5 class="fw-bold">클래스 소개</h5>
-            <p id="class-description" class="text-muted">로딩 중...</p>
+            <p id="class-description">로딩 중...</p>
             <img id="class-intro-image" src="/images/default-image.png" class="img-fluid rounded" alt="소개 이미지">
         </section>
 
@@ -254,6 +262,7 @@
                 <div class="col-md-6 d-flex align-items-center">
                     <i class="bi bi-calendar3 me-2 text-primary"></i>
                     <span class="text-primary fw-semibold small">2023년 3월 3일 수강 시작</span>
+                    <!--createdAt으로 수정해야 됨-->
                 </div>
                 <div class="col-md-6 d-flex align-items-center">
                     <i class="bi bi-play-btn-fill me-2"></i>
@@ -281,7 +290,7 @@
         <!--        </section>-->
 
         <section id="creator" class="mb-5" style="padding-bottom: 30px;">
-            <h5 class="fw-bold">크리에이터 소개</h5>
+            <h5 class="fw-bold mb-3">크리에이터 소개</h5>
             <div class="d-flex align-items-center">
                 <img id="creator-image" src="/images/default-image.png" width="60" height="60"
                      class="rounded-circle me-3">
@@ -307,7 +316,7 @@
                 </div>
                 <a href="#" class="btn btn-danger w-100 py-2 fw-bold"
                    style="font-size: 0.9rem; background-color: #FE5D01; border-radius: 3px;">
-                    <i class="bi bi-play-fill me-1"></i> 구독으로 시작하기
+                    <i class="bi bi-play-fill me-1"></i> 무료로 시청하기
                 </a>
                 <div class="d-flex justify-content-center gap-5 mt-4">
                     <div class="text-center">
@@ -346,99 +355,110 @@
     <script>
         (async () => {
             const classId = location.pathname.split("/").pop();
+
             const res = await fetch(`/api/classes/${classId}`);
             const data = await res.json();
+            const {class: classInfo, lectureCurriculum} = data;
+            const {
+                classTitle,
+                classDescription,
+                thumbnailUrl,
+                creatorName,
+                creatorDescription,
+                creatorProfileImg
+            } = classInfo;
 
-            const {class: classInfo, classImageList, lectureCurriculum} = data;
-            const {classTitle, classDescription, thumbnailUrl, categoryName} = classInfo;
-
+            // 클래스 및 크리에이터 정보 렌더링
             document.querySelector("#class-title").textContent = classTitle;
             document.querySelector("#class-description").textContent = classDescription;
             document.querySelector("#class-intro-image").src = thumbnailUrl || "/images/default-image.png";
             document.querySelector("#class-main-thumbnail").src = thumbnailUrl || "/images/default-image.png";
-            document.querySelector("#creator-name").textContent = categoryName || "크리에이터명";
-            document.querySelector("#creator-bio").textContent = "크리에이터 소개를 여기에 입력하세요.";
             document.querySelector("#sidebar-class-title").textContent = classTitle;
 
-            let totalMinutes = 0;
+            document.querySelector("#creator-name").textContent = creatorName || "크리에이터명";
+            document.querySelector("#creator-bio").textContent = creatorDescription || "크리에이터 소개를 여기에 입력하세요.";
+            document.querySelector("#creator-image").src = creatorProfileImg || "/images/default-image.png";
+            document.querySelector("#sidebar-creator-name").textContent = creatorName || "크리에이터명";
+            document.querySelector("#sidebar-creator-img").src = creatorProfileImg || "/images/default-image.png";
 
-            Object.values(lectureCurriculum).forEach(lectures => {
-                lectures.forEach(lec => {
-                    const [hh, mm] = lec.duration.split(":").map(Number);
-                    totalMinutes += (hh * 60) + mm;
+            // 총 시간 및 강의 수 계산
+            let totalMinutes = 0;
+            let totalLectureCount = 0;
+
+            if (lectureCurriculum && typeof lectureCurriculum === 'object') {
+                Object.values(lectureCurriculum).forEach(lectures => {
+                    lectures.forEach(lec => {
+                        if (!lec.duration) return;
+                        const parts = lec.duration.split(":").map(Number);
+                        if (parts.length === 3) {
+                            const [hh, mm, ss] = parts;
+                            totalMinutes += hh * 60 + mm + Math.floor(ss / 60);
+                        } else if (parts.length === 2) {
+                            const [mm, ss] = parts;
+                            totalMinutes += mm + Math.floor(ss / 60);
+                        }
+                    });
+                    totalLectureCount += lectures.length;
                 });
-            });
+            }
 
             const hours = Math.floor(totalMinutes / 60);
             const minutes = totalMinutes % 60;
 
             document.querySelector("#total-duration").textContent = `총 ${hours}시간 ${minutes}분`;
-
-            let totalLectureCount = 0;
-
-            Object.values(lectureCurriculum).forEach(lectures => {
-                totalLectureCount += lectures.length;
-            });
-
             document.querySelector("#lecture-count").textContent = `영상 ${totalLectureCount}개`;
-        })();
 
-        (async () => {
-            const classId = location.pathname.split("/").pop();
-            const res = await fetch(`/api/classes/${classId}`);
-            const data = await res.json();
-
-            const {classImageList, lectureCurriculum} = data;
+            // 커리큘럼 + 썸네일 렌더링
             const wrapper = document.getElementById("curriculum-wrapper");
+            const curriculumEntries = Object.entries(lectureCurriculum);
 
-            // 1. 이미지 리스트 렌더링
-            if (classImageList && Array.isArray(classImageList) && classImageList.length > 0) {
-                const imageRow = document.createElement("div");
-                imageRow.className = "d-flex flex-wrap justify-content-center gap-3 px-3 mb-3";
-
-                classImageList.forEach(url => {
-                    const col = document.createElement("div");
-                    col.style.flex = "0 0 calc(33.333% - 1rem)";
-                    col.innerHTML = `
-                    <div class="overflow-hidden" style="aspect-ratio: 16 / 9;">
-                        <img src="${url}" class="w-100 h-100 object-fit-cover" alt="클래스 미리보기 이미지">
+            curriculumEntries.forEach(([section, lectures], idx) => {
+                // 썸네일 이미지 가로 스크롤
+                const scrollRow = document.createElement("div");
+                scrollRow.className = "scroll-row d-flex overflow-auto gap-2 px-3 pb-2 mt-3";
+                lectures.forEach(lec => {
+                    const thumb = document.createElement("div");
+                    thumb.style.flex = "0 0 auto";
+                    thumb.style.width = "130px";
+                    thumb.innerHTML = `
+                    <div class="overflow-hidden" style="aspect-ratio: 16 / 9; border-radius: 5px;">
+                        <img src="${lec.thumbnailUrl || '/images/default-image.png'}"
+                             class="w-100 h-100 object-fit-cover"
+                             alt="강의 썸네일"
+                             onerror="this.onerror=null; this.src='/images/default-image.png';">
                     </div>`;
-                    imageRow.appendChild(col);
+                    scrollRow.appendChild(thumb);
                 });
 
-                wrapper.appendChild(imageRow);
-            }
+                wrapper.appendChild(scrollRow);
 
-            // 2. 커리큘럼 렌더링 (lectureCurriculum 유효성 체크)
-            if (lectureCurriculum && typeof lectureCurriculum === 'object') {
-                Object.entries(lectureCurriculum).forEach(([section, lectures]) => {
-                    const sectionBlock = document.createElement("div");
-                    sectionBlock.classList.add("my-4");
+                // 섹션 제목 및 강의 목록
+                const sectionBlock = document.createElement("div");
+                sectionBlock.classList.add("my-4");
 
-                    const sectionTitle = document.createElement("h6");
-                    sectionTitle.className = "fw-bold mt-2 mb-3 px-3";
-                    sectionTitle.textContent = section;
-                    sectionBlock.appendChild(sectionTitle);
+                const sectionTitle = document.createElement("h6");
+                sectionTitle.className = "fw-bold px-3 mb-1";
+                sectionTitle.textContent = section;
+                sectionBlock.appendChild(sectionTitle);
 
-                    const ul = document.createElement("ul");
-                    ul.className = "list-group px-3";
+                const ul = document.createElement("ul");
+                ul.className = "list-group px-3";
 
-                    lectures.forEach((lec, idx) => {
-                        const li = document.createElement("li");
-                        li.className = "list-group-item d-flex justify-content-between border-0 px-0";
-                        li.innerHTML = `
-                        <span>${idx + 1}. ${lec.title}</span>
-                        <span>
-                            <span>${lec.duration}</span>
-                            <i class="bi bi-lock-fill text-muted"></i>
-                        </span>`;
-                        ul.appendChild(li);
-                    });
-
-                    sectionBlock.appendChild(ul);
-                    wrapper.appendChild(sectionBlock);
+                lectures.forEach((lec, i) => {
+                    const li = document.createElement("li");
+                    li.className = "list-group-item d-flex justify-content-between border-0 px-0 py-1";
+                    li.innerHTML = `
+                    <span>${i + 1}. ${lec.title}</span>
+                    <span>
+                        <span>${lec.duration}</span>
+                        <i class="bi bi-lock-fill text-muted"></i>
+                    </span>`;
+                    ul.appendChild(li);
                 });
-            }
+
+                sectionBlock.appendChild(ul);
+                wrapper.appendChild(sectionBlock);
+            });
         })();
     </script>
 
