@@ -3,26 +3,34 @@ package net.fullstack.class101clone.service;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.UserEntity;
 import net.fullstack.class101clone.dto.UserDTO;
-import net.fullstack.class101clone.repository.login.UserRepository;
+import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserServiceIf {
-	private final UserRepository userRepository;
+	private final UserRepositoryIf userRepository;
 
 	@Override
-	public UserEntity findByUserId(String userId) {
-		return userRepository.findById(userId).orElse(null);
+	public UserDTO login(UserDTO userDTO) {
+		UserEntity user = userRepository.login(userDTO);
+		if (user != null) {
+			// 로그인 성공
+			return UserDTO.builder()
+					.userId(user.getUserId())
+					.userName(user.getUserName())
+					.build();
+		}
+		return null; // 로그인 실패
 	}
 
 	@Override
-	public void signup(UserDTO userDTO) {
-		UserEntity user = UserEntity.builder()
-				.userId(userDTO.getUserId())
-				.userPwd(userDTO.getUserPwd()) // 암호화 필요
-				.userName(userDTO.getUserName())
-				.build();
-		userRepository.save(user);
+	public boolean signup(UserDTO userDTO) {
+		return userRepository.signup(userDTO);
+	}
+
+	@Override
+	public boolean existsByUserId(String userId) {
+		return userRepository.existsByUserId(userId);
 	}
 }
