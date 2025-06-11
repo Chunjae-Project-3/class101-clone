@@ -1,7 +1,7 @@
 package net.fullstack.class101clone.config;
 
 import lombok.RequiredArgsConstructor;
-import net.fullstack.class101clone.repository.login.UserRepository;
+import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
-	private final UserRepository userRepository;
+	private final UserRepositoryIf userRepositoryIf;
 	private final CorsConfig corsConfig;
 	private final AuthenticationConfiguration authenticationConfiguration;
 
