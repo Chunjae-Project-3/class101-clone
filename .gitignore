@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+src/main/resources/static/.DS_Store
+
+application.properties
+**/uploads/
