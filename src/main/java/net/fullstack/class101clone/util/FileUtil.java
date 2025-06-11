@@ -4,12 +4,17 @@ import net.coobird.thumbnailator.Thumbnailator;
 import net.fullstack.class101clone.dto.FileResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,6 +75,26 @@ public class FileUtil {
                 .build();
     }
 
+    public Map<String, Boolean> deleteFile(String fileName) throws IOException {
+        Resource resource = new FileSystemResource(uploadPath + File.separator + fileName);
+
+        Map<String, Boolean> result = new HashMap<>();
+        boolean fileDeleteFlag = false;
+        boolean thumbDeleteFlag = false;
+
+        String contentType = Files.probeContentType(resource.getFile().toPath());
+        if (contentType.startsWith("image")) {
+            File thumbFile = new File(uploadPath + File.separator + "s_" + fileName);
+            if (thumbFile.exists()) thumbDeleteFlag = thumbFile.delete();
+        }
+        fileDeleteFlag = resource.getFile().delete();
+
+        result.put("fileDeleteFlag", fileDeleteFlag);
+        result.put("thumbDeleteFlag", thumbDeleteFlag);
+
+        return result;
+    }
+
     private void validateFile(MultipartFile file, Set<String> allowedExts, long maxSize) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("파일이 비어 있습니다.");
@@ -90,6 +115,12 @@ public class FileUtil {
         }
     }
 
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex == -1 || dotIndex == fileName.length() - 1) return "";
+        return fileName.substring(dotIndex + 1).toLowerCase();
+    }
+
     private String saveFile(MultipartFile file) throws IOException {
         String oFileName = file.getOriginalFilename();
         String uuid = UUID.randomUUID().toString();
@@ -98,11 +129,5 @@ public class FileUtil {
 
         file.transferTo(saveFile);
         return sFileName;
-    }
-
-    private String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex == -1 || dotIndex == fileName.length() - 1) return "";
-        return fileName.substring(dotIndex + 1).toLowerCase();
     }
 }
