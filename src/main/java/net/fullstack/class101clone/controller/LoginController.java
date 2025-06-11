@@ -1,5 +1,6 @@
 package net.fullstack.class101clone.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +32,8 @@ public class LoginController {
 			@Valid @ModelAttribute UserDTO userDTO,
 			BindingResult bindingResult,
 			RedirectAttributes ra,
-			Model model
+			Model model,
+			HttpSession session
 	) {
 		log.info("UserDTO : {}", userDTO);
 
@@ -58,6 +60,7 @@ public class LoginController {
 			ra.addFlashAttribute("loginErrorMsg", "잘못된 아이디 또는 비밀번호입니다.");
 			return "redirect:/login"; // Redirect to login page with error message
 		} else {
+			session.setAttribute("loginId", userInfo.getUserId());
 			model.addAttribute("userInfo", userInfo);
 			ra.addFlashAttribute("welcomeMsg", "반갑습니다, " + userInfo.getUserName() + "님!");
 			return "redirect:/"; // Redirect to home page after successful login
