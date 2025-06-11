@@ -2,16 +2,16 @@ package net.fullstack.class101clone.repository;
 
 import lombok.extern.log4j.Log4j2;
 import net.fullstack.class101clone.domain.UserEntity;
-import net.fullstack.class101clone.repository.login.UserRepository;
+import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @Log4j2
 @SpringBootTest
-public class UserRepositoryTests {
+public class UserRepositoryIfTests {
     @Autowired
-    private UserRepository userRepository;
+    private UserRepositoryIf userRepositoryIf;
 
     @Test
     public void testUserRegist() {
@@ -21,7 +21,7 @@ public class UserRepositoryTests {
                 .userPwd("1234")
                 .userName("test")
                 .build();
-        UserEntity result = userRepository.save(entity);
+        UserEntity result = userRepositoryIf.save(entity);
         log.info("testUserRegist result: {}", result);
         log.info("==================================================");
     }
