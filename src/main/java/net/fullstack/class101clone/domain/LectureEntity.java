@@ -28,4 +28,8 @@ public class LectureEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "lecture_video", foreignKey = @ForeignKey(name = "FK_tbl_lecture_tbl_file"))
     private FileEntity lectureVideo;
+
+    @Column(columnDefinition = "varchar(100) default null comment '강의 그룹 또는 섹션명'")
+    private String lectureSection;
+
 }

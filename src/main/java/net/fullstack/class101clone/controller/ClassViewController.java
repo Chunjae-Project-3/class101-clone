@@ -28,6 +28,7 @@ public class ClassViewController {
 
         model.addAttribute("classImageList", List.of(
                 "/images/default-image.png",
+                "/images/default-image.png",
                 "/images/default-image.png"
         ));
 
@@ -38,6 +39,20 @@ public class ClassViewController {
                 Map.of("content", "초보자에게도 이해하기 쉬웠습니다.")
         ));
 
+        model.addAttribute("lectureCurriculum", Map.of(
+                "고은센세 N3 클래스에 대해서", List.of(
+                        Map.of("title", "고은센세와 N3 시작해볼까요?", "duration", "00:59"),
+                        Map.of("title", "JLPT N3 시험에 대해 알려드려요!", "duration", "03:31"),
+                        Map.of("title", "수업 진행 방식에 대해 알려드려요!", "duration", "01:59")
+                ),
+                "본격적인 JLPT N3 공부 전 꼭 알아야 할 기본 문법 정리 1", List.of(
+                        Map.of("title", "[기본 문법] 필수 조사1", "duration", "19:05"),
+                        Map.of("title", "[기본 문법] ます형 문법", "duration", "12:15"),
+                        Map.of("title", "[기본 문법] 필수 조사2", "duration", "09:41")
+                )
+        ));
+
         return "class/main";
     }
+
 }
