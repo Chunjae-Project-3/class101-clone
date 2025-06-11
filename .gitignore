@@ -39,3 +39,4 @@ src/main/resources/static/.DS_Store
 
 application.properties
 **/uploads/
+src/main/resources/application.properties
