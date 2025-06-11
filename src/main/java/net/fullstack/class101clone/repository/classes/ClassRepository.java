@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.repository;
+package net.fullstack.class101clone.repository.classes;
 
 import net.fullstack.class101clone.domain.ClassEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

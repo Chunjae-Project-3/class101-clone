@@ -3,17 +3,22 @@ package net.fullstack.class101clone.service;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.LectureEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
-import net.fullstack.class101clone.repository.ClassRepository;
+import net.fullstack.class101clone.repository.classes.ClassRepository;
+import net.fullstack.class101clone.repository.file.FileRepository;
+import net.fullstack.class101clone.repository.LectureRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class ClassService {
     private final ClassRepository classRepository;
+    private final FileRepository fileRepository;
+    private final LectureRepository lectureRepository;
 
     public List<ClassDTO> getClasses(String category) {
         return classRepository.getClasses(category);

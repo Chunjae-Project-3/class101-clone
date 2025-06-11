@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -224,13 +224,12 @@
     <!-- 왼쪽: 스크롤스파이 + 본문 콘텐츠 -->
     <div class="w-100 w-lg-60 me-lg-5">
         <!-- ScrollSpy 내비게이션 바 -->
-        <nav id="scrollNav"
-             class="navbar navbar-light mb-4 bg-white"
+        <nav id="scrollNav" class="navbar navbar-light mb-4 bg-white"
              style="position: sticky; top: 70px; z-index: 1010;">
             <ul class="nav nav-pills">
                 <li class="nav-item"><a class="nav-link" href="#intro">클래스 소개</a></li>
                 <li class="nav-item"><a class="nav-link" href="#curriculum">커리큘럼</a></li>
-                <li class="nav-item"><a class="nav-link" href="#reviews">수강 후기</a></li>
+                <!--                <li class="nav-item"><a class="nav-link" href="#reviews">수강 후기</a></li>-->
                 <li class="nav-item"><a class="nav-link" href="#creator">크리에이터</a></li>
             </ul>
         </nav>
@@ -238,16 +237,16 @@
         <!-- 본문 콘텐츠 -->
         <section id="intro" class="mb-5">
             <h5 class="fw-bold">클래스 소개</h5>
-            <p class="text-muted">여기에 클래스 상세 설명이 들어갑니다. 일본어 시험 대비 클래스입니다...</p>
-            <img src="/images/default-image.png" class="img-fluid rounded" alt="소개 이미지">
+            <p id="class-description" class="text-muted">로딩 중...</p>
+            <img id="class-intro-image" src="/images/default-image.png" class="img-fluid rounded" alt="소개 이미지">
         </section>
 
         <section id="curriculum" class="mb-5">
             <h5 class="fw-bold pb-2">클래스 커리큘럼</h5>
 
             <div class="border rounded px-2 py-2 d-flex align-items-center gap-3 mb-4">
-                <img src="/images/default-image.png" width="48" height="48" class="rounded">
-                <span class="fw-semibold">고은센세와 쉽게 공부하는 일본어 자격증 JLPT N3 &lt;문법&gt;</span>
+                <img id="class-main-thumbnail" src="/images/default-image.png" width="48" height="48" class="rounded">
+                <span id="class-title" class="fw-semibold">클래스 타이틀</span>
             </div>
 
             <h6 class="fw-bold mb-3">클래스 정보</h6>
@@ -258,11 +257,12 @@
                 </div>
                 <div class="col-md-6 d-flex align-items-center">
                     <i class="bi bi-play-btn-fill me-2"></i>
-                    <span class="small">영상 33개 · 첨부 파일 29개</span>
+                    <span class="small" id="lecture-count">영상 0개</span>
+                    <!--                     · 첨부 파일 29개-->
                 </div>
                 <div class="col-md-6 d-flex align-items-center">
                     <i class="bi bi-clock me-2"></i>
-                    <span class="small">총 5시간 10분</span>
+                    <span class="small" id="total-duration">총 0시간 0분</span>
                 </div>
                 <div class="col-md-6 d-flex align-items-center">
                     <i class="bi bi-globe me-2"></i>
@@ -271,60 +271,24 @@
                 </div>
             </div>
 
-            <!-- 커리큘럼 전체를 감싸는 wrapper -->
-            <div class="border">
-                <div th:each="entry, stat : ${lectureCurriculum}"
-                     th:classappend="${stat.first} ? 'rounded-top my-4' : (${stat.last} ? 'rounded-bottom mb-3' : '')">
-
-                    <!-- 섹션 이미지 리스트 -->
-                    <div class="d-flex flex-wrap justify-content-center gap-3 px-3 mb-3" th:if="${classImageList}">
-                        <div style="flex: 0 0 calc(33.333% - 1rem);" th:each="img : ${classImageList}">
-                            <div class="overflow-hidden" style="aspect-ratio: 16 / 9;">
-                                <img th:src="${img}" class="w-100 h-100 object-fit-cover" alt="클래스 미리보기 이미지">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 섹션 제목 -->
-                    <h6 class="fw-bold mt-2 mb-3 px-3" th:text="${entry.key}">섹션 제목</h6>
-
-                    <!-- 강의 리스트 -->
-                    <ul class="list-group px-3">
-                        <li class="list-group-item d-flex justify-content-between border-0 px-0"
-                            th:each="lecture, iterStat : ${entry.value}">
-                            <span th:text="|${iterStat.count}. ${lecture.title}|">강의 제목</span>
-                            <span>
-                        <span th:text="${lecture.duration}">00:00</span>
-                        <i class="bi bi-lock-fill text-muted"></i>
-                    </span>
-                        </li>
-                    </ul>
-
-                    <hr class="my-4" th:if="${!stat.last}"/>
-                </div>
-            </div>
+            <!-- 커리큘럼 JS 렌더링 영역 -->
+            <div id="curriculum-wrapper" class="border"></div>
         </section>
 
-        <section id="reviews" class="mb-5">
-            <h5 class="fw-bold">수강 후기</h5>
-            <p class="text-muted">실제 수강생들의 리뷰가 들어갑니다.</p>
-        </section>
+        <!--        <section id="reviews" class="mb-5">-->
+        <!--            <h5 class="fw-bold">수강 후기</h5>-->
+        <!--            <p class="text-muted">실제 수강생들의 리뷰가 들어갑니다.</p>-->
+        <!--        </section>-->
 
         <section id="creator" class="mb-5" style="padding-bottom: 30px;">
             <h5 class="fw-bold">크리에이터 소개</h5>
             <div class="d-flex align-items-center">
-                <img src="/images/default-image.png" width="60" height="60" class="rounded-circle me-3">
-                <div>
-                    <strong>고은센세</strong><br>
-                </div>
+                <img id="creator-image" src="/images/default-image.png" width="60" height="60"
+                     class="rounded-circle me-3">
+                <div><strong id="creator-name">크리에이터명</strong></div>
             </div>
             <div style="padding-left: 0.5rem; padding-top: 0.8rem;">
-                <small class="text-muted" style="word-break: keep-all;">안녕하세요. 여러분들을 쉽고 빠르게 JLPT N3 합격길로 안내 해 드릴
-                    고은센세
-                    입니다:)<br><br>
-                    고등학교 때 부터 일본에서 생활을 하였고, 대학 졸업 후에는 한국에 돌아와서 강남 파고다 어학원에서 일본어 강사로 7년간 활동 했습니다. 일본어 기초만 겨우 끝낸 수강생들도
-                    고은센세 수업만 듣고 두달만에 쉽게 JLPT에 합격 하곤 했죠! 어렵지 않고 무섭지 않게, 하지만 꼭 알아야 할 부분은 확실하게 제대로 짚어주는 고은센세의 강의를 클래스
-                    101을 통해 온라인으로도 여러분들께 선보일 수 있게 되어서 너무 기쁩니다. 여러분들도 고은센세를 믿고 따라 와 주시면 JLPT 합격길을 걷게 되실거에요~!</small>
+                <small id="creator-bio" class="text-muted" style="word-break: keep-all;">로딩 중...</small>
             </div>
         </section>
     </div>
@@ -333,20 +297,18 @@
     <div class="d-none d-lg-block mt-2" style="width: 55%;">
         <div class="position-sticky" style="top: 100px;">
             <div class="text-center p-2">
-                <h5 class="fw-bold mb-3" style="text-align: left; font-weight: 800; font-size: 1.4rem;">고은센세와 쉽게
-                    공부하는
-                    일본어 자격증 JLPT N3 &lt;문법&gt;</h5>
+                <h5 id="sidebar-class-title" class="fw-bold mb-3"
+                    style="text-align: left; font-weight: 800; font-size: 1.4rem;">클래스 타이틀</h5>
 
                 <div class="d-flex align-items-center mb-3">
-                    <img src="/images/default-image.png" width="32" height="32" class="rounded-circle me-2">
-                    <span class="fw-semibold">고은센세</span>
+                    <img id="sidebar-creator-img" src="/images/default-image.png" width="32" height="32"
+                         class="rounded-circle me-2">
+                    <span id="sidebar-creator-name" class="fw-semibold">크리에이터명</span>
                 </div>
-
                 <a href="#" class="btn btn-danger w-100 py-2 fw-bold"
                    style="font-size: 0.9rem; background-color: #FE5D01; border-radius: 3px;">
                     <i class="bi bi-play-fill me-1"></i> 구독으로 시작하기
                 </a>
-
                 <div class="d-flex justify-content-center gap-5 mt-4">
                     <div class="text-center">
                         <i class="bi bi-bookmark fs-5"></i>
@@ -360,7 +322,6 @@
             </div>
         </div>
     </div>
-
     <!-- 모바일용 구독 패널 -->
     <div class="d-block d-lg-none fixed-bottom bg-white shadow-sm py-2 px-3">
         <div class="d-flex align-items-center justify-content-between">
@@ -381,32 +342,106 @@
             </div>
         </div>
     </div>
-
+    <!-- JS 렌더링 스크립트 -->
     <script>
-        function toggleCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-                icon.classList.remove('bi-caret-down-fill');
-                icon.classList.add('bi-caret-up-fill');
-            } else {
-                menu.style.display = 'none';
-                icon.classList.remove('bi-caret-up-fill');
-                icon.classList.add('bi-caret-down-fill');
-            }
-        }
+        (async () => {
+            const classId = location.pathname.split("/").pop();
+            const res = await fetch(`/api/classes/${classId}`);
+            const data = await res.json();
 
-        document.addEventListener('click', function (e) {
-            const toggle = document.getElementById('categoryToggle');
-            const menu = document.getElementById('categoryMenu');
-            if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-                document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
-                document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
+            const {class: classInfo, classImageList, lectureCurriculum} = data;
+            const {classTitle, classDescription, thumbnailUrl, categoryName} = classInfo;
+
+            document.querySelector("#class-title").textContent = classTitle;
+            document.querySelector("#class-description").textContent = classDescription;
+            document.querySelector("#class-intro-image").src = thumbnailUrl || "/images/default-image.png";
+            document.querySelector("#class-main-thumbnail").src = thumbnailUrl || "/images/default-image.png";
+            document.querySelector("#creator-name").textContent = categoryName || "크리에이터명";
+            document.querySelector("#creator-bio").textContent = "크리에이터 소개를 여기에 입력하세요.";
+            document.querySelector("#sidebar-class-title").textContent = classTitle;
+
+            let totalMinutes = 0;
+
+            Object.values(lectureCurriculum).forEach(lectures => {
+                lectures.forEach(lec => {
+                    const [hh, mm] = lec.duration.split(":").map(Number);
+                    totalMinutes += (hh * 60) + mm;
+                });
+            });
+
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            document.querySelector("#total-duration").textContent = `총 ${hours}시간 ${minutes}분`;
+
+            let totalLectureCount = 0;
+
+            Object.values(lectureCurriculum).forEach(lectures => {
+                totalLectureCount += lectures.length;
+            });
+
+            document.querySelector("#lecture-count").textContent = `영상 ${totalLectureCount}개`;
+        })();
+
+        (async () => {
+            const classId = location.pathname.split("/").pop();
+            const res = await fetch(`/api/classes/${classId}`);
+            const data = await res.json();
+
+            const {classImageList, lectureCurriculum} = data;
+            const wrapper = document.getElementById("curriculum-wrapper");
+
+            // 1. 이미지 리스트 렌더링
+            if (classImageList && Array.isArray(classImageList) && classImageList.length > 0) {
+                const imageRow = document.createElement("div");
+                imageRow.className = "d-flex flex-wrap justify-content-center gap-3 px-3 mb-3";
+
+                classImageList.forEach(url => {
+                    const col = document.createElement("div");
+                    col.style.flex = "0 0 calc(33.333% - 1rem)";
+                    col.innerHTML = `
+                    <div class="overflow-hidden" style="aspect-ratio: 16 / 9;">
+                        <img src="${url}" class="w-100 h-100 object-fit-cover" alt="클래스 미리보기 이미지">
+                    </div>`;
+                    imageRow.appendChild(col);
+                });
+
+                wrapper.appendChild(imageRow);
             }
-        });
+
+            // 2. 커리큘럼 렌더링 (lectureCurriculum 유효성 체크)
+            if (lectureCurriculum && typeof lectureCurriculum === 'object') {
+                Object.entries(lectureCurriculum).forEach(([section, lectures]) => {
+                    const sectionBlock = document.createElement("div");
+                    sectionBlock.classList.add("my-4");
+
+                    const sectionTitle = document.createElement("h6");
+                    sectionTitle.className = "fw-bold mt-2 mb-3 px-3";
+                    sectionTitle.textContent = section;
+                    sectionBlock.appendChild(sectionTitle);
+
+                    const ul = document.createElement("ul");
+                    ul.className = "list-group px-3";
+
+                    lectures.forEach((lec, idx) => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item d-flex justify-content-between border-0 px-0";
+                        li.innerHTML = `
+                        <span>${idx + 1}. ${lec.title}</span>
+                        <span>
+                            <span>${lec.duration}</span>
+                            <i class="bi bi-lock-fill text-muted"></i>
+                        </span>`;
+                        ul.appendChild(li);
+                    });
+
+                    sectionBlock.appendChild(ul);
+                    wrapper.appendChild(sectionBlock);
+                });
+            }
+        })();
     </script>
+
 </div>
 </body>
 </html>

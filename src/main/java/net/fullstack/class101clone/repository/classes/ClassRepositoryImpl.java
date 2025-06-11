@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.repository;
+package net.fullstack.class101clone.repository.classes;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
