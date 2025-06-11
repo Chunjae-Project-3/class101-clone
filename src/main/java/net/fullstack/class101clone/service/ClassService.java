@@ -15,4 +15,9 @@ public class ClassService {
     public List<ClassDTO> getClasses(String category) {
         return classRepository.getClasses(category);
     }
+
+    public ClassDTO getClassDetail(Integer classId) {
+        return classRepository.getClassDetailById(classId);
+    }
+
 }

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMMB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+            crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #0c0c0c;
+            font-size: 0.8rem;
+        }
+
+        a {
+            color: #0c0c0c;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0c0c0c;
+            text-decoration: underline;
+        }
+
+        section {
+            margin-top: 48px;
+        }
+
+        .nav-pills .nav-link {
+            font-weight: bold;
+            color: #000;
+            padding-bottom: 6px;
+        }
+
+        .nav-pills .nav-link.active {
+            color: #000;
+            border-bottom: 3px solid #000;
+            border-radius: 0;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<body data-bs-spy="scroll" data-bs-target="#scrollNav" data-bs-offset="100" tabindex="0">
+<!-- 고정 헤더 -->
+<header class="position-sticky top-0 bg-white" style="z-index: 1020;">
+    <div class="container py-3 position-relative">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="me-1 fw-bold">클래스</a>
+                <a href="#" class="me-1 fw-bold">클럽</a>
+                <a href="#" class="me-1 fw-bold">커뮤니티</a>
+                <a href="#" class="fw-bold" id="categoryToggle"
+                   onclick="event.preventDefault(); toggleCategoryMenu();">
+                    카테고리 <i id="categoryIcon" class="bi bi-caret-down-fill small"></i>
+                </a>
+                <div class="position-relative" style="width: 300px; margin-left: 10px;">
+                    <input type="text" class="form-control ps-3 pe-5"
+                           placeholder="관심 주제, 클래스, 크리에이터 찾기"
+                           style="height: 34px; font-size: 0.8rem; background-color: #F7F7F7; border: none;">
+                    <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                       style="font-size: 0.9rem;"></i>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="/login" class="text-dark small fw-bold">로그인</a>
+                <a href="/signup" class="text-dark small fw-bold">회원가입</a>
+            </div>
+        </div>
+
+        <!-- 카테고리 드롭다운 메뉴 -->
+        <div id="categoryMenu" class="border p-4 bg-white shadow position-absolute w-100"
+             style="top: 100%; left: 0; display: none; z-index: 1040;">
+            <div class="row row-cols-2 row-cols-md-4">
+                <div>
+                    <p><a href="/classes?categoryIdx=1" class="text-dark text-decoration-none">디지털 드로잉</a></p>
+                    <p><a href="/classes?categoryIdx=2" class="text-dark text-decoration-none">드로잉</a></p>
+                    <p><a href="/classes?categoryIdx=3" class="text-dark text-decoration-none">공예</a></p>
+                    <p><a href="/classes?categoryIdx=4" class="text-dark text-decoration-none">요리 · 음료</a></p>
+                    <p><a href="/classes?categoryIdx=5" class="text-dark text-decoration-none">베이킹 · 디저트</a></p>
+                    <p><a href="/classes?categoryIdx=6" class="text-dark text-decoration-none">음악</a></p>
+                    <p><a href="/classes?categoryIdx=7" class="text-dark text-decoration-none">운동</a></p>
+                    <p><a href="/classes?categoryIdx=8" class="text-dark text-decoration-none">라이프스타일</a></p>
+                    <p><a href="/classes?categoryIdx=9" class="text-dark text-decoration-none">사진 · 영상</a></p>
+                </div>
+                <div>
+                    <p><a href="/classes?categoryIdx=10" class="text-dark text-decoration-none">금융 · 재테크</a></p>
+                    <p><a href="/classes?categoryIdx=11" class="text-dark text-decoration-none">창업 · 부업</a></p>
+                    <p><a href="/classes?categoryIdx=12" class="text-dark text-decoration-none">성공 마인드</a></p>
+                    <p><a href="/classes?categoryIdx=13" class="text-dark text-decoration-none">프로그래밍</a></p>
+                    <p><a href="/classes?categoryIdx=14" class="text-dark text-decoration-none">데이터사이언스</a></p>
+                    <p><a href="/classes?categoryIdx=15" class="text-dark text-decoration-none">제품 기획</a></p>
+                    <p><a href="/classes?categoryIdx=16" class="text-dark text-decoration-none">비즈니스</a></p>
+                    <p><a href="/classes?categoryIdx=17" class="text-dark text-decoration-none">생산성</a></p>
+                    <p><a href="/classes?categoryIdx=18" class="text-dark text-decoration-none">마케팅</a></p>
+                </div>
+                <div>
+                    <p><a href="/classes?categoryIdx=19" class="text-dark text-decoration-none">디자인</a></p>
+                    <p><a href="/classes?categoryIdx=20" class="text-dark text-decoration-none">영상/3D</a></p>
+                    <p><a href="/classes?categoryIdx=21" class="text-dark text-decoration-none">영어</a></p>
+                    <p><a href="/classes?categoryIdx=22" class="text-dark text-decoration-none">외국어 시험</a></p>
+                    <p><a href="/classes?categoryIdx=23" class="text-dark text-decoration-none">제2 외국어</a></p>
+                </div>
+                <div>
+                    <p><a href="/classes?categoryIdx=24" class="text-dark text-decoration-none">아이 교육</a></p>
+                    <p><a href="/classes?categoryIdx=25" class="text-dark text-decoration-none">부모 교육</a></p>
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button class="btn btn-sm border-0 small" onclick="toggleCategoryMenu()"
+                        style="font-size: 0.75rem;">
+                    ✕ 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container d-flex mt-2">
+    <!-- 왼쪽: 스크롤스파이 + 본문 콘텐츠 -->
+    <div class="flex-grow-1 me-5" style="max-width: 100%;">
+        <!-- ScrollSpy 내비게이션 바 -->
+        <nav id="scrollNav"
+             class="navbar navbar-light mb-4 bg-white"
+             style="position: sticky; top: 70px; z-index: 1010;">
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a class="nav-link" href="#intro">클래스 소개</a></li>
+                <li class="nav-item"><a class="nav-link" href="#curriculum">커리큘럼</a></li>
+                <li class="nav-item"><a class="nav-link" href="#reviews">수강 후기</a></li>
+                <li class="nav-item"><a class="nav-link" href="#creator">크리에이터</a></li>
+            </ul>
+        </nav>
+
+        <!-- 본문 콘텐츠 -->
+        <section id="intro" class="mb-5">
+            <h5 class="fw-bold">클래스 소개</h5>
+            <p class="text-muted">여기에 클래스 상세 설명이 들어갑니다. 일본어 시험 대비 클래스입니다...</p>
+            <img src="/images/default-image.png" class="img-fluid rounded" alt="소개 이미지">
+        </section>
+
+        <section id="curriculum" class="mb-5">
+            <h5 class="fw-bold mb-4 border-bottom pb-2">클래스 커리큘럼 <span class="text-primary">1</span></h5>
+
+            <div class="border rounded px-4 py-3 d-flex align-items-center gap-3 mb-3">
+                <img src="/images/default-image.png" width="48" height="48" class="rounded">
+                <span class="fw-semibold">고은센세와 쉽게 공부하는 일본어 자격증 JLPT N3 &lt;문법&gt;</span>
+            </div>
+
+            <div class="bg-light rounded p-4 mb-4">
+                <h6 class="fw-bold mb-3">클래스 정보</h6>
+                <div class="row gy-2">
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                        <span class="text-primary fw-semibold small">2023년 3월 3일 수강 시작</span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-play-btn-fill me-2"></i>
+                        <span class="small">중급 난이도 · 영상 33개 · 첨부 파일 29개</span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-clock me-2"></i>
+                        <span class="small">총 5시간 10분</span>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center">
+                        <i class="bi bi-globe me-2"></i>
+                        <span class="small">한국어 음성</span>
+                        <span class="ms-3"><i class="bi bi-cc-circle"></i> <span class="small">한국어 자막</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-2 mb-4">
+                <div class="col-6 col-md-4"><img src="/images/default-image.png" class="img-fluid rounded border"></div>
+                <div class="col-6 col-md-4"><img src="/images/default-image.png" class="img-fluid rounded border"></div>
+                <div class="col-6 col-md-4"><img src="/images/default-image.png" class="img-fluid rounded border"></div>
+            </div>
+
+            <h6 class="fw-bold">고은센세 N3 클래스에 대해서</h6>
+            <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>1. 고은센세와 N3 시작해볼까요?</span>
+                    <span>00:59 <i class="bi bi-lock-fill text-muted"></i></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>2. JLPT N3 시험에 대해 알려드려요!</span>
+                    <span>03:31 <i class="bi bi-lock-fill text-muted"></i></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>3. 수업 진행 방식에 대해 알려드려요!</span>
+                    <span>01:59 <i class="bi bi-lock-fill text-muted"></i></span>
+                </li>
+            </ul>
+        </section>
+
+        <section id="reviews" class="mb-5">
+            <h5 class="fw-bold">수강 후기</h5>
+            <p class="text-muted">실제 수강생들의 리뷰가 들어갑니다.</p>
+        </section>
+
+        <section id="creator">
+            <h5 class="fw-bold">크리에이터 소개</h5>
+            <div class="d-flex align-items-center">
+                <img src="/images/default-image.png" width="60" height="60" class="rounded-circle me-3">
+                <div>
+                    <strong>고은센세</strong><br>
+                    <small class="text-muted">일러스트레이터 및 이모티콘 작가</small>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- 오른쪽: 고정 결제 정보 패널 -->
+    <div class="d-none d-lg-block mt-2" style="width: 100%;">
+        <div class="position-sticky" style="top: 100px;">
+            <div class="text-center p-2">
+                <h5 class="fw-bold mb-3">고은센세와 쉽게 공부하는 일본어 자격증 JLPT N3 &lt;문법&gt;</h5>
+
+                <div class="d-flex align-items-center justify-content-center mb-3">
+                    <img src="/images/default-image.png" width="32" height="32" class="rounded-circle me-2">
+                    <span class="fw-semibold">고은센세</span>
+                </div>
+
+                <a href="#" class="btn btn-danger w-100 py-2 fw-bold">
+                    <i class="bi bi-play-fill me-1"></i> 구독으로 시작하기
+                </a>
+
+                <div class="d-flex justify-content-center gap-5 mt-4">
+                    <div class="text-center">
+                        <i class="bi bi-bookmark fs-5"></i>
+                        <div class="small">1356</div>
+                    </div>
+                    <div class="text-center">
+                        <i class="bi bi-upload fs-5"></i>
+                        <div class="small">공유</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleCategoryMenu() {
+        const menu = document.getElementById('categoryMenu');
+        const icon = document.getElementById('categoryIcon');
+        if (menu.style.display === 'none' || menu.style.display === '') {
+            menu.style.display = 'block';
+            icon.classList.remove('bi-caret-down-fill');
+            icon.classList.add('bi-caret-up-fill');
+        } else {
+            menu.style.display = 'none';
+            icon.classList.remove('bi-caret-up-fill');
+            icon.classList.add('bi-caret-down-fill');
+        }
+    }
+
+    document.addEventListener('click', function (e) {
+        const toggle = document.getElementById('categoryToggle');
+        const menu = document.getElementById('categoryMenu');
+        if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+            menu.style.display = 'none';
+            document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
+            document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
+        }
+    });
+</script>
+
+</body>
+</html>
