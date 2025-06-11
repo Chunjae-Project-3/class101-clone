@@ -32,4 +32,6 @@ public class LectureEntity {
     @Column(columnDefinition = "varchar(100) default null comment '강의 그룹 또는 섹션명'")
     private String lectureSection;
 
+    @Column(columnDefinition = "int default 0 comment '강의 재생 시간 (초 단위)'")
+    private int lectureDurationSec;
 }

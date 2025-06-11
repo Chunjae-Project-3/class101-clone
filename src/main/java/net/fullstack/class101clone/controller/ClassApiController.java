@@ -28,13 +28,16 @@ public class ClassApiController {
 
     @GetMapping("/{id}")
     @Operation(summary = "클래스 상세 조회 (API)", description = "클래스 ID로 JSON 형태 상세 정보를 반환합니다.")
-    public ClassDTO getClassDetail(@PathVariable Integer id) {
-        return new ClassDTO(
-                id,
-                "이모티콘 클래스",
-                "귀여운 이모티콘 만들기",
-                "/images/default-image.png",
-                "일러스트"
+    public Map<String, Object> getClassDetail(@PathVariable Integer id) {
+        ClassDTO classInfo = classService.getClassDetail(id);
+        List<String> imageList = classService.getClassImageList(id);
+        Map<String, List<Map<String, String>>> curriculum = classService.getLectureCurriculum(id);
+
+        return Map.of(
+                "class", classInfo,
+                "classImageList", imageList,
+                "lectureCurriculum", curriculum
         );
     }
+
 }
