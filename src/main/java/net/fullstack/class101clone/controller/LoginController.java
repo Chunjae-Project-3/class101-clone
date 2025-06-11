@@ -13,17 +13,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Log4j2
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
 	private final UserServiceImpl userService;
+	private final HttpSession httpSession;
 
 	@GetMapping("/login")
 	public String loginPage() {
@@ -167,15 +165,17 @@ public class LoginController {
 
 	@PostMapping("/mypage/edit")
 	public String editUserInfo(
-			@RequestBody String userName,
-			@RequestBody String originalPwd,
-			@RequestBody String newPwd,
-			@RequestBody String newPwdConfirm,
+			@RequestParam String userName,
+			@RequestParam String originalPwd,
+			@RequestParam String newPwd,
+			@RequestParam String newPwdConfirm,
 			HttpServletRequest req,
 			RedirectAttributes ra,
 			Model model
 	) {
 		UserDTO userInfo = (UserDTO) req.getSession().getAttribute("userInfo");
+
+		log.info("userName: {}, originalPwd: {}, newPwd: {}, newPwdConfirm: {}", userName, originalPwd, newPwd, newPwdConfirm);
 
 		if (userInfo == null) {
 			log.warn("User not logged in, cannot edit user info.");
@@ -219,11 +219,14 @@ public class LoginController {
 				.build();
 
 		updatedUser = userService.updateUserInfo(updatedUser, newPwd);
+
 		if (updatedUser == null) {
 			log.error("Failed to update user info for userId: {}", userId);
 			ra.addFlashAttribute("editErrorMsg", "회원 정보 수정에 실패했습니다. 다시 시도해주세요.");
 			return "redirect:/mypage"; // 마이페이지로 리다이렉트
 		}
+		HttpSession session = req.getSession();
+		session.setAttribute("userInfo", updatedUser);
 		model.addAttribute("userInfo", updatedUser);
 		return "redirect:/mypage"; // 마이페이지 뷰로 이동
 	}
