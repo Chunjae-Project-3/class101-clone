@@ -4,8 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack.class101clone.domain.FileEntity;
 import net.fullstack.class101clone.dto.FileDTO;
-import net.fullstack.class101clone.repository.FileRepository;
-import net.fullstack.class101clone.util.FileUtil;
+import net.fullstack.class101clone.repository.file.FileRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
