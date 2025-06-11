@@ -46,6 +46,12 @@ public class SpringSecurityConfig {
 						.defaultSuccessUrl("/") // 로그인 성공 시 이동할 경로
 						.permitAll()
 				)
+				.logout(logout -> logout
+						.logoutUrl("/logout") // 로그아웃 요청 URL
+						.logoutSuccessUrl("/") // 로그아웃 성공 시 이동할 경로
+						.invalidateHttpSession(true) // 세션 무효화
+						.deleteCookies("JSESSIONID") // 쿠키 삭제
+				)
 				.addFilter(corsConfig.corsFilter())
 				.sessionManagement(sessionManagement ->
 						sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
