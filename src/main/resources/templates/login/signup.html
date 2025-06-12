@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>회원가입</title>
@@ -11,27 +9,106 @@
 </head>
 <body class="bg-light">
 <div class="container d-flex align-items-center justify-content-center min-vh-100">
-    <div class="card shadow p-4" >
+    <div class="card shadow p-4">
         <h1 class="h2 fw-bold mb-4 text-center">회원가입</h1>
-        <form th:action="@{/signup}" method="post">
+        <form th:action="@{/signup}" method="post" id="signupForm" onsubmit="return validateForm()">
             <div class="mb-3">
-                <label for="userId" class="form-label d-flex align-items-center">ID<span class=" orange">&nbsp;&nbsp;*</span></label>
-                <input type="text" id="userId" name="userId" class="form-control" required>
+                <label for="userId" class="form-label d-flex align-items-center">ID<span class="orange">&nbsp;&nbsp;*</span></label>
+                <input type="text" id="userId" name="userId" class="form-control"
+                       pattern="^[a-zA-Z0-9]{6,20}$"
+                       title="ID는 영문자와 숫자로 6~20자 사이여야 합니다"
+                       required>
+                <div class="invalid-feedback">ID는 영문자와 숫자로 6~20자 사이여야 합니다.</div>
             </div>
             <div class="mb-3">
-                <label for="userPwd" class="form-label d-flex align-items-center">비밀번호<span class=" orange">&nbsp;&nbsp;*</span></label>
-                <input type="password" id="userPwd" name="userPwd" class="form-control" required>
+                <label for="userPwd" class="form-label d-flex align-items-center">비밀번호<span class="orange">&nbsp;&nbsp;*</span></label>
+                <input type="password" id="userPwd" name="userPwd" class="form-control"
+                       pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$"
+                       title="비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다"
+                       required>
+                <div class="invalid-feedback">비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다.</div>
             </div>
             <div class="mb-3">
                 <label for="userName" class="form-label">닉네임<small class="text-secondary ms-2">(선택)</small></label>
-                <input type="text" id="userName" name="userName" class="form-control">
+                <input type="text" id="userName" name="userName" class="form-control"
+                       pattern="^[가-힣a-zA-Z0-9]{3,}$|^$"
+                       title="닉네임은 한글, 영문, 숫자로 3자 이상이어야 합니다">
+                <div class="invalid-feedback">닉네임은 한글, 영문, 숫자로 3자 이상이어야 합니다.</div>
             </div>
-            <div th:if="${signupErrorMsg != null}" class="alert alert-danger mb-3" role="alert" th:text="${signupErrorMsg}"></div>
+            <div th:if="${signupErrorMsg != null}" class="alert alert-danger mb-3" role="alert"
+                 th:text="${#strings.escapeXml(signupErrorMsg)}"></div>
             <button type="submit" class="btn btn-success w-100">회원가입</button>
             <a href="/login" class="btn btn-outline-secondary w-100 mt-2">로그인으로 돌아가기</a>
         </form>
     </div>
 </div>
 
+<script th:inline="javascript">
+    function validateForm() {
+        const userId = document.getElementById('userId');
+        const userPwd = document.getElementById('userPwd');
+        const userName = document.getElementById('userName');
+
+        // XSS 방어를 위한 이스케이프 처리
+        const escapeHTML = (str) => {
+            return str.replace(/[&<>"']/g, function(match) {
+                const escape = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escape[match];
+            });
+        }
+
+        // 정규식 패턴
+        const userIdPattern = /^[a-zA-Z0-9]{6,20}$/;
+        const pwdPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$/;
+        const userNamePattern = /^[가-힣a-zA-Z0-9]{3,}$|^$/;
+
+        let isValid = true;
+
+        // ID 검증
+        if (!userIdPattern.test(userId.value)) {
+            userId.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // 비밀번호 검증
+        if (!pwdPattern.test(userPwd.value)) {
+            userPwd.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // 닉네임 검증 (값이 있는 경우에만)
+        if (userName.value && !userNamePattern.test(userName.value)) {
+            userName.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        if (isValid) {
+            // 입력값 이스케이프 처리
+            userId.value = escapeHTML(userId.value);
+            if (userName.value) {
+                userName.value = escapeHTML(userName.value);
+            }
+        }
+
+        return isValid;
+    }
+
+    // 입력 필드 변경 시 유효성 검사 메시지 초기화
+    document.getElementById('userId').addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+    });
+    document.getElementById('userPwd').addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+    });
+    document.getElementById('userName').addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+    });
+</script>
 </body>
 </html>
