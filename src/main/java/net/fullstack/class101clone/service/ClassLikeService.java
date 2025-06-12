@@ -4,11 +4,10 @@ import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.ClassLikeEntity;
 import net.fullstack.class101clone.domain.UserEntity;
-import net.fullstack.class101clone.repository.ClassLikeRepository;
+import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Optional;
