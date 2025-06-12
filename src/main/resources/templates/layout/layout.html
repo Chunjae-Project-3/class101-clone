@@ -44,8 +44,8 @@
     </style>
 </head>
 <body>
-<header class="position-sticky top-0 bg-white border-bottom" style="z-index: 1020;" layout:fragment="header">
-    <div class="container py-2 position-relative">
+<header class="position-sticky top-0 bg-white" style="z-index: 1020;" layout:fragment="header">
+    <div class="container py-4 position-relative">
         <!-- 모바일용 토글 버튼 -->
         <div class="d-lg-none d-flex justify-content-between align-items-center">
             <a href="/">
@@ -209,22 +209,22 @@
 <div layout:fragment="content">
     <p>컨텐츠</p>
 </div>
-<footer layout:fragment="footer">
-    <div class="row">
-        <div class="col-md-4">
-            <h6 class="fw-bold">고객센터</h6>
-            <p>support@class101.net</p>
+<footer layout:fragment="footer" class="w-100" style="background-color: #eee;">
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="fw-bold">고객센터</h6>
+                <p>support@class101.net</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">회사 정보</h6>
+                <p>서울특별시 성동구 왕십리로 125</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">앱 다운로드</h6>
+                <a href="#">App Store</a> | <a href="#">Google Play</a>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h6 class="fw-bold">회사 정보</h6>
-            <p>서울특별시 성동구 왕십리로 125</p>
-        </div>
-        <div class="col-md-4">
-            <h6 class="fw-bold">앱 다운로드</h6>
-            <a href="#">App Store</a> | <a href="#">Google Play</a>
-        </div>
-    </div>
-    <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
+        <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
 </footer>
 
 <th:block layout:fragment="script">
@@ -234,6 +234,40 @@
         //     alert(successMsg);
         // }
     </script>
+    <script>
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'TOGGLE_CATEGORY_MENU') {
+                const isMobile = window.innerWidth < 992;
+
+                if (isMobile) {
+                    const mobileNav = document.getElementById('mobileNav');
+                    const menu = document.getElementById('mobileCategoryMenu');
+                    const icon = document.getElementById('categoryIconMobile');
+                    if (!menu || !icon || !mobileNav) return;
+
+                    if (!mobileNav.classList.contains('show')) {
+                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(mobileNav);
+                        bsCollapse.show();
+                    }
+
+                    const isOpen = !menu.classList.contains('d-none');
+                    menu.classList.toggle('d-none');
+                    icon.classList.toggle('bi-caret-up-fill', !isOpen);
+                    icon.classList.toggle('bi-caret-down-fill', isOpen);
+                } else {
+                    const menu = document.getElementById('categoryMenu');
+                    const icon = document.getElementById('categoryIconDesktop');
+                    if (!menu || !icon) return;
+
+                    const isOpen = menu.style.display === 'block';
+                    menu.style.display = isOpen ? 'none' : 'block';
+                    icon.classList.toggle('bi-caret-up-fill', !isOpen);
+                    icon.classList.toggle('bi-caret-down-fill', isOpen);
+                }
+            }
+        });
+    </script>
+
     <script>
         function toggleCategoryMenu() {
             const isMobile = window.innerWidth < 992;

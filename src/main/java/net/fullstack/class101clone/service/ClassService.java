@@ -32,9 +32,13 @@ public class ClassService {
         return classRepository.getClassesByCategoryIdx(categoryIdx);
     }
 
-    public Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, int page, int size) {
+    public Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, int page, int size, String sort) {
         Pageable pageable = PageRequest.of(page, size);
-        return classRepository.getPagedClassesByCategoryIdx(categoryIdx, pageable);
+        return classRepository.getPagedClassesByCategoryIdx(categoryIdx, pageable, sort);
+    }
+
+    public List<Map<String, String>> getCreatorsByCategory(Integer categoryIdx) {
+        return classRepository.getCreatorListByCategoryIdx(categoryIdx);
     }
 
     public ClassDTO getClassDetail(Integer classId) {

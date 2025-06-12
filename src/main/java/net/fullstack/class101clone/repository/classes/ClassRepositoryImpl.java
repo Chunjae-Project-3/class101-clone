@@ -10,7 +10,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class ClassRepositoryImpl implements ClassRepositoryCustom {
@@ -92,13 +95,14 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
     }
 
     @Override
-    public Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, Pageable pageable) {
+    public Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, Pageable pageable, String sort) {
         QClassEntity cls = QClassEntity.classEntity;
         QFileEntity file = QFileEntity.fileEntity;
         QCategoryEntity cat = QCategoryEntity.categoryEntity;
         QCreatorEntity creator = QCreatorEntity.creatorEntity;
+        QClassLikeEntity like = QClassLikeEntity.classLikeEntity;
 
-        List<ClassDTO> content = queryFactory
+        var query = queryFactory
                 .select(Projections.constructor(ClassDTO.class,
                         cls.classIdx,
                         cls.classTitle,
@@ -113,13 +117,28 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .leftJoin(cls.classThumbnailImg, file)
                 .leftJoin(cls.classCategory, cat)
                 .leftJoin(cls.creator, creator)
-                .where(cat.categoryIdx.eq(categoryIdx))
-                .orderBy(cls.createdAt.desc())
+                .where(cat.categoryIdx.eq(categoryIdx));
+
+        // 정렬 조건 분기
+        switch (sort) {
+            case "popular":
+                query
+                        .leftJoin(like).on(like.classLikeRef.eq(cls))
+                        .groupBy(cls.classIdx)
+                        .orderBy(like.count().desc());
+                break;
+            case "old":
+                query.orderBy(cls.createdAt.asc());
+                break;
+            default:
+                query.orderBy(cls.createdAt.desc());
+        }
+
+        List<ClassDTO> content = query
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // count 쿼리
         long total = queryFactory
                 .select(cls.count())
                 .from(cls)
@@ -128,6 +147,29 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .fetchOne();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public List<Map<String, String>> getCreatorListByCategoryIdx(Integer categoryIdx) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+
+        return queryFactory
+                .select(creator.creatorName, creator.creatorProfileImg, creator.creatorDescription)
+                .from(cls)
+                .leftJoin(cls.creator, creator)
+                .where(cls.classCategory.categoryIdx.eq(categoryIdx))
+                .distinct()
+                .fetch()
+                .stream()
+                .map(t -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("name", t.get(creator.creatorName));
+                    map.put("profileImage", t.get(creator.creatorProfileImg));
+                    map.put("description", t.get(creator.creatorDescription));
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override

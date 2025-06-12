@@ -133,8 +133,9 @@
                 <!-- 필터 영역 -->
                 <div class="d-flex justify-content-end mb-4 gap-2">
                     <select id="sortOption" class="form-select form-select-sm" style="width: 100px;">
-                        <option>인기순</option>
-                        <option>최신순</option>
+                        <option value="popular">인기순</option>
+                        <option value="recent" selected>최신순</option>
+                        <option value="old">오래된순</option>
                     </select>
                     <select id="pageSizeOption" class="form-select form-select-sm" style="width: 120px;">
                         <option value="1">1개씩 보기</option>
@@ -162,21 +163,19 @@
                         }
                     });
 
-                    function renderCreators(classList) {
-                        const creatorMap = new Map();
+                    function loadCreators(categoryIdx) {
+                        fetch(`/api/classes/creators/category/${categoryIdx}`)
+                            .then(res => res.json())
+                            .then(creators => {
+                                console.log("🎨 크리에이터 목록", creators);
+                                latestCreators = creators;
+                                renderCreators(creators);
+                            })
+                            .catch(err => console.error("크리에이터 로드 실패", err));
+                    }
 
-                        classList.forEach(cls => {
-                            if (cls.creatorName && !creatorMap.has(cls.creatorName)) {
-                                creatorMap.set(cls.creatorName, {
-                                    name: cls.creatorName,
-                                    profileImage: cls.creatorProfileImg,
-                                    description: cls.creatorDescription
-                                });
-                            }
-                        });
-
-                        const creators = Array.from(creatorMap.values());
-                        latestCreators = creators;
+                    function renderCreators(creators) {
+                        if (!creators || !creators.length) return;
 
                         const sectionId = `creator-carousel`;
                         const isWideScreen = window.innerWidth >= 992;
@@ -185,51 +184,51 @@
                             const slides = [];
                             for (let i = 0; i < creators.length; i += 5) {
                                 const group = creators.slice(i, i + 5);
-                                while (group.length < 5) group.push(null); // 빈 칸 채우기
+                                while (group.length < 5) group.push(null);
                                 slides.push(group);
                             }
 
                             const slideItemsHtml = slides.map((group, idx) => `
-        <div class="carousel-item ${idx === 0 ? 'active' : ''}">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-                ${group.map(creator => {
+            <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                    ${group.map(creator => {
                                 if (!creator) return `<div class="col"></div>`;
                                 return `
-                        <div class="col">
-                            <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
-                                <img src="${creator.profileImage}" alt="프로필"
-                                     class="rounded-circle mb-2"
-                                     style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
-                                <p class="fw-bold small mb-1">${creator.name}</p>
-                                <p class="text-muted small mb-0 text-truncate">${creator.description}</p>
+                            <div class="col">
+                                <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
+                                    <img src="${creator.profileImage}" alt="프로필"
+                                         class="rounded-circle mb-2"
+                                         style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
+                                    <p class="fw-bold small mb-1">${creator.name}</p>
+                                    <p class="text-muted small mb-0 text-truncate">${creator.description}</p>
+                                </div>
                             </div>
-                        </div>
-                    `;
+                        `;
                             }).join('')}
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
 
                             document.getElementById("creatorSectionContainer").innerHTML = `
-        <section class="mb-5">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="fw-bold mb-0">크리에이터</h5>
-                <div>
-                    <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
-                        <i class="bi bi-chevron-left fs-5 text-dark"></i>
-                    </button>
-                    <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
-                        <i class="bi bi-chevron-right fs-5 text-dark"></i>
-                    </button>
+            <section class="mb-5">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-bold mb-0">크리에이터</h5>
+                    <div>
+                        <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
+                            <i class="bi bi-chevron-left fs-5 text-dark"></i>
+                        </button>
+                        <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
+                            <i class="bi bi-chevron-right fs-5 text-dark"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
-                <div class="carousel-inner">
-                    ${slideItemsHtml}
+                <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        ${slideItemsHtml}
+                    </div>
                 </div>
-            </div>
-        </section>
-    `;
+            </section>
+        `;
                         }
                     }
 
@@ -242,18 +241,18 @@
                     function loadClasses(page) {
                         currentPage = page;
 
-                        fetch(`/api/classes/category/${categoryIdx}?page=${page}&size=${pageSize}`) //&sort=${currentSort}
+                        fetch(`/api/classes/category/${categoryIdx}?page=${page}&size=${pageSize}&sort=${currentSort}`)
                             .then(res => res.json())
                             .then(data => {
                                 renderClassList(data.content);
                                 renderPagination(data.totalPages, data.number);
-                                renderCreators(data.content);
                             })
                             .catch(err => console.error("클래스 목록 로드 실패", err));
                     }
 
                     document.getElementById("pageSizeOption").addEventListener("change", (e) => {
                         pageSize = parseInt(e.target.value);
+                        loadCreators(categoryIdx);
                         loadClasses(0); // 첫 페이지로 이동
                     });
 
@@ -280,6 +279,9 @@
                             const card = document.createElement("div");
                             card.className = "card h-100 position-relative";
                             card.style.width = "100%";
+                            card.addEventListener("click", () => {
+                                window.location.href = `/class/${cls.classIdx}`;
+                            });
 
                             const img = document.createElement("img");
                             img.src = cls.thumbnailUrl || "/images/default-image.png";
@@ -365,6 +367,7 @@
 
                     // 초기 로딩
                     window.addEventListener("DOMContentLoaded", () => {
+                        loadCreators(categoryIdx);
                         loadClasses(0);
                     });
 
