@@ -8,6 +8,7 @@ import net.fullstack.class101clone.domain.UserEntity;
 import net.fullstack.class101clone.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ import java.security.NoSuchAlgorithmException;
 public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implements UserRepositoryIfCustom {
 	@Autowired
 	private EntityManager em;
+	@Autowired
+	private PasswordEncoder passwordEncoder; // 추가
 
 	public UserRepositoryIfCustomImpl() {
 		super(UserEntity.class);
@@ -138,19 +141,7 @@ public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implem
 	 * @return hashed password as a String
 	 */
 	public String hashPassword(String password) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
-			StringBuilder hexString = new StringBuilder();
-			for (byte b : hash) {
-				String hex = Integer.toHexString(0xff & b);
-				if (hex.length() == 1) hexString.append('0');
-				hexString.append(hex);
-			}
-			return hexString.toString();
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
+		return passwordEncoder.encode(password);
 	}
 
 	// 이름 랜덤 생성
