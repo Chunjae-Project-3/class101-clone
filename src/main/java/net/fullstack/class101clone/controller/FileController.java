@@ -23,7 +23,7 @@ import java.io.IOException;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/file")
-@Tag(name = "파일 API")
+@Tag(name = "파일 API", description = "파일 업로드 및 삭제 테스트용 API")
 public class FileController {
 
     private final FileUtil fileUtil;
@@ -65,9 +65,14 @@ public class FileController {
 
     @Operation(summary = "파일 삭제")
     @DeleteMapping("/{fileName}")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
+    public ResponseEntity<String> deleteFile(
+            @PathVariable String fileName,
+
+            @Parameter(description = "파일 유형 ('image' 또는 'video')")
+            @RequestParam("type") String type
+    ) {
         try {
-            fileUtil.deleteFile(fileName);
+            fileUtil.deleteFile(fileName, type);
             fileService.deleteFileByName(fileName);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(404).body(e.getMessage());
