@@ -11,20 +11,52 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig {
-	private final UserRepositoryIf userRepositoryIf;
 	private final CorsConfig corsConfig;
 	private final AuthenticationConfiguration authenticationConfiguration;
 
 	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+	public PasswordEncoder passwordEncoder() {
+		return new PasswordEncoder() {
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return hashWithSHA256(rawPassword.toString());
+			}
+
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				String hashedAttemptedPassword = hashWithSHA256(rawPassword.toString());
+				return hashedAttemptedPassword.equals(encodedPassword);
+			}
+
+			private String hashWithSHA256(String input) {
+				try {
+					MessageDigest md = MessageDigest.getInstance("SHA-256");
+					byte[] hash = md.digest(input.getBytes(StandardCharsets.UTF_8));
+					StringBuilder hexString = new StringBuilder();
+					for (byte b : hash) {
+						String hex = Integer.toHexString(0xff & b);
+						if (hex.length() == 1) hexString.append('0');
+						hexString.append(hex);
+					}
+					return hexString.toString();
+				} catch (NoSuchAlgorithmException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
 	}
 
 	@Bean
