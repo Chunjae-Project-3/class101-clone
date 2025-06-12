@@ -32,10 +32,13 @@
             font-size: 1rem;
             border: none;
             font-weight: 500;
+            color: black;
         }
 
         .more-category-btn:hover {
             background-color: #e2e2e2;
+            color: black;
+            text-decoration: none;
         }
 
         a {
@@ -89,16 +92,16 @@
             <!-- 오른쪽 버튼 박스 -->
             <div class="d-flex flex-column" style="flex: 6;">
                 <div class="d-flex flex-wrap bg-white rounded h-100" style="gap: 8px;">
-                    <button class="category-btn">🏢 창업 · 부업</button>
-                    <button class="category-btn">🎨 디지털 드로잉</button>
-                    <button class="category-btn">🌿 라이프스타일</button>
-                    <button class="category-btn">🖌️ 드로잉</button>
-                    <button class="category-btn">🧵 공예</button>
-                    <button class="category-btn">💰 금융 · 재테크</button>
-                    <button class="category-btn">🎯 디자인</button>
-                    <button class="category-btn">⚙️ 생산성</button>
-                    <button class="category-btn">📸 사진 · 영상</button>
-                    <button class="category-btn">➕ 전체 카테고리</button>
+                    <a th:href="@{/class/category/11}" class="category-btn text-decoration-none">🏢 창업 · 부업</a>
+                    <a th:href="@{/class/category/1}" class="category-btn text-decoration-none">🎨 디지털 드로잉</a>
+                    <a th:href="@{/class/category/8}" class="category-btn text-decoration-none">🌿 라이프스타일</a>
+                    <a th:href="@{/class/category/2}" class="category-btn text-decoration-none">🖌️ 드로잉</a>
+                    <a th:href="@{/class/category/3}" class="category-btn text-decoration-none">🧵 공예</a>
+                    <a th:href="@{/class/category/10}" class="category-btn text-decoration-none">💰 금융 · 재테크</a>
+                    <a th:href="@{/class/category/19}" class="category-btn text-decoration-none">🎯 디자인</a>
+                    <a th:href="@{/class/category/17}" class="category-btn text-decoration-none">⚙️ 생산성</a>
+                    <a th:href="@{/class/category/9}" class="category-btn text-decoration-none">📸 사진 · 영상</a>
+                    <a th:href="@{/class/category/0}" class="category-btn text-decoration-none">➕ 전체 카테고리</a>
                 </div>
             </div>
         </div>
@@ -147,32 +150,6 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
-
-    <script>
-        function toggleCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-                icon.classList.remove('bi-caret-down-fill');
-                icon.classList.add('bi-caret-up-fill');
-            } else {
-                menu.style.display = 'none';
-                icon.classList.remove('bi-caret-up-fill');
-                icon.classList.add('bi-caret-down-fill');
-            }
-        }
-
-        document.addEventListener('click', function (e) {
-            const toggle = document.getElementById('categoryToggle');
-            const menu = document.getElementById('categoryMenu');
-            if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-                document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
-                document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
-            }
-        });
-    </script>
 
     <div id="classSections"></div>
 
@@ -281,23 +258,23 @@
     <div class="text-center py-5">
         <h5 class="fw-bold mb-3">관심 클래스를 발견하지 못하셨나요?</h5>
         <p class="text-muted mb-4">아래 카테고리들도 탐색해 보세요.</p>
-        <div class="d-flex flex-wrap justify-content-center">
-            <button class="more-category-btn">💰 금융 · 재테크</button>
-            <button class="more-category-btn">🏋️ 운동</button>
-            <button class="more-category-btn">🔤 영어</button>
-            <button class="more-category-btn">🍜 요리 · 음료</button>
-            <button class="more-category-btn">🧑‍🎨 디자인</button>
-            <button class="more-category-btn">🎵 음악</button>
-            <button class="more-category-btn">📸 사진 · 영상</button>
-            <button class="more-category-btn">💻 프로그래밍</button>
-            <button class="more-category-btn">📊 데이터사이언스</button>
-            <button class="more-category-btn">🏀 공예</button>
-            <button class="more-category-btn">💃 라이프스타일</button>
-            <button class="more-category-btn">🖌️ 디지털드로잉</button>
-            <button class="more-category-btn">✨ 마케팅</button>
-            <button class="more-category-btn">📈 생산성</button>
-            <button class="more-category-btn">💡 창업 · 부업</button>
-            <button class="more-category-btn">👶 아이 교육</button>
+        <div class="d-flex flex-wrap justify-content-center" style="gap: 0.5rem;">
+            <a th:href="@{/class/category/10}" class="btn btn-outline-secondary more-category-btn">💰 금융 · 재테크</a>
+            <a th:href="@{/class/category/7}" class="btn btn-outline-secondary more-category-btn">🏋️ 운동</a>
+            <a th:href="@{/class/category/21}" class="btn btn-outline-secondary more-category-btn">🔤 영어</a>
+            <a th:href="@{/class/category/4}" class="btn btn-outline-secondary more-category-btn">🍜 요리 · 음료</a>
+            <a th:href="@{/class/category/19}" class="btn btn-outline-secondary more-category-btn">🧑‍🎨 디자인</a>
+            <a th:href="@{/class/category/6}" class="btn btn-outline-secondary more-category-btn">🎵 음악</a>
+            <a th:href="@{/class/category/9}" class="btn btn-outline-secondary more-category-btn">📸 사진 · 영상</a>
+            <a th:href="@{/class/category/13}" class="btn btn-outline-secondary more-category-btn">💻 프로그래밍</a>
+            <a th:href="@{/class/category/14}" class="btn btn-outline-secondary more-category-btn">📊 데이터사이언스</a>
+            <a th:href="@{/class/category/3}" class="btn btn-outline-secondary more-category-btn">🏀 공예</a>
+            <a th:href="@{/class/category/8}" class="btn btn-outline-secondary more-category-btn">💃 라이프스타일</a>
+            <a th:href="@{/class/category/1}" class="btn btn-outline-secondary more-category-btn">🖌️ 디지털 드로잉</a>
+            <a th:href="@{/class/category/18}" class="btn btn-outline-secondary more-category-btn">✨ 마케팅</a>
+            <a th:href="@{/class/category/17}" class="btn btn-outline-secondary more-category-btn">📈 생산성</a>
+            <a th:href="@{/class/category/11}" class="btn btn-outline-secondary more-category-btn">💡 창업 · 부업</a>
+            <a th:href="@{/class/category/24}" class="btn btn-outline-secondary more-category-btn">👶 아이 교육</a>
         </div>
     </div>
 
@@ -306,7 +283,7 @@
          style="z-index: 1050;">
         <div class="fw-bold">듣고 싶은 클래스를 다 들어보세요<br><a href="#" class="text-decoration-underline text-dark">구독 더 알아보기</a>
         </div>
-        <button class="btn btn-warning fw-bold px-4 py-2">바로 시작하기</button>
+        <button class="btn btn-warning fw-bold px-4 py-2" style="width: 300px; background-color: #FE5D01; color: white;">바로 시작하기</button>
     </div>
 </div>
 

@@ -7,6 +7,9 @@ import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.file.FileRepository;
 import net.fullstack.class101clone.repository.LectureRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,8 +24,17 @@ public class ClassService {
     private final FileRepository fileRepository;
     private final LectureRepository lectureRepository;
 
-    public List<ClassDTO> getClasses(String category) {
-        return classRepository.getClasses(category);
+    public List<ClassDTO> getClasses(String category, String userId) {
+        return classRepository.getClasses(category, userId);
+    }
+
+    public List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx) {
+        return classRepository.getClassesByCategoryIdx(categoryIdx);
+    }
+
+    public Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return classRepository.getPagedClassesByCategoryIdx(categoryIdx, pageable);
     }
 
     public ClassDTO getClassDetail(Integer classId) {
