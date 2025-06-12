@@ -5,13 +5,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ClassRepositoryCustom {
     List<ClassDTO> getClasses(String category, String userId);
 
     ClassDTO getClassDetailById(Integer classId);
 
-    Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, Pageable pageable);
+    Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, Pageable pageable, String sort);
 
     List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx);
+
+    List<Map<String, String>> getCreatorListByCategoryIdx(Integer categoryIdx);
 }
