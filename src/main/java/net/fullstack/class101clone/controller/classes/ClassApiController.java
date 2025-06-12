@@ -1,0 +1,56 @@
+package net.fullstack.class101clone.controller.classes;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.service.ClassService;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/classes")
+@Tag(name = "클래스 API", description = "메인화면 클래스 조회용 API")
+@RequiredArgsConstructor
+public class ClassApiController {
+
+    private final ClassService classService;
+
+    @GetMapping
+    public List<ClassDTO> getClasses(
+            @RequestParam(required = false) String category,
+            HttpSession session
+    ) {
+        String userId = (String) session.getAttribute("loginId");
+        return classService.getClasses(category, userId);
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "클래스 상세 전체 조회", description = "클래스, 이미지, 커리큘럼까지 포함된 정보를 반환합니다.")
+    public Map<String, Object> getClassAllDetail(@PathVariable Integer id) {
+        ClassDTO classInfo = classService.getClassDetail(id);
+        List<String> imageList = classService.getClassImageList(id);
+        Map<String, List<Map<String, String>>> curriculum = classService.getLectureCurriculum(id);
+
+        return Map.of(
+                "class", classInfo,
+                "classImageList", imageList,
+                "lectureCurriculum", curriculum
+        );
+    }
+
+    @GetMapping("/category/{categoryIdx}")
+    @Operation(summary = "카테고리 인덱스로 클래스 목록 조회 (페이징)", description = "카테고리 인덱스로 등록된 클래스 목록을 페이지네이션하여 반환합니다.")
+    public Page<ClassDTO> getPagedClassesByCategoryIdx(
+            @PathVariable Integer categoryIdx,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return classService.getPagedClassesByCategoryIdx(categoryIdx, page, size);
+    }
+
+}

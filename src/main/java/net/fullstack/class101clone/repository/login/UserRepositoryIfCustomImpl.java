@@ -8,6 +8,7 @@ import net.fullstack.class101clone.domain.UserEntity;
 import net.fullstack.class101clone.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,8 @@ import java.security.NoSuchAlgorithmException;
 public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implements UserRepositoryIfCustom {
 	@Autowired
 	private EntityManager em;
+	@Autowired
+	private PasswordEncoder passwordEncoder; // 추가
 
 	public UserRepositoryIfCustomImpl() {
 		super(UserEntity.class);
@@ -38,7 +41,7 @@ public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implem
 			return false; // 아이디가 이미 존재하는 경우
 		}
 		// 이름을 입력하지 않은 경우 임의로 생성
-		if( userDTO.getUserName() == null || userDTO.getUserName().isEmpty()) {
+		if (userDTO.getUserName() == null || userDTO.getUserName().isEmpty()) {
 			userDTO.setUserName(generateDefaultName());
 		}
 
@@ -89,6 +92,48 @@ public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implem
 		return result; // 로그인 성공
 	}
 
+	@Override
+	@Transactional
+	public boolean quit(String userId) {
+		QUserEntity user = QUserEntity.userEntity;
+		JPQLQuery<UserEntity> query = from(QUserEntity.userEntity)
+				.where(user.userId.eq(userId));
+		if (query.fetchCount() == 0) {
+			return false; // 해당 아이디가 존재하지 않는 경우
+		} else {
+			em.remove(em.find(UserEntity.class, userId));
+			return true;
+		}
+	}
+
+	@Override
+	@Transactional
+	public UserEntity updateUserInfo(UserDTO userDTO) {
+		log.info("NEW user info {}", userDTO);
+
+		QUserEntity user = QUserEntity.userEntity;
+		// userId로 기존 사용자 조회
+		JPQLQuery<UserEntity> query = from(user)
+				.where(user.userId.eq(userDTO.getUserId()));
+		UserEntity originalUser = query.fetchOne();
+		log.info("Original user info {}", originalUser);
+
+		if (originalUser != null) {
+			// 비밀번호가 변경된 경우
+			if (userDTO.getUserPwd() != null && !userDTO.getUserPwd().isEmpty()) {
+				originalUser.setUserPwd(hashPassword(userDTO.getUserPwd()));
+			}
+			// 이름이 변경된 경우
+			if (userDTO.getUserName() != null && !userDTO.getUserName().isEmpty()) {
+				originalUser.setUserName(userDTO.getUserName());
+			}
+			em.merge(originalUser); // JPA를 사용하여 회원 정보 수정
+			return originalUser; // 수정된 회원 정보 반환
+		}
+
+		return null;
+	}
+
 	/**
 	 * 비밀번호 암호화 메소드
 	 *
@@ -96,19 +141,7 @@ public class UserRepositoryIfCustomImpl extends QuerydslRepositorySupport implem
 	 * @return hashed password as a String
 	 */
 	public String hashPassword(String password) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
-			StringBuilder hexString = new StringBuilder();
-			for (byte b : hash) {
-				String hex = Integer.toHexString(0xff & b);
-				if (hex.length() == 1) hexString.append('0');
-				hexString.append(hex);
-			}
-			return hexString.toString();
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
-		}
+		return passwordEncoder.encode(password);
 	}
 
 	// 이름 랜덤 생성

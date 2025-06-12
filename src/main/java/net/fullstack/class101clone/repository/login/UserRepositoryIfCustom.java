@@ -9,9 +9,9 @@ public interface UserRepositoryIfCustom {
 	// 아이디 중복 체크
 	boolean existsByUserId(String userId);
 	// 탈퇴
-//	boolean deleteByUserId(String userId);
+	boolean quit(String userId);
 	// 로그인
 	UserEntity login(UserDTO userDTO);
 	// 회원정보 수정
-
+	UserEntity updateUserInfo(UserDTO userDTO);
 }

@@ -1,38 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MMMB</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
-            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
-            crossorigin="anonymous"></script>
 
     <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #ffffff;
-            color: #0c0c0c;
-            font-size: 0.8rem;
-        }
-
-        #container {
-            padding: 1rem 5rem;
-        }
-
         .card {
             border: none;
             border-radius: 5px !important;
-            //box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
             transition: transform 0.2s;
         }
-
-        //.card:hover {
-        //    transform: translateY(-4px);
-        //    border-radius: 5px !important;
-        //}
 
         .card-img-top {
             aspect-ratio: 16 / 9;
@@ -43,27 +24,21 @@
             display: block;
         }
 
-        header, footer {
-            background-color: #ffffff;
-            border-bottom: 1px solid #eee;
-        }
-
-        footer {
-            border-top: 1px solid #eee;
-        }
-
         .more-category-btn {
             background-color: #f5f5f5;
             border-radius: 24px;
             padding: 8px 16px;
             margin: 4px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             border: none;
             font-weight: 500;
+            color: black;
         }
 
         .more-category-btn:hover {
             background-color: #e2e2e2;
+            color: black;
+            text-decoration: none;
         }
 
         a {
@@ -84,7 +59,7 @@
             width: calc(20% - 8px);
             background-color: white;
             padding: 8px;
-            font-size: 0.7rem;
+            font-size: 1rem;
             border: 1px #eee solid;
             font-weight: 500;
             transition: background-color 0.2s ease-in-out;
@@ -95,237 +70,170 @@
             background-color: #eee;
         }
 
-    </style>
-</head>
-<body>
-<!-- 고정 헤더 -->
-<header class="position-sticky top-0 bg-white border-bottom" style="z-index: 1020;">
-    <div class="container py-3 position-relative">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-            <div class="d-flex align-items-center gap-3">
-                <a href="#" class="me-1 fw-bold">클래스</a>
-                <a href="#" class="me-1 fw-bold">클럽</a>
-                <a href="#" class="me-1 fw-bold">커뮤니티</a>
-                <a href="#" class="fw-bold" id="categoryToggle"
-                   onclick="event.preventDefault(); toggleCategoryMenu();">
-                    카테고리 <i id="categoryIcon" class="bi bi-caret-down-fill small"></i>
-                </a>
-                <div class="position-relative" style="width: 300px; margin-left: 10px;">
-                    <input type="text" class="form-control ps-3 pe-5"
-                           placeholder="관심 주제, 클래스, 크리에이터 찾기"
-                           style="height: 34px; font-size: 0.8rem; background-color: #F7F7F7; border: none;">
-                    <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                       style="font-size: 0.9rem;"></i>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <a href="/login" class="text-dark small fw-bold">로그인</a>
-                <a href="/signup" class="text-dark small fw-bold">회원가입</a>
-            </div>
-        </div>
-
-        <!-- 카테고리 드롭다운 메뉴 -->
-        <div id="categoryMenu" class="border p-4 bg-white shadow position-absolute w-100"
-             style="top: 100%; left: 0; display: none; z-index: 1040;">
-            <div class="row row-cols-2 row-cols-md-4">
-                <div>
-                    <p><a href="/classes?categoryIdx=1" class="text-dark text-decoration-none">디지털 드로잉</a></p>
-                    <p><a href="/classes?categoryIdx=2" class="text-dark text-decoration-none">드로잉</a></p>
-                    <p><a href="/classes?categoryIdx=3" class="text-dark text-decoration-none">공예</a></p>
-                    <p><a href="/classes?categoryIdx=4" class="text-dark text-decoration-none">요리 · 음료</a></p>
-                    <p><a href="/classes?categoryIdx=5" class="text-dark text-decoration-none">베이킹 · 디저트</a></p>
-                    <p><a href="/classes?categoryIdx=6" class="text-dark text-decoration-none">음악</a></p>
-                    <p><a href="/classes?categoryIdx=7" class="text-dark text-decoration-none">운동</a></p>
-                    <p><a href="/classes?categoryIdx=8" class="text-dark text-decoration-none">라이프스타일</a></p>
-                    <p><a href="/classes?categoryIdx=9" class="text-dark text-decoration-none">사진 · 영상</a></p>
-                </div>
-                <div>
-                    <p><a href="/classes?categoryIdx=10" class="text-dark text-decoration-none">금융 · 재테크</a></p>
-                    <p><a href="/classes?categoryIdx=11" class="text-dark text-decoration-none">창업 · 부업</a></p>
-                    <p><a href="/classes?categoryIdx=12" class="text-dark text-decoration-none">성공 마인드</a></p>
-                    <p><a href="/classes?categoryIdx=13" class="text-dark text-decoration-none">프로그래밍</a></p>
-                    <p><a href="/classes?categoryIdx=14" class="text-dark text-decoration-none">데이터사이언스</a></p>
-                    <p><a href="/classes?categoryIdx=15" class="text-dark text-decoration-none">제품 기획</a></p>
-                    <p><a href="/classes?categoryIdx=16" class="text-dark text-decoration-none">비즈니스</a></p>
-                    <p><a href="/classes?categoryIdx=17" class="text-dark text-decoration-none">생산성</a></p>
-                    <p><a href="/classes?categoryIdx=18" class="text-dark text-decoration-none">마케팅</a></p>
-                </div>
-                <div>
-                    <p><a href="/classes?categoryIdx=19" class="text-dark text-decoration-none">디자인</a></p>
-                    <p><a href="/classes?categoryIdx=20" class="text-dark text-decoration-none">영상/3D</a></p>
-                    <p><a href="/classes?categoryIdx=21" class="text-dark text-decoration-none">영어</a></p>
-                    <p><a href="/classes?categoryIdx=22" class="text-dark text-decoration-none">외국어 시험</a></p>
-                    <p><a href="/classes?categoryIdx=23" class="text-dark text-decoration-none">제2 외국어</a></p>
-                </div>
-                <div>
-                    <p><a href="/classes?categoryIdx=24" class="text-dark text-decoration-none">아이 교육</a></p>
-                    <p><a href="/classes?categoryIdx=25" class="text-dark text-decoration-none">부모 교육</a></p>
-                </div>
-            </div>
-            <div class="text-end mt-3">
-                <button class="btn btn-sm border-0 small" onclick="toggleCategoryMenu()"
-                        style="font-size: 0.75rem;">
-                    ✕ 닫기
-                </button>
-            </div>
-        </div>
-    </div>
-</header>
-
-<div id="container" class="mt-2">
-    <div class="mb-4">
-        <div class="d-flex rounded" style="gap: 8px;">
-            <!-- 왼쪽 배너 (flex: 3) -->
-            <div class="position-relative overflow-hidden rounded" style="flex: 3; height: 100%;">
-                <!-- 배경 이미지 -->
-                <div class="w-100 h-100 position-absolute top-0 start-0"
-                     style="background-image: url('/images/vtuber.png'); background-size: cover; background-position: center;">
-                </div>
-                <!-- 반투명 오버레이 -->
-                <div class="w-100 h-100 position-absolute top-0 start-0"
-                     style="background-color: rgba(0, 0, 0, 0.4);"></div>
-                <!-- 텍스트 -->
-                <div class="position-relative text-white p-3 h-100 d-flex flex-column justify-content-center">
-                    <h5 class="fw-bold mb-1">외주로 이어지는<br>2D 버튜버 클래스</h5>
-                    <p class="small mb-0">59종 실습으로 빠르게 수익화 시작</p>
-                </div>
-            </div>
-
-            <!-- 오른쪽 버튼 박스 (flex: 7) -->
-            <div class="d-flex flex-wrap align-content-start rounded bg-white px-2 py-2"
-                 style="flex: 7; height: 100%; gap: 8px;">
-                <button class="category-btn">🏢 창업 · 부업</button>
-                <button class="category-btn">🎨 디지털 드로잉</button>
-                <button class="category-btn">🌿 라이프스타일</button>
-                <button class="category-btn">🖌️ 드로잉</button>
-                <button class="category-btn">🧵 공예</button>
-                <button class="category-btn">💰 금융 · 재테크</button>
-                <button class="category-btn">🎯 디자인</button>
-                <button class="category-btn">⚙️ 생산성</button>
-                <button class="category-btn">📸 사진 · 영상</button>
-                <button class="category-btn">➕ 전체 카테고리</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 상단 홍보 캐러셀 -->
-    <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active bg-dark"
-                    aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="1" class="bg-dark"
-                    aria-label="Slide 2"></button>
-        </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="bg-light rounded p-4">
-                    <div class="d-flex align-items-center mx-auto"
-                         style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
-                        <img src="" class="me-4" alt="프로모션 이미지">
-                        <div>
-                            <h4 class="fw-bold">클래스 완강자 모여라!</h4>
-                            <p class="text-muted">재파와 함께 연령대별 투자전략 GO</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="bg-light rounded p-4">
-                    <div class="d-flex align-items-center mx-auto"
-                         style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
-                        <img src="" class="me-4" alt="프로모션 이미지">
-                        <div>
-                            <h4 class="fw-bold">새로운 클래스 오픈!</h4>
-                            <p class="text-muted">지금 등록하고 빠르게 시작하세요</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
-    </div>
-
-    <script>
-        function toggleCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-                icon.classList.remove('bi-caret-down-fill');
-                icon.classList.add('bi-caret-up-fill');
-            } else {
-                menu.style.display = 'none';
-                icon.classList.remove('bi-caret-up-fill');
-                icon.classList.add('bi-caret-down-fill');
+        @media (min-width: 993px) {
+            .category-btn {
+                width: calc(20% - 8px);
+                background-color: white;
+                padding: 8px;
+                font-size: 1rem;
+                border: 1px #eee solid;
+                font-weight: 500;
+                transition: background-color 0.2s ease-in-out;
+                text-align: center;
             }
         }
 
-        document.addEventListener('click', function (e) {
-            const toggle = document.getElementById('categoryToggle');
-            const menu = document.getElementById('categoryMenu');
-            if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-                document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
-                document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
+        @media (max-width: 992px) {
+            .category-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8rem;
+                word-break: keep-all;
             }
-        });
-    </script>
-
-    <div id="classSections"></div>
-
-    <script>
-        const sections = [
-            '주간101',
-            '실시간 인기 클래스',
-            '새로 오픈한 클래스',
-            '오늘의 BEST 클래스',
-            '금융 · 재테크 인기 클래스',
-            '음악 인기 클래스',
-            '창업 · 부업 인기 클래스',
-            '생산성 인기 클래스',
-            '외국어 시험 인기 클래스',
-            '브랜딩 인기 클래스',
-            '트렌드가 뭔데, 지금 BUY 인기 클래스',
-            '스마트한 일상을 위한 클래스',
-            '클로저 HOT 클래스'
-        ];
-
-        const sectionToCategoryName = {
-            '금융 · 재테크 인기 클래스': '금융 · 재테크',
-            '음악 인기 클래스': '음악',
-            '창업 · 부업 인기 클래스': '창업 · 부업',
-            '생산성 인기 클래스': '생산성',
-            '외국어 시험 인기 클래스': '외국어 시험',
-            '마케팅 인기 클래스': '마케팅',
-            '아이 교육 인기 클래스': '아이 교육'
-        };
-
-        const fetchClassesByCategory = async (sectionTitle) => {
-            const category = sectionToCategoryName[sectionTitle];
-            if (!category) return [];
-            const res = await fetch(`/api/classes?category=${encodeURIComponent(category)}`);
-            return res.ok ? res.json() : [];
-        };
-
-
-        const renderSection = (category, index, classes) => {
-            const sectionId = `carousel-${index}`;
-
-            // 5개씩 나누기
-            const slides = [];
-            for (let i = 0; i < classes.length; i += 5) {
-                slides.push(classes.slice(i, i + 5));
+        }
+        @media (max-width: 545px) {
+            .category-wrapper {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
             }
+            .category-row {
+                display: flex;
+                gap: 1rem;
+                justify-content: space-between;
+            }
+            .category-btn {
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="container" class="mt-2" layout:fragment="content">
+    <div class="mb-4">
+        <div class="row g-2 mb-4">
+            <div class="col-12 col-lg-4">
+                <div class="position-relative overflow-hidden rounded h-100" style="min-height: 100px;">
+                    <div class="w-100 h-100 position-absolute top-0 start-0"
+                         style="background-image: url('/images/vtuber.png'); background-size: cover; background-position: center;"></div>
+                    <div class="w-100 h-100 position-absolute top-0 start-0"
+                         style="background-color: rgba(0, 0, 0, 0.4);"></div>
+                    <div class="position-relative text-white p-3 h-100 d-flex flex-column justify-content-center">
+                        <h5 class="fw-bold mb-1">외주로 이어지는<br>2D 버튜버 클래스</h5>
+                        <p class="small mb-0">59종 실습으로 빠르게 수익화 시작</p>
+                    </div>
+                </div>
+            </div>
 
-            const slideItemsHtml = slides.map((group, idx) => `
+            <div class="col-12 col-lg-8">
+                <div class="d-flex flex-wrap bg-white rounded h-100 gap-2">
+                    <a th:href="@{/class/category/11}" class="category-btn">🏢 창업 · 부업</a>
+                    <a th:href="@{/class/category/1}" class="category-btn">🎨 디지털 드로잉</a>
+                    <a th:href="@{/class/category/8}" class="category-btn">🌿 라이프 스타일</a>
+                    <a th:href="@{/class/category/2}" class="category-btn">🖌️ 드로잉</a>
+                    <a th:href="@{/class/category/3}" class="category-btn">🧵 공예</a>
+                    <a th:href="@{/class/category/10}" class="category-btn">💰 금융 · 재테크</a>
+                    <a th:href="@{/class/category/19}" class="category-btn">🎯 디자인</a>
+                    <a th:href="@{/class/category/17}" class="category-btn">⚙️ 생산성</a>
+                    <a th:href="@{/class/category/9}" class="category-btn">📸 사진 · 영상</a>
+                    <a th:href="@{/class/category/0}" class="category-btn">➕ 전체 카테고리</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 상단 홍보 캐러셀 -->
+        <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active bg-dark"
+                        aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="1" class="bg-dark"
+                        aria-label="Slide 2"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="bg-light rounded p-4">
+                        <div class="d-flex align-items-center mx-auto"
+                             style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
+                            <img src="" class="me-4" alt="프로모션 이미지">
+                            <div>
+                                <h4 class="fw-bold">클래스 완강자 모여라!</h4>
+                                <p class="text-muted">재파와 함께 연령대별 투자전략 GO</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="bg-light rounded p-4">
+                        <div class="d-flex align-items-center mx-auto"
+                             style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
+                            <img src="" class="me-4" alt="프로모션 이미지">
+                            <div>
+                                <h4 class="fw-bold">새로운 클래스 오픈!</h4>
+                                <p class="text-muted">지금 등록하고 빠르게 시작하세요</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+
+        <div id="classSections"></div>
+
+        <script>
+            const sections = [
+                '주간101',
+                '실시간 인기 클래스',
+                '새로 오픈한 클래스',
+                '오늘의 BEST 클래스',
+                '금융 · 재테크 인기 클래스',
+                '음악 인기 클래스',
+                '창업 · 부업 인기 클래스',
+                '생산성 인기 클래스',
+                '외국어 시험 인기 클래스',
+                '브랜딩 인기 클래스',
+                '트렌드가 뭔데, 지금 BUY 인기 클래스',
+                '스마트한 일상을 위한 클래스',
+                '클로저 HOT 클래스'
+            ];
+
+            const sectionToCategoryName = {
+                '금융 · 재테크 인기 클래스': '금융 · 재테크',
+                '음악 인기 클래스': '음악',
+                '창업 · 부업 인기 클래스': '창업 · 부업',
+                '생산성 인기 클래스': '생산성',
+                '외국어 시험 인기 클래스': '외국어 시험',
+                '마케팅 인기 클래스': '마케팅',
+                '아이 교육 인기 클래스': '아이 교육'
+            };
+
+            const fetchClassesByCategory = async (sectionTitle) => {
+                const category = sectionToCategoryName[sectionTitle];
+                if (!category) return [];
+                const res = await fetch(`/api/classes?category=${encodeURIComponent(category)}`);
+                return res.ok ? res.json() : [];
+            };
+
+
+            const renderSection = (category, index, classes) => {
+                const sectionId = `carousel-${index}`;
+
+                // 5개씩 나누기
+                const slides = [];
+                for (let i = 0; i < classes.length; i += 5) {
+                    slides.push(classes.slice(i, i + 5));
+                }
+
+                const slideItemsHtml = slides.map((group, idx) => `
         <div class="carousel-item ${idx === 0 ? 'active' : ''}">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
                 ${group.map(cls => `
@@ -344,7 +252,7 @@
         </div>
     `).join('');
 
-            return `
+                return `
         <section>
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="fw-bold mb-0">${category}</h5>
@@ -365,86 +273,68 @@
             </div>
         </section>
     `;
-        };
+            };
 
-        const renderAllSections = async () => {
-            const container = document.getElementById('classSections');
-            for (let i = 0; i < sections.length; i++) {
-                const sectionTitle = sections[i];
-                const classList = await fetchClassesByCategory(sectionTitle);
-                if (classList.length === 0) continue; // 데이터 없는 섹션은 건너뜀
+            const renderAllSections = async () => {
+                const container = document.getElementById('classSections');
+                for (let i = 0; i < sections.length; i++) {
+                    const sectionTitle = sections[i];
+                    const classList = await fetchClassesByCategory(sectionTitle);
+                    if (classList.length === 0) continue; // 데이터 없는 섹션은 건너뜀
 
-                const sectionHtml = renderSection(sectionTitle, i, classList);
-                container.insertAdjacentHTML("beforeend", sectionHtml);
-            }
-        };
+                    const sectionHtml = renderSection(sectionTitle, i, classList);
+                    container.insertAdjacentHTML("beforeend", sectionHtml);
+                }
+            };
 
-        document.addEventListener('DOMContentLoaded', renderAllSections);
-    </script>
+            document.addEventListener('DOMContentLoaded', renderAllSections);
+        </script>
 
-    <!-- 중간 카테고리 검색 추가 -->
-    <div class="text-center py-5">
-        <h5 class="fw-bold mb-3">관심 클래스를 발견하지 못하셨나요?</h5>
-        <p class="text-muted mb-4">아래 카테고리들도 탐색해 보세요.</p>
-        <div class="d-flex flex-wrap justify-content-center">
-            <button class="more-category-btn">💰 금융 · 재테크</button>
-            <button class="more-category-btn">🏋️ 운동</button>
-            <button class="more-category-btn">🔤 영어</button>
-            <button class="more-category-btn">🍜 요리 · 음료</button>
-            <button class="more-category-btn">🧑‍🎨 디자인</button>
-            <button class="more-category-btn">🎵 음악</button>
-            <button class="more-category-btn">📸 사진 · 영상</button>
-            <button class="more-category-btn">💻 프로그래밍</button>
-            <button class="more-category-btn">📊 데이터사이언스</button>
-            <button class="more-category-btn">🏀 공예</button>
-            <button class="more-category-btn">💃 라이프스타일</button>
-            <button class="more-category-btn">🖌️ 디지털드로잉</button>
-            <button class="more-category-btn">✨ 마케팅</button>
-            <button class="more-category-btn">📈 생산성</button>
-            <button class="more-category-btn">💡 창업 · 부업</button>
-            <button class="more-category-btn">👶 아이 교육</button>
+        <!-- 중간 카테고리 검색 추가 -->
+        <div class="text-center py-5">
+            <h5 class="fw-bold mb-3">관심 클래스를 발견하지 못하셨나요?</h5>
+            <p class="text-muted mb-4">아래 카테고리들도 탐색해 보세요.</p>
+            <div class="d-flex flex-wrap justify-content-center" style="gap: 0.5rem;">
+                <a th:href="@{/class/category/10}" class="btn btn-outline-secondary more-category-btn">💰 금융 · 재테크</a>
+                <a th:href="@{/class/category/7}" class="btn btn-outline-secondary more-category-btn">🏋️ 운동</a>
+                <a th:href="@{/class/category/21}" class="btn btn-outline-secondary more-category-btn">🔤 영어</a>
+                <a th:href="@{/class/category/4}" class="btn btn-outline-secondary more-category-btn">🍜 요리 · 음료</a>
+                <a th:href="@{/class/category/19}" class="btn btn-outline-secondary more-category-btn">🧑‍🎨 디자인</a>
+                <a th:href="@{/class/category/6}" class="btn btn-outline-secondary more-category-btn">🎵 음악</a>
+                <a th:href="@{/class/category/9}" class="btn btn-outline-secondary more-category-btn">📸 사진 · 영상</a>
+                <a th:href="@{/class/category/13}" class="btn btn-outline-secondary more-category-btn">💻 프로그래밍</a>
+                <a th:href="@{/class/category/14}" class="btn btn-outline-secondary more-category-btn">📊 데이터사이언스</a>
+                <a th:href="@{/class/category/3}" class="btn btn-outline-secondary more-category-btn">🏀 공예</a>
+                <a th:href="@{/class/category/8}" class="btn btn-outline-secondary more-category-btn">💃 라이프스타일</a>
+                <a th:href="@{/class/category/1}" class="btn btn-outline-secondary more-category-btn">🖌️ 디지털 드로잉</a>
+                <a th:href="@{/class/category/18}" class="btn btn-outline-secondary more-category-btn">✨ 마케팅</a>
+                <a th:href="@{/class/category/17}" class="btn btn-outline-secondary more-category-btn">📈 생산성</a>
+                <a th:href="@{/class/category/11}" class="btn btn-outline-secondary more-category-btn">💡 창업 · 부업</a>
+                <a th:href="@{/class/category/24}" class="btn btn-outline-secondary more-category-btn">👶 아이 교육</a>
+            </div>
+        </div>
+
+        <!-- 하단 고정 CTA 바 -->
+        <div class="position-fixed bottom-0 start-0 end-0 bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center"
+             style="z-index: 1050;">
+            <div class="fw-bold">듣고 싶은 클래스를 다 들어보세요<br><a href="#" class="text-decoration-underline text-dark">구독 더
+                알아보기</a>
+            </div>
+            <button class="btn btn-warning fw-bold px-4 py-2"
+                    style="width: 300px; background-color: #FE5D01; color: white;">바로 시작하기
+            </button>
         </div>
     </div>
 
-    <!-- 하단 고정 CTA 바 -->
-    <div class="position-fixed bottom-0 start-0 end-0 bg-white border-top py-3 px-4 d-flex justify-content-between align-items-center"
-         style="z-index: 1050;">
-        <div class="fw-bold">듣고 싶은 클래스를 다 들어보세요<br><a href="#" class="text-decoration-underline text-dark">구독 더 알아보기</a>
-        </div>
-        <button class="btn btn-warning fw-bold px-4 py-2">바로 시작하기</button>
-    </div>
+    <script>
+        // 클래스 리스트를 렌더링할 대상 영역 (예: 특정 섹션 또는 div)
+        const renderClassList = (classes) => {
+            const container = document.getElementById('dynamicClassContainer');
+            if (!container) return;
 
-    <!-- Footer -->
-    <footer class="mt-5 pt-4 border-top">
-        <div class="row">
-            <div class="col-md-4">
-                <h6 class="fw-bold">고객센터</h6>
-                <p>support@class101.net</p>
-            </div>
-            <div class="col-md-4">
-                <h6 class="fw-bold">회사 정보</h6>
-                <p>서울특별시 성동구 왕십리로 125</p>
-            </div>
-            <div class="col-md-4">
-                <h6 class="fw-bold">앱 다운로드</h6>
-                <a href="#">App Store</a> | <a href="#">Google Play</a>
-            </div>
-        </div>
-        <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
-    </footer>
-    <!-- 푸터 하단 공간 확보 -->
-    <div style="height: 50px;"></div>
-</div>
-
-<script>
-    // 클래스 리스트를 렌더링할 대상 영역 (예: 특정 섹션 또는 div)
-    const renderClassList = (classes) => {
-        const container = document.getElementById('dynamicClassContainer');
-        if (!container) return;
-
-        let html = '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">';
-        classes.forEach(cls => {
-            html += `
+            let html = '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">';
+            classes.forEach(cls => {
+                html += `
         <div class="col">
             <div class="card h-100">
                 <img src="${cls.thumbnailUrl}" class="card-img-top" alt="썸네일">
@@ -454,24 +344,24 @@
                 </div>
             </div>
         </div>`;
+            });
+            html += '</div>';
+
+            container.innerHTML = html;
+        };
+
+        const fetchClasses = (categoryName = '') => {
+            fetch(`/api/classes${categoryName ? '?category=' + encodeURIComponent(categoryName) : ''}`)
+                .then(res => res.json())
+                .then(data => renderClassList(data))
+                .catch(err => console.error('클래스 로딩 실패:', err));
+        };
+
+        // 예: 페이지 로딩 시 전체 클래스 호출
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchClasses();
         });
-        html += '</div>';
-
-        container.innerHTML = html;
-    };
-
-    const fetchClasses = (categoryName = '') => {
-        fetch(`/api/classes${categoryName ? '?category=' + encodeURIComponent(categoryName) : ''}`)
-            .then(res => res.json())
-            .then(data => renderClassList(data))
-            .catch(err => console.error('클래스 로딩 실패:', err));
-    };
-
-    // 예: 페이지 로딩 시 전체 클래스 호출
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchClasses();
-    });
-</script>
+    </script>
 
 </body>
 </html>

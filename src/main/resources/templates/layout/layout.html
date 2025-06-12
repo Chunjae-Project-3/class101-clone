@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="kor" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+<head layout:fragment="head">
+    <meta charset="UTF-8">
+    <title>MMMB</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+            crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background-color: #ffffff;
+            color: #0c0c0c;
+            font-size: 1rem;
+        }
+
+        #container {
+            padding: 1rem 5rem;
+        }
+
+        footer {
+            background-color: #eee;
+            font-size: 0.8rem;
+            padding: 3rem 3rem 6rem 3rem;
+        }
+
+        a {
+            color: #0c0c0c;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0c0c0c;
+            text-decoration: underline;
+        }
+
+        section {
+            margin-top: 48px;
+        }
+    </style>
+</head>
+<body>
+<header class="position-sticky top-0 bg-white border-bottom" style="z-index: 1020;" layout:fragment="header">
+    <div class="container py-2 position-relative">
+        <!-- 모바일용 토글 버튼 -->
+        <div class="d-lg-none d-flex justify-content-between align-items-center">
+            <a href="/">
+                <img src="/images/logo_mini.png" alt="로고" style="height: 20px;">
+            </a>
+            <button class="btn border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav"
+                    aria-controls="mobileNav" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list fs-3"></i>
+            </button>
+        </div>
+
+        <!-- 데스크탑 메뉴 -->
+        <div class="d-none d-lg-flex justify-content-between align-items-center mb-1">
+            <div class="d-flex align-items-center gap-3">
+                <a href="/">
+                    <img src="/images/logo_mini.png" alt="로고" style="height: 20px; margin-bottom: 2px;">
+                </a>
+                <a href="/" class="fw-bold">클래스</a>
+                <a href="#" class="fw-bold">클럽</a>
+                <a href="#" class="fw-bold">커뮤니티</a>
+                <a href="#" class="fw-bold" id="categoryToggle">
+                    카테고리 <i id="categoryIconDesktop" class="bi bi-caret-down-fill small"></i>
+                </a>
+
+                <div class="position-relative" style="width: 300px; margin-left: 10px;">
+                    <input type="text" class="form-control ps-3 pe-5"
+                           placeholder="관심 주제, 클래스, 크리에이터 찾기"
+                           style="height: 34px; font-size: 0.8rem; background-color: #F7F7F7; border: none;">
+                    <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                       style="font-size: 0.9rem;"></i>
+                </div>
+            </div>
+            <div class="d-flex align-items-center gap-2" th:if="${userInfo == null}">
+                <a href="/login" class="text-dark small fw-bold">로그인</a>
+                <a href="/signup" class="text-dark small fw-bold">회원가입</a>
+            </div>
+            <div class="d-flex align-items-center gap-2" th:unless="${userInfo == null}">
+                <a href="/mypage" class="text-dark small fw-bold">마이페이지</a>
+                <a href="/logout" class="text-dark small fw-bold">로그아웃</a>
+            </div>
+        </div>
+
+        <!-- 모바일 메뉴 -->
+        <div class="collapse d-lg-none mt-2" id="mobileNav">
+            <div class="d-flex flex-column gap-2">
+                <a href="/" class="fw-bold">클래스</a>
+                <a href="#" class="fw-bold">클럽</a>
+                <a href="#" class="fw-bold">커뮤니티</a>
+                <a href="#" class="fw-bold" id="mobileCategoryToggle">
+                    카테고리 <i id="categoryIconMobile" class="bi bi-caret-down-fill small"></i>
+                </a>
+                <div id="mobileCategoryMenu" class="bg-white p-3 border mt-2">
+                    <div class="row row-cols-2">
+                        <div>
+                            <p><a th:href="@{/class/category/1}" class="text-dark text-decoration-none">디지털 드로잉</a></p>
+                            <p><a th:href="@{/class/category/2}" class="text-dark text-decoration-none">드로잉</a></p>
+                            <p><a th:href="@{/class/category/3}" class="text-dark text-decoration-none">공예</a></p>
+                            <p><a th:href="@{/class/category/4}" class="text-dark text-decoration-none">요리 · 음료</a></p>
+                            <p><a th:href="@{/class/category/5}" class="text-dark text-decoration-none">베이킹 · 디저트</a>
+                            </p>
+                            <p><a th:href="@{/class/category/6}" class="text-dark text-decoration-none">음악</a></p>
+                            <p><a th:href="@{/class/category/7}" class="text-dark text-decoration-none">운동</a></p>
+                            <p><a th:href="@{/class/category/8}" class="text-dark text-decoration-none">라이프스타일</a></p>
+                            <p><a th:href="@{/class/category/9}" class="text-dark text-decoration-none">사진 · 영상</a></p>
+                        </div>
+                        <div>
+                            <p><a th:href="@{/class/category/10}" class="text-dark text-decoration-none">금융 · 재테크</a>
+                            </p>
+                            <p><a th:href="@{/class/category/11}" class="text-dark text-decoration-none">창업 · 부업</a></p>
+                            <p><a th:href="@{/class/category/12}" class="text-dark text-decoration-none">성공 마인드</a></p>
+                            <p><a th:href="@{/class/category/13}" class="text-dark text-decoration-none">프로그래밍</a></p>
+                            <p><a th:href="@{/class/category/14}" class="text-dark text-decoration-none">데이터사이언스</a></p>
+                            <p><a th:href="@{/class/category/15}" class="text-dark text-decoration-none">제품 기획</a></p>
+                            <p><a th:href="@{/class/category/16}" class="text-dark text-decoration-none">비즈니스</a></p>
+                            <p><a th:href="@{/class/category/17}" class="text-dark text-decoration-none">생산성</a></p>
+                            <p><a th:href="@{/class/category/18}" class="text-dark text-decoration-none">마케팅</a></p>
+                        </div>
+                        <div>
+                            <p><a th:href="@{/class/category/19}" class="text-dark text-decoration-none">디자인</a></p>
+                            <p><a th:href="@{/class/category/20}" class="text-dark text-decoration-none">영상/3D</a></p>
+                            <p><a th:href="@{/class/category/21}" class="text-dark text-decoration-none">영어</a></p>
+                            <p><a th:href="@{/class/category/22}" class="text-dark text-decoration-none">외국어 시험</a></p>
+                            <p><a th:href="@{/class/category/23}" class="text-dark text-decoration-none">제2 외국어</a></p>
+                        </div>
+                        <div>
+                            <p><a th:href="@{/class/category/24}" class="text-dark text-decoration-none">아이 교육</a></p>
+                            <p><a th:href="@{/class/category/25}" class="text-dark text-decoration-none">부모 교육</a></p>
+                        </div>
+                    </div>
+                    <div class="text-end mt-3">
+                        <button class="btn btn-sm border-0 small" onclick="toggleCategoryMenu()"
+                                style="font-size: 0.75rem;">
+                            ✕ 닫기
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" class="form-control mb-2"
+                           placeholder="관심 주제, 클래스, 크리에이터 찾기"
+                           style="font-size: 0.85rem;">
+                </div>
+                <div th:if="${userInfo == null}">
+                    <a href="/login" class="text-dark small fw-bold">로그인</a> |
+                    <a href="/signup" class="text-dark small fw-bold">회원가입</a>
+                </div>
+                <div th:unless="${userInfo == null}">
+                    <a href="/mypage" class="text-dark small fw-bold">마이페이지</a> |
+                    <a href="/logout" class="text-dark small fw-bold">로그아웃</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="categoryMenu" class="border p-4 bg-white shadow position-absolute w-100"
+             style="top: 100%; left: 0; display: none; z-index: 1040;">
+            <div class="row row-cols-2 row-cols-md-4">
+                <div>
+                    <p><a th:href="@{/class/category/1}" class="text-dark text-decoration-none">디지털 드로잉</a></p>
+                    <p><a th:href="@{/class/category/2}" class="text-dark text-decoration-none">드로잉</a></p>
+                    <p><a th:href="@{/class/category/3}" class="text-dark text-decoration-none">공예</a></p>
+                    <p><a th:href="@{/class/category/4}" class="text-dark text-decoration-none">요리 · 음료</a></p>
+                    <p><a th:href="@{/class/category/5}" class="text-dark text-decoration-none">베이킹 · 디저트</a></p>
+                    <p><a th:href="@{/class/category/6}" class="text-dark text-decoration-none">음악</a></p>
+                    <p><a th:href="@{/class/category/7}" class="text-dark text-decoration-none">운동</a></p>
+                    <p><a th:href="@{/class/category/8}" class="text-dark text-decoration-none">라이프스타일</a></p>
+                    <p><a th:href="@{/class/category/9}" class="text-dark text-decoration-none">사진 · 영상</a></p>
+                </div>
+                <div>
+                    <p><a th:href="@{/class/category/10}" class="text-dark text-decoration-none">금융 · 재테크</a></p>
+                    <p><a th:href="@{/class/category/11}" class="text-dark text-decoration-none">창업 · 부업</a></p>
+                    <p><a th:href="@{/class/category/12}" class="text-dark text-decoration-none">성공 마인드</a></p>
+                    <p><a th:href="@{/class/category/13}" class="text-dark text-decoration-none">프로그래밍</a></p>
+                    <p><a th:href="@{/class/category/14}" class="text-dark text-decoration-none">데이터사이언스</a></p>
+                    <p><a th:href="@{/class/category/15}" class="text-dark text-decoration-none">제품 기획</a></p>
+                    <p><a th:href="@{/class/category/16}" class="text-dark text-decoration-none">비즈니스</a></p>
+                    <p><a th:href="@{/class/category/17}" class="text-dark text-decoration-none">생산성</a></p>
+                    <p><a th:href="@{/class/category/18}" class="text-dark text-decoration-none">마케팅</a></p>
+                </div>
+                <div>
+                    <p><a th:href="@{/class/category/19}" class="text-dark text-decoration-none">디자인</a></p>
+                    <p><a th:href="@{/class/category/20}" class="text-dark text-decoration-none">영상/3D</a></p>
+                    <p><a th:href="@{/class/category/21}" class="text-dark text-decoration-none">영어</a></p>
+                    <p><a th:href="@{/class/category/22}" class="text-dark text-decoration-none">외국어 시험</a></p>
+                    <p><a th:href="@{/class/category/23}" class="text-dark text-decoration-none">제2 외국어</a></p>
+                </div>
+                <div>
+                    <p><a th:href="@{/class/category/24}" class="text-dark text-decoration-none">아이 교육</a></p>
+                    <p><a th:href="@{/class/category/25}" class="text-dark text-decoration-none">부모 교육</a></p>
+                </div>
+            </div>
+            <div class="text-end mt-3">
+                <button class="btn btn-sm border-0 small" onclick="toggleCategoryMenu()"
+                        style="font-size: 0.75rem;">
+                    ✕ 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+</header>
+
+<div layout:fragment="content">
+    <p>컨텐츠</p>
+</div>
+<footer layout:fragment="footer">
+    <div class="row">
+        <div class="col-md-4">
+            <h6 class="fw-bold">고객센터</h6>
+            <p>support@class101.net</p>
+        </div>
+        <div class="col-md-4">
+            <h6 class="fw-bold">회사 정보</h6>
+            <p>서울특별시 성동구 왕십리로 125</p>
+        </div>
+        <div class="col-md-4">
+            <h6 class="fw-bold">앱 다운로드</h6>
+            <a href="#">App Store</a> | <a href="#">Google Play</a>
+        </div>
+    </div>
+    <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
+</footer>
+
+<th:block layout:fragment="script">
+    <script>
+        // const successMsg = [[${success}]];
+        // if (successMsg !== null) {
+        //     alert(successMsg);
+        // }
+    </script>
+    <script>
+        function toggleCategoryMenu() {
+            const isMobile = window.innerWidth < 992;
+
+            if (isMobile) {
+                const mobileNav = document.getElementById('mobileNav');
+                const menu = document.getElementById('mobileCategoryMenu');
+                const icon = document.getElementById('categoryIconMobile');
+                if (!menu || !icon || !mobileNav) return;
+
+                // Bootstrap collapse 영역 열기 강제 (권장 방식)
+                if (!mobileNav.classList.contains('show')) {
+                    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(mobileNav);
+                    bsCollapse.show();
+                }
+
+                const isOpen = !menu.classList.contains('d-none');
+                menu.classList.toggle('d-none');
+                icon.classList.toggle('bi-caret-up-fill', !isOpen);
+                icon.classList.toggle('bi-caret-down-fill', isOpen);
+            } else {
+                const menu = document.getElementById('categoryMenu');
+                const icon = document.getElementById('categoryIconDesktop');
+                if (!menu || !icon) return;
+
+                const isOpen = menu.style.display === 'block';
+                menu.style.display = isOpen ? 'none' : 'block';
+                icon.classList.toggle('bi-caret-up-fill', !isOpen);
+                icon.classList.toggle('bi-caret-down-fill', isOpen);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const desktopToggle = document.getElementById('categoryToggle');
+            const mobileToggle = document.getElementById('mobileCategoryToggle');
+
+            if (desktopToggle) {
+                desktopToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggleCategoryMenu();
+                });
+            }
+
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    toggleCategoryMenu();
+                });
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            const isMobile = window.innerWidth < 992;
+
+            if (isMobile) {
+                const toggle = document.getElementById('mobileCategoryToggle');
+                const menu = document.getElementById('mobileCategoryMenu');
+                const icon = document.getElementById('categoryIconMobile');
+                if (!toggle || !menu || !icon) return;
+
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                    menu.classList.add('d-none');
+                    icon.classList.remove('bi-caret-up-fill');
+                    icon.classList.add('bi-caret-down-fill');
+                }
+            } else {
+                const toggle = document.getElementById('categoryToggle');
+                const menu = document.getElementById('categoryMenu');
+                const icon = document.getElementById('categoryIconDesktop');
+                if (!toggle || !menu || !icon) return;
+
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                    menu.style.display = 'none';
+                    icon.classList.remove('bi-caret-up-fill');
+                    icon.classList.add('bi-caret-down-fill');
+                }
+            }
+        });
+    </script>
+
+</th:block>
+</body>
+</html>

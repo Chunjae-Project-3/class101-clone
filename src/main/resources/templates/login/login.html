@@ -11,7 +11,7 @@
 </head>
 <body class="bg-light">
 <div class="container d-flex align-items-center justify-content-center min-vh-100">
-    <div class="card shadow p-4" style="min-width: 350px; max-width: 400px; width: 100%;">
+    <div class="card shadow p-4">
         <h1 class="h2 fw-bold mb-4 text-center">로그인</h1>
         <form th:action="@{/login}" method="post">
             <div class="mb-3">
@@ -22,15 +22,20 @@
                 <label for="password" class="form-label">비밀번호</label>
                 <input type="password" id="password" name="userPwd" class="form-control" required>
             </div>
-            <div th:if="loginErrorMsg != null" th:text="${loginErrorMsg}"></div>
+            <div th:if="${loginErrorMsg != null}" class="alert alert-danger mb-3 " role="alert" th:text="${loginErrorMsg}"></div>
             <button type="submit" class="btn btn-primary w-100 mb-2">로그인</button>
             <a href="/signup" class="btn btn-outline-secondary w-100">회원가입</a>
         </form>
     </div>
 </div>
-<th:block th:if="${signUpSuccessMsg != null}">
+<th:block th:if="${signupSuccessMsg != null}">
     <script th:inline="javascript">
-        alert([[${signUpSuccessMsg}]]);
+        alert([[${signupSuccessMsg}]]);
+    </script>
+</th:block>
+<th:block th:if="${loginRequired != null}">
+    <script th:inline="javascript">
+        alert([[${loginRequired}]]);
     </script>
 </th:block>
 </body>
