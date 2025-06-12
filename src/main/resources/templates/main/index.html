@@ -93,17 +93,20 @@
                 word-break: keep-all;
             }
         }
+
         @media (max-width: 545px) {
             .category-wrapper {
                 display: flex;
                 flex-direction: column;
                 gap: 1rem;
             }
+
             .category-row {
                 display: flex;
                 gap: 1rem;
                 justify-content: space-between;
             }
+
             .category-btn {
                 flex: 1;
             }
@@ -238,6 +241,7 @@
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
                 ${group.map(cls => `
                     <div class="col">
+                        <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
                         <div class="card h-100">
                             <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
                                  onerror="this.onerror=null; this.src='/images/default-image.png';">
@@ -246,6 +250,7 @@
                                 <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cls.classDescription}</p>
                             </div>
                         </div>
+                        </a>
                     </div>
                 `).join('')}
             </div>
@@ -362,6 +367,6 @@
             fetchClasses();
         });
     </script>
-
+</div>
 </body>
 </html>
