@@ -57,13 +57,13 @@
                     <a class="nav-link fw-bold" href="/logout">로그아웃</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold active" href="#favoritesTab" data-bs-toggle="tab">찜 목록</a>
+                    <a class="nav-link fw-bold" href="#favorites" data-bs-toggle="tab">찜 목록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#historyTab" data-bs-toggle="tab">시청 기록</a>
+                    <a class="nav-link fw-bold" href="#history" data-bs-toggle="tab">시청 기록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#editTab" data-bs-toggle="tab">정보 수정</a>
+                    <a class="nav-link fw-bold" href="#edit" data-bs-toggle="tab">정보 수정</a>
                 </li>
             </ul>
         </div>
@@ -72,7 +72,7 @@
         <div class="col-md-9">
             <div class="tab-content">
                 <!-- 찜 목록 (기본) -->
-                <div class="tab-pane fade show active" id="favoritesTab">
+                <div class="tab-pane fade" id="favorites">
                     <h4>찜 목록</h4>
                     <!-- 찜 목록 내용 -->
                     <div th:if="${#lists.isEmpty(favorites)}">찜한 항목이 없습니다.</div>
@@ -81,7 +81,7 @@
                     </ul>
                 </div>
                 <!-- 시청 기록 -->
-                <div class="tab-pane fade" id="historyTab">
+                <div class="tab-pane fade" id="history">
                     <h4>시청 기록</h4>
                     <!-- 시청 기록 내용 -->
                     <div th:if="${#lists.isEmpty(history)}">시청 기록이 없습니다.</div>
@@ -90,7 +90,7 @@
                     </ul>
                 </div>
                 <!-- 정보 수정 -->
-                <div class="tab-pane fade" id="editTab">
+                <div class="tab-pane fade" id="edit">
                     <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4">
                         <h4 class="mb-4">정보 수정</h4>
                         <form class="w-75" style="max-width:400px;" th:action="@{/mypage/edit}" method="post">
@@ -132,8 +132,7 @@
                 location.href = '/quit';
             }
         });
-    </script>
-    <script>
+
         function toggleCategoryMenu() {
             const menu = document.getElementById('categoryMenu');
             const icon = document.getElementById('categoryIcon');
@@ -156,6 +155,32 @@
                 document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
                 document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
             }
+        });
+
+        // 페이지 로드 시 hash에 따라 탭 활성화
+        document.addEventListener('DOMContentLoaded', function() {
+            let hash = window.location.hash;
+
+            // editErrorMsg나 activeEditTab이 있으면 수정 탭 활성화
+            if ([[${editErrorMsg != null || activeEditTab != null}]]) {
+                hash = '#edit';
+            } else if (!hash) {
+                hash = '#favorites'; // 기본 탭
+            }
+
+            // 해당 탭의 내용 표시
+            document.querySelector(hash).classList.add('show', 'active');
+
+            // 해당 탭 링크 활성화
+            const tabLink = document.querySelector(`a[href="${hash}"]`);
+            tabLink.classList.add('active');
+        });
+
+        // 탭 변경 시 URL hash 업데이트
+        document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function(e) {
+                window.location.hash = e.target.getAttribute('href');
+            });
         });
     </script>
     <th:block th:if="${editErrorMsg != null}">
