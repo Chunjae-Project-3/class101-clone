@@ -141,7 +141,7 @@
                     <a th:href="@{/class/category/19}" class="category-btn">🎯 디자인</a>
                     <a th:href="@{/class/category/17}" class="category-btn">⚙️ 생산성</a>
                     <a th:href="@{/class/category/9}" class="category-btn">📸 사진 · 영상</a>
-                    <a th:href="@{/class/category/0}" class="category-btn">➕ 전체 카테고리</a>
+                    <a href="javascript:void(0);" id="allCategoryBtn" class="category-btn">➕ 전체 카테고리</a>
                 </div>
             </div>
         </div>
@@ -191,6 +191,17 @@
         </div>
 
         <div id="classSections"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const allCategoryBtn = document.getElementById('allCategoryBtn');
+                if (allCategoryBtn) {
+                    allCategoryBtn.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        window.postMessage({type: 'TOGGLE_CATEGORY_MENU'}, '*');
+                    });
+                }
+            });
+        </script>
 
         <script>
             const sections = [

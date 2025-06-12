@@ -235,6 +235,40 @@
         // }
     </script>
     <script>
+        window.addEventListener('message', function (event) {
+            if (event.data && event.data.type === 'TOGGLE_CATEGORY_MENU') {
+                const isMobile = window.innerWidth < 992;
+
+                if (isMobile) {
+                    const mobileNav = document.getElementById('mobileNav');
+                    const menu = document.getElementById('mobileCategoryMenu');
+                    const icon = document.getElementById('categoryIconMobile');
+                    if (!menu || !icon || !mobileNav) return;
+
+                    if (!mobileNav.classList.contains('show')) {
+                        const bsCollapse = bootstrap.Collapse.getOrCreateInstance(mobileNav);
+                        bsCollapse.show();
+                    }
+
+                    const isOpen = !menu.classList.contains('d-none');
+                    menu.classList.toggle('d-none');
+                    icon.classList.toggle('bi-caret-up-fill', !isOpen);
+                    icon.classList.toggle('bi-caret-down-fill', isOpen);
+                } else {
+                    const menu = document.getElementById('categoryMenu');
+                    const icon = document.getElementById('categoryIconDesktop');
+                    if (!menu || !icon) return;
+
+                    const isOpen = menu.style.display === 'block';
+                    menu.style.display = isOpen ? 'none' : 'block';
+                    icon.classList.toggle('bi-caret-up-fill', !isOpen);
+                    icon.classList.toggle('bi-caret-down-fill', isOpen);
+                }
+            }
+        });
+    </script>
+
+    <script>
         function toggleCategoryMenu() {
             const isMobile = window.innerWidth < 992;
 
