@@ -15,7 +15,7 @@
             font-family: 'Pretendard', sans-serif;
             background-color: #ffffff;
             color: #0c0c0c;
-            font-size: 0.8rem;
+            font-size: 1rem;
         }
 
         #container {
@@ -175,39 +175,38 @@
 
 <div id="container" class="mt-2">
     <div class="mb-4">
-        <div class="d-flex rounded" style="gap: 8px;">
-            <!-- 왼쪽 배너 (flex: 3) -->
-            <div class="position-relative overflow-hidden rounded" style="flex: 3; height: 100%;">
-                <!-- 배경 이미지 -->
+        <div class="d-flex rounded" style="gap: 8px; height: 100px; align-items: stretch;">
+            <!-- 왼쪽 배너 -->
+            <div class="position-relative overflow-hidden rounded" style="flex: 4;">
                 <div class="w-100 h-100 position-absolute top-0 start-0"
                      style="background-image: url('/images/vtuber.png'); background-size: cover; background-position: center;">
                 </div>
-                <!-- 반투명 오버레이 -->
                 <div class="w-100 h-100 position-absolute top-0 start-0"
                      style="background-color: rgba(0, 0, 0, 0.4);"></div>
-                <!-- 텍스트 -->
                 <div class="position-relative text-white p-3 h-100 d-flex flex-column justify-content-center">
                     <h5 class="fw-bold mb-1">외주로 이어지는<br>2D 버튜버 클래스</h5>
                     <p class="small mb-0">59종 실습으로 빠르게 수익화 시작</p>
                 </div>
             </div>
 
-            <!-- 오른쪽 버튼 박스 (flex: 7) -->
-            <div class="d-flex flex-wrap align-content-start rounded bg-white px-2 py-2"
-                 style="flex: 7; height: 100%; gap: 8px;">
-                <button class="category-btn">🏢 창업 · 부업</button>
-                <button class="category-btn">🎨 디지털 드로잉</button>
-                <button class="category-btn">🌿 라이프스타일</button>
-                <button class="category-btn">🖌️ 드로잉</button>
-                <button class="category-btn">🧵 공예</button>
-                <button class="category-btn">💰 금융 · 재테크</button>
-                <button class="category-btn">🎯 디자인</button>
-                <button class="category-btn">⚙️ 생산성</button>
-                <button class="category-btn">📸 사진 · 영상</button>
-                <button class="category-btn">➕ 전체 카테고리</button>
+            <!-- 오른쪽 버튼 박스 -->
+            <div class="d-flex flex-column" style="flex: 6;">
+                <div class="d-flex flex-wrap bg-white rounded h-100" style="gap: 8px;">
+                    <button class="category-btn">🏢 창업 · 부업</button>
+                    <button class="category-btn">🎨 디지털 드로잉</button>
+                    <button class="category-btn">🌿 라이프스타일</button>
+                    <button class="category-btn">🖌️ 드로잉</button>
+                    <button class="category-btn">🧵 공예</button>
+                    <button class="category-btn">💰 금융 · 재테크</button>
+                    <button class="category-btn">🎯 디자인</button>
+                    <button class="category-btn">⚙️ 생산성</button>
+                    <button class="category-btn">📸 사진 · 영상</button>
+                    <button class="category-btn">➕ 전체 카테고리</button>
+                </div>
             </div>
         </div>
     </div>
+
 
     <!-- 상단 홍보 캐러셀 -->
     <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
