@@ -22,7 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class LoginController {
 	private final UserServiceImpl userService;
-	private final HttpSession httpSession;
 
 	@GetMapping("/login")
 	public String loginPage(
