@@ -1,10 +1,12 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.classes;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.service.ClassService;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,9 +21,12 @@ public class ClassApiController {
     private final ClassService classService;
 
     @GetMapping
-    @Operation(summary = "클래스 목록 조회", description = "카테고리별 등록된 클래스 목록을 반환합니다.")
-    public List<ClassDTO> getClasses(@RequestParam(required = false) String category) {
-        return classService.getClasses(category);
+    public List<ClassDTO> getClasses(
+            @RequestParam(required = false) String category,
+            HttpSession session
+    ) {
+        String userId = (String) session.getAttribute("loginId");
+        return classService.getClasses(category, userId);
     }
 
     @GetMapping("/{id}")
@@ -36,6 +41,16 @@ public class ClassApiController {
                 "classImageList", imageList,
                 "lectureCurriculum", curriculum
         );
+    }
+
+    @GetMapping("/category/{categoryIdx}")
+    @Operation(summary = "카테고리 인덱스로 클래스 목록 조회 (페이징)", description = "카테고리 인덱스로 등록된 클래스 목록을 페이지네이션하여 반환합니다.")
+    public Page<ClassDTO> getPagedClassesByCategoryIdx(
+            @PathVariable Integer categoryIdx,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return classService.getPagedClassesByCategoryIdx(categoryIdx, page, size);
     }
 
 }

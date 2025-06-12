@@ -1,10 +1,10 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.classes;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.UserEntity;
-import net.fullstack.class101clone.repository.ClassLikeRepository;
+import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import net.fullstack.class101clone.service.ClassLikeService;
