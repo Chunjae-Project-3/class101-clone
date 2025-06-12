@@ -47,12 +47,12 @@
             position: absolute;
             top: 8px;
             right: 10px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #fff;
             z-index: 2;
-            padding: 0;
+            padding: 5px;
+            border-radius: 5px;
             background-color: rgba(0, 0, 0, 0.5);
-
         }
 
         #classListContainer .col {
@@ -84,6 +84,13 @@
             color: white;
             border-color: #fe5d01;
         }
+
+        .text-ellipsis {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
     </style>
 </head>
 <body>
@@ -121,19 +128,7 @@
             <!-- 오른쪽 본문 -->
             <main class="col-md-10">
                 <!-- 크리에이터 목록 -->
-                <h5 class="fw-bold mt-5 mb-3">크리에이터</h5>
-                <div class="d-flex overflow-auto mb-4" style="gap: 1rem;"
-                     th:if="${creators != null and !creators.isEmpty()}">
-                    <div class="card text-center" style="min-width: 160px;" th:each="creator : ${creators}">
-                        <img th:src="${creator.profileImage}" class="card-img-top rounded-circle mx-auto mt-3"
-                             style="width: 60px;" alt="프로필">
-                        <div class="card-body p-2">
-                            <p class="fw-bold small mb-0" th:text="${creator.name}">이름</p>
-                            <p class="text-muted small mb-0"
-                               th:text="'누적 수강생 ' + ${creator.studentCount} + '명 이상'"></p>
-                        </div>
-                    </div>
-                </div>
+                <div id="creatorSectionContainer" class="justify-content-center mb-4" style="gap: 1rem;"></div>
 
                 <!-- 필터 영역 -->
                 <div class="d-flex justify-content-end mb-4 gap-2">
@@ -156,6 +151,88 @@
                 </nav>
 
                 <script th:inline="javascript">
+                    let latestCreators = [];
+                    let currentCreatorMode = window.innerWidth >= 992 ? 'carousel' : 'scroll';
+
+                    window.addEventListener("resize", () => {
+                        const newMode = window.innerWidth >= 992 ? 'carousel' : 'scroll';
+                        if (newMode !== currentCreatorMode) {
+                            currentCreatorMode = newMode;
+                            renderCreators(latestCreators);
+                        }
+                    });
+
+                    function renderCreators(classList) {
+                        const creatorMap = new Map();
+
+                        classList.forEach(cls => {
+                            if (cls.creatorName && !creatorMap.has(cls.creatorName)) {
+                                creatorMap.set(cls.creatorName, {
+                                    name: cls.creatorName,
+                                    profileImage: cls.creatorProfileImg,
+                                    description: cls.creatorDescription
+                                });
+                            }
+                        });
+
+                        const creators = Array.from(creatorMap.values());
+                        latestCreators = creators;
+
+                        const sectionId = `creator-carousel`;
+                        const isWideScreen = window.innerWidth >= 992;
+
+                        if (isWideScreen) {
+                            const slides = [];
+                            for (let i = 0; i < creators.length; i += 5) {
+                                const group = creators.slice(i, i + 5);
+                                while (group.length < 5) group.push(null); // 빈 칸 채우기
+                                slides.push(group);
+                            }
+
+                            const slideItemsHtml = slides.map((group, idx) => `
+        <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                ${group.map(creator => {
+                                if (!creator) return `<div class="col"></div>`;
+                                return `
+                        <div class="col">
+                            <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
+                                <img src="${creator.profileImage}" alt="프로필"
+                                     class="rounded-circle mb-2"
+                                     style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
+                                <p class="fw-bold small mb-1">${creator.name}</p>
+                                <p class="text-muted small mb-0 text-truncate">${creator.description}</p>
+                            </div>
+                        </div>
+                    `;
+                            }).join('')}
+            </div>
+        </div>
+    `).join('');
+
+                            document.getElementById("creatorSectionContainer").innerHTML = `
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold mb-0">크리에이터</h5>
+                <div>
+                    <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
+                        <i class="bi bi-chevron-left fs-5 text-dark"></i>
+                    </button>
+                    <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
+                        <i class="bi bi-chevron-right fs-5 text-dark"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
+                <div class="carousel-inner">
+                    ${slideItemsHtml}
+                </div>
+            </div>
+        </section>
+    `;
+                        }
+                    }
+
                     const categoryIdx = /*[[${categoryIdx}]]*/ 0;
                     let pageSize = parseInt(document.getElementById("pageSizeOption").value);
                     let currentPage = 0;
@@ -170,6 +247,7 @@
                             .then(data => {
                                 renderClassList(data.content);
                                 renderPagination(data.totalPages, data.number);
+                                renderCreators(data.content);
                             })
                             .catch(err => console.error("클래스 목록 로드 실패", err));
                     }
@@ -183,6 +261,7 @@
                         currentSort = e.target.value;
                         loadClasses(0); // 첫 페이지로 이동
                     });
+
 
                     // 클래스 목록 렌더링
                     function renderClassList(classList) {
