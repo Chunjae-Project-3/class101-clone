@@ -6,6 +6,11 @@
 >
 <head>
     <style>
+        #container.container {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
         .quit {
             color: #a4a4a4;
             cursor: pointer;
@@ -36,7 +41,6 @@
 </head>
 <body>
 <header></header>
-
 <div id="container" class="container" layout:fragment="content">
     <div class="row">
         <!-- 사이드바 -->
@@ -50,16 +54,16 @@
             </div>
             <ul class="nav nav-tabs flex-column list-group">
                 <li class="list-group-item">
-                    <a class="nav-link" href="/logout">로그아웃</a>
+                    <a class="nav-link fw-bold" href="/logout">로그아웃</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link active" href="#favoritesTab" data-bs-toggle="tab">찜 목록</a>
+                    <a class="nav-link fw-bold active" href="#favoritesTab" data-bs-toggle="tab">찜 목록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link" href="#historyTab" data-bs-toggle="tab">시청 기록</a>
+                    <a class="nav-link fw-bold" href="#historyTab" data-bs-toggle="tab">시청 기록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link" href="#editTab" data-bs-toggle="tab">정보 수정</a>
+                    <a class="nav-link fw-bold" href="#editTab" data-bs-toggle="tab">정보 수정</a>
                 </li>
             </ul>
         </div>
@@ -154,6 +158,17 @@
             }
         });
     </script>
+    <th:block th:if="${editErrorMsg != null}">
+        <script th:inline="javascript">
+            alert([[${editErrorMsg}]]);
+        </script>
+    </th:block>
+    <th:block th:if="${editSuccessMsg != null}">
+        <script th:inline="javascript">
+            alert([[${editSuccessMsg}]]);
+        </script>
+    </th:block>
 </th:block>
+
 </body>
 </html>

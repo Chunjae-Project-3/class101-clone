@@ -30,6 +30,9 @@ body::before {
     border-radius: 12px;
     font-weight: 600;
     border: none;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
 }
 
 .btn-primary, .btn-success {
@@ -109,4 +112,10 @@ a:hover {
 
 .orange {
     color: rgb(255, 93, 0);
+}
+
+.alert{
+    font-size: small;
+    word-break: keep-all;
+    white-space: nowrap;
 }
