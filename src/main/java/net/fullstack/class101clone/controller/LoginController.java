@@ -187,6 +187,13 @@ public class LoginController {
 			return "redirect:/mypage";
 		}
 
+		// 비밀번호가 UserDTO 의 패턴을 따르는지 확인
+		if (newPwd != null && !newPwd.isEmpty() && !newPwd.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d])[^\\s]{8,20}$")) {
+			log.error("New password does not meet the required pattern.");
+			ra.addFlashAttribute("editErrorMsg", "비밀번호는 8~20자의 영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.");
+			return "redirect:/mypage";
+		}
+
 		if (
 				CommonValidationUtil.checkXSS(userName)
 						|| CommonValidationUtil.checkXSS(originalPwd)
