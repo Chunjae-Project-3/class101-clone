@@ -38,6 +38,14 @@
             color: inherit !important;
             box-shadow: none !important;
         }
+
+        .editBtn {
+            background-color: rgb(255, 93, 0);
+            border: none;
+        }
+        .editBtn:hover {
+            background-color: rgb(255, 120, 0);
+        }
     </style>
 </head>
 <body>
@@ -58,13 +66,13 @@
                     <a class="nav-link fw-bold" href="/logout">로그아웃</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#favorites" data-bs-toggle="tab">찜 목록</a>
+                    <a class="nav-link fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#favorites">찜 목록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#history" data-bs-toggle="tab">시청 기록</a>
+                    <a class="nav-link fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#history">시청 기록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#edit" data-bs-toggle="tab">정보 수정</a>
+                    <a class="nav-link fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#edit">정보 수정</a>
                 </li>
             </ul>
         </div>
@@ -96,9 +104,7 @@
                 </div>
                 <!-- 정보 수정 -->
                 <div class="tab-pane fade" id="edit">
-                    <div
-                            class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4"
-                    >
+                    <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4">
                         <h4 class="mb-4">정보 수정</h4>
                         <form
                                 class="w-75"
@@ -123,9 +129,7 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="originalPwd" class="form-label"
-                                >기존 비밀번호</label
-                                >
+                                <label for="originalPwd" class="form-label">기존 비밀번호</label>
                                 <input
                                         type="password"
                                         class="form-control"
@@ -149,32 +153,19 @@
                                         pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$"
                                         title="비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다"
                                 />
-                                <div class="invalid-feedback">
-                                    비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야
-                                    합니다.
-                                </div>
+                                <div class="invalid-feedback">비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다.</div>
                             </div>
                             <div class="mb-3">
-                                <label for="newPwdConfirm" class="form-label"
-                                >비밀번호 확인</label
-                                >
+                                <label for="newPwdConfirm" class="form-label">비밀번호 확인</label>
                                 <input
                                         type="password"
                                         class="form-control"
                                         id="newPwdConfirm"
                                         name="newPwdConfirm"
                                 />
-                                <div class="invalid-feedback">
-                                    비밀번호가 일치하지 않습니다.
-                                </div>
+                                <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
                             </div>
-                            <button
-                                    type="submit"
-                                    class="btn btn-primary w-100"
-                                    style="background-color: rgb(255, 93, 0); border: none"
-                            >
-                                수정하기
-                            </button>
+                            <button type="submit" class="btn btn-primary w-100 editBtn">수정하기</button>
                         </form>
                         <span class="quit mt-4">탈퇴하기</span>
                     </div>
@@ -183,7 +174,6 @@
         </div>
     </div>
 </div>
-
 <footer></footer>
 <th:block layout:fragment="script">
     <th:block th:if="${editErrorMsg != null}">
@@ -223,21 +213,18 @@
 
         // 페이지 로드 시 hash에 따라 탭 활성화
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOM fully loaded and parsed');
-            let hash = window.location.hash;
+            let targetTab = '#favorites'; // 기본 탭
 
             // editErrorMsg나 activeEditTab이 있으면 수정 탭 활성화
             if ([[${editErrorMsg != null || activeEditTab != null}]]) {
-                hash = '#edit';
-            } else if (!hash) {
-                hash = '#favorites'; // 기본 탭
+                targetTab = '#edit';
             }
 
             // 해당 탭의 내용 표시
-            document.querySelector(hash).classList.add('show', 'active');
+            document.querySelector(targetTab).classList.add('show', 'active');
 
             // 해당 탭 링크 활성화
-            const tabLink = document.querySelector(`a[href="${hash}"]`);
+            const tabLink = document.querySelector(`[data-bs-target="${targetTab}"]`);
             tabLink.classList.add('active');
 
             const quitBtn = document.querySelector('.quit');
@@ -246,13 +233,6 @@
                 if (confirm('정말 탈퇴하시겠습니까?')) {
                     window.location.href = '/quit';
                 }
-            });
-        });
-
-        // 탭 변경 시 URL hash 업데이트
-        document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-            tab.addEventListener('shown.bs.tab', function (e) {
-                window.location.hash = e.target.getAttribute('href');
             });
         });
 
