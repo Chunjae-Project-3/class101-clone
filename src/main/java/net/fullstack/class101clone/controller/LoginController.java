@@ -25,7 +25,18 @@ public class LoginController {
 	private final HttpSession httpSession;
 
 	@GetMapping("/login")
-	public String loginPage() {
+	public String loginPage(
+			HttpServletRequest req
+	) {
+		HttpSession session = req.getSession();
+
+		// 이미 로그인된 사용자 정보가 있는지 확인
+		UserDTO userInfo = (UserDTO) session.getAttribute("userInfo");
+		if(userInfo != null) {
+			log.info("User is already logged in: {}", userInfo);
+			return "redirect:/";
+		}
+
 		return "login/login";
 	}
 
