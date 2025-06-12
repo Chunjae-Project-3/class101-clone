@@ -35,8 +35,7 @@ public class LoginController {
 			HttpServletRequest req,
 			BindingResult bindingResult,
 			RedirectAttributes ra,
-			Model model,
-			HttpSession session
+			Model model
 	) {
 		log.info("UserDTO : {}", userDTO);
 

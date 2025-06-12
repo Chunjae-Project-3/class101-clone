@@ -1,38 +1,19 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MMMB</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
-            integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
-            crossorigin="anonymous"></script>
 
     <style>
-        body {
-            font-family: 'Pretendard', sans-serif;
-            background-color: #ffffff;
-            color: #0c0c0c;
-            font-size: 1rem;
-        }
-
-        #container {
-            padding: 1rem 5rem;
-        }
-
         .card {
             border: none;
             border-radius: 5px !important;
-            //box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
             transition: transform 0.2s;
         }
-
-        //.card:hover {
-        //    transform: translateY(-4px);
-        //    border-radius: 5px !important;
-        //}
 
         .card-img-top {
             aspect-ratio: 16 / 9;
@@ -43,21 +24,12 @@
             display: block;
         }
 
-        header, footer {
-            background-color: #ffffff;
-            border-bottom: 1px solid #eee;
-        }
-
-        footer {
-            border-top: 1px solid #eee;
-        }
-
         .more-category-btn {
             background-color: #f5f5f5;
             border-radius: 24px;
             padding: 8px 16px;
             margin: 4px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             border: none;
             font-weight: 500;
         }
@@ -84,7 +56,7 @@
             width: calc(20% - 8px);
             background-color: white;
             padding: 8px;
-            font-size: 0.7rem;
+            font-size: 1rem;
             border: 1px #eee solid;
             font-weight: 500;
             transition: background-color 0.2s ease-in-out;
@@ -98,82 +70,7 @@
     </style>
 </head>
 <body>
-<!-- 고정 헤더 -->
-<header class="position-sticky top-0 bg-white border-bottom" style="z-index: 1020;">
-    <div class="container py-3 position-relative">
-        <div class="d-flex justify-content-between align-items-center mb-1">
-            <div class="d-flex align-items-center gap-3">
-                <a href="#" class="me-1 fw-bold">클래스</a>
-                <a href="#" class="me-1 fw-bold">클럽</a>
-                <a href="#" class="me-1 fw-bold">커뮤니티</a>
-                <a href="#" class="fw-bold" id="categoryToggle"
-                   onclick="event.preventDefault(); toggleCategoryMenu();">
-                    카테고리 <i id="categoryIcon" class="bi bi-caret-down-fill small"></i>
-                </a>
-                <div class="position-relative" style="width: 300px; margin-left: 10px;">
-                    <input type="text" class="form-control ps-3 pe-5"
-                           placeholder="관심 주제, 클래스, 크리에이터 찾기"
-                           style="height: 34px; font-size: 0.8rem; background-color: #F7F7F7; border: none;">
-                    <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                       style="font-size: 0.9rem;"></i>
-                </div>
-            </div>
-
-            <div class="d-flex align-items-center gap-2">
-                <a href="/login" class="text-dark small fw-bold">로그인</a>
-                <a href="/signup" class="text-dark small fw-bold">회원가입</a>
-            </div>
-        </div>
-
-        <!-- 카테고리 드롭다운 메뉴 -->
-        <div id="categoryMenu" class="border p-4 bg-white shadow position-absolute w-100"
-             style="top: 100%; left: 0; display: none; z-index: 1040;">
-            <div class="row row-cols-2 row-cols-md-4">
-                <div>
-                    <p><a href="/classes?categoryIdx=1" class="text-dark text-decoration-none">디지털 드로잉</a></p>
-                    <p><a href="/classes?categoryIdx=2" class="text-dark text-decoration-none">드로잉</a></p>
-                    <p><a href="/classes?categoryIdx=3" class="text-dark text-decoration-none">공예</a></p>
-                    <p><a href="/classes?categoryIdx=4" class="text-dark text-decoration-none">요리 · 음료</a></p>
-                    <p><a href="/classes?categoryIdx=5" class="text-dark text-decoration-none">베이킹 · 디저트</a></p>
-                    <p><a href="/classes?categoryIdx=6" class="text-dark text-decoration-none">음악</a></p>
-                    <p><a href="/classes?categoryIdx=7" class="text-dark text-decoration-none">운동</a></p>
-                    <p><a href="/classes?categoryIdx=8" class="text-dark text-decoration-none">라이프스타일</a></p>
-                    <p><a href="/classes?categoryIdx=9" class="text-dark text-decoration-none">사진 · 영상</a></p>
-                </div>
-                <div>
-                    <p><a href="/classes?categoryIdx=10" class="text-dark text-decoration-none">금융 · 재테크</a></p>
-                    <p><a href="/classes?categoryIdx=11" class="text-dark text-decoration-none">창업 · 부업</a></p>
-                    <p><a href="/classes?categoryIdx=12" class="text-dark text-decoration-none">성공 마인드</a></p>
-                    <p><a href="/classes?categoryIdx=13" class="text-dark text-decoration-none">프로그래밍</a></p>
-                    <p><a href="/classes?categoryIdx=14" class="text-dark text-decoration-none">데이터사이언스</a></p>
-                    <p><a href="/classes?categoryIdx=15" class="text-dark text-decoration-none">제품 기획</a></p>
-                    <p><a href="/classes?categoryIdx=16" class="text-dark text-decoration-none">비즈니스</a></p>
-                    <p><a href="/classes?categoryIdx=17" class="text-dark text-decoration-none">생산성</a></p>
-                    <p><a href="/classes?categoryIdx=18" class="text-dark text-decoration-none">마케팅</a></p>
-                </div>
-                <div>
-                    <p><a href="/classes?categoryIdx=19" class="text-dark text-decoration-none">디자인</a></p>
-                    <p><a href="/classes?categoryIdx=20" class="text-dark text-decoration-none">영상/3D</a></p>
-                    <p><a href="/classes?categoryIdx=21" class="text-dark text-decoration-none">영어</a></p>
-                    <p><a href="/classes?categoryIdx=22" class="text-dark text-decoration-none">외국어 시험</a></p>
-                    <p><a href="/classes?categoryIdx=23" class="text-dark text-decoration-none">제2 외국어</a></p>
-                </div>
-                <div>
-                    <p><a href="/classes?categoryIdx=24" class="text-dark text-decoration-none">아이 교육</a></p>
-                    <p><a href="/classes?categoryIdx=25" class="text-dark text-decoration-none">부모 교육</a></p>
-                </div>
-            </div>
-            <div class="text-end mt-3">
-                <button class="btn btn-sm border-0 small" onclick="toggleCategoryMenu()"
-                        style="font-size: 0.75rem;">
-                    ✕ 닫기
-                </button>
-            </div>
-        </div>
-    </div>
-</header>
-
-<div id="container" class="mt-2">
+<div id="container" class="mt-2" layout:fragment="content">
     <div class="mb-4">
         <div class="d-flex rounded" style="gap: 8px; height: 100px; align-items: stretch;">
             <!-- 왼쪽 배너 -->
@@ -206,7 +103,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- 상단 홍보 캐러셀 -->
     <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
@@ -412,27 +308,6 @@
         </div>
         <button class="btn btn-warning fw-bold px-4 py-2">바로 시작하기</button>
     </div>
-
-    <!-- Footer -->
-    <footer class="mt-5 pt-4 border-top">
-        <div class="row">
-            <div class="col-md-4">
-                <h6 class="fw-bold">고객센터</h6>
-                <p>support@class101.net</p>
-            </div>
-            <div class="col-md-4">
-                <h6 class="fw-bold">회사 정보</h6>
-                <p>서울특별시 성동구 왕십리로 125</p>
-            </div>
-            <div class="col-md-4">
-                <h6 class="fw-bold">앱 다운로드</h6>
-                <a href="#">App Store</a> | <a href="#">Google Play</a>
-            </div>
-        </div>
-        <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
-    </footer>
-    <!-- 푸터 하단 공간 확보 -->
-    <div style="height: 50px;"></div>
 </div>
 
 <script>
