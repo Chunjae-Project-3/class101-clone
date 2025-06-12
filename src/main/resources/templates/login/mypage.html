@@ -1,132 +1,398 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="ko"-->
+<!--      xmlns:th="http://www.thymeleaf.org"-->
+<!--      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"-->
+<!--      layout:decorate="~{layout/layout.html}"-->
+<!--&gt;-->
+<!--<head>-->
+<!--    <style>-->
+<!--        #container.container {-->
+<!--            padding-left: 0;-->
+<!--            padding-right: 0;-->
+<!--        }-->
+
+<!--        .quit {-->
+<!--            color: #a4a4a4;-->
+<!--            cursor: pointer;-->
+<!--            font-weight: bold;-->
+<!--            text-decoration: underline;-->
+<!--        }-->
+
+<!--        /* 선택된 탭(활성 탭)의 파란색 배경과 테두리 제거 */-->
+<!--        .nav-tabs .nav-link.active {-->
+<!--            background-color: transparent !important;-->
+<!--            border-color: transparent !important;-->
+<!--            color: inherit !important;-->
+<!--            box-shadow: none !important;-->
+<!--        }-->
+
+<!--        .nav-link {-->
+<!--            color: black !important;-->
+<!--        }-->
+
+<!--        .nav-tabs .nav-link:hover,-->
+<!--        .nav-tabs .nav-link:focus {-->
+<!--            background-color: transparent !important;-->
+<!--            border-color: transparent !important;-->
+<!--            color: inherit !important;-->
+<!--            box-shadow: none !important;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--<header></header>-->
+<!--<div id="container" class="container" layout:fragment="content">-->
+<!--    <div class="row">-->
+<!--        &lt;!&ndash; 사이드바 &ndash;&gt;-->
+<!--        <div class="col-md-3 mb-4">-->
+<!--            <div class="card mb-3">-->
+<!--                <div class="card-body">-->
+<!--                    <h5 class="card-title">내 정보</h5>-->
+<!--                    <p class="card-text" th:text="${userInfo.userName}">닉네임</p>-->
+<!--                    <p class="card-text" th:text="${userInfo.userId}">아이디</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <ul class="nav nav-tabs flex-column list-group">-->
+<!--                <li class="list-group-item">-->
+<!--                    <a class="nav-link fw-bold" href="/logout">로그아웃</a>-->
+<!--                </li>-->
+<!--                <li class="list-group-item">-->
+<!--                    <a class="nav-link fw-bold" href="#favorites" data-bs-toggle="tab">찜 목록</a>-->
+<!--                </li>-->
+<!--                <li class="list-group-item">-->
+<!--                    <a class="nav-link fw-bold" href="#history" data-bs-toggle="tab">시청 기록</a>-->
+<!--                </li>-->
+<!--                <li class="list-group-item">-->
+<!--                    <a class="nav-link fw-bold" href="#edit" data-bs-toggle="tab">정보 수정</a>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; 메인 컨텐츠 &ndash;&gt;-->
+<!--        <div class="col-md-9">-->
+<!--            <div class="tab-content">-->
+<!--                &lt;!&ndash; 찜 목록 (기본) &ndash;&gt;-->
+<!--                <div class="tab-pane fade" id="favorites">-->
+<!--                    <h4>찜 목록</h4>-->
+<!--                    &lt;!&ndash; 찜 목록 내용 &ndash;&gt;-->
+<!--                    <div th:if="${#lists.isEmpty(favorites)}">찜한 항목이 없습니다.</div>-->
+<!--                    <ul th:each="item : ${favorites}">-->
+<!--                        <li th:text="${item.title}">콘텐츠 제목</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--                &lt;!&ndash; 시청 기록 &ndash;&gt;-->
+<!--                <div class="tab-pane fade" id="history">-->
+<!--                    <h4>시청 기록</h4>-->
+<!--                    &lt;!&ndash; 시청 기록 내용 &ndash;&gt;-->
+<!--                    <div th:if="${#lists.isEmpty(history)}">시청 기록이 없습니다.</div>-->
+<!--                    <ul th:each="item : ${history}">-->
+<!--                        <li th:text="${item.title}">콘텐츠 제목</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--                &lt;!&ndash; 정보 수정 &ndash;&gt;-->
+<!--                <div class="tab-pane fade" id="edit">-->
+<!--                    <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4">-->
+<!--                        <h4 class="mb-4">정보 수정</h4>-->
+<!--                        <form class="w-75" style="max-width:400px;" th:action="@{/mypage/edit}" method="post">-->
+<!--                            <div class="mb-3">-->
+<!--                                <label for="userName" class="form-label">닉네임</label>-->
+<!--                                <input type="text" class="form-control" id="userName" name="userName"-->
+<!--                                       th:value="${userInfo.userName}">-->
+<!--                            </div>-->
+<!--                            <div class="mb-3">-->
+<!--                                <label for="userPwd" class="form-label">기존 비밀번호</label>-->
+<!--                                <input type="password" class="form-control" name="originalPwd" minlength="8" required>-->
+<!--                            </div>-->
+<!--                            <div class="mb-3">-->
+<!--                                <label for="userPwd" class="form-label">새 비밀번호</label>-->
+<!--                                <input type="password" class="form-control" name="newPwd" minlength="8">-->
+<!--                            </div>-->
+<!--                            <div class="mb-3">-->
+<!--                                <label for="userPwdConfirm" class="form-label">비밀번호 확인</label>-->
+<!--                                <input type="password" class="form-control" id="userPwdConfirm" name="newPwdConfirm"-->
+<!--                                       minlength="8">-->
+<!--                            </div>-->
+<!--                            <button type="submit" class="btn btn-primary w-100"-->
+<!--                                    style="background-color: rgb(255, 93, 0); border: none">수정하기-->
+<!--                            </button>-->
+<!--                        </form>-->
+<!--                        <span class="quit mt-4">탈퇴하기</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<footer></footer>-->
+<!--<th:block layout:fragment="script">-->
+<!--    <script>-->
+<!--        document.querySelector('.quit').addEventListener('click', function () {-->
+<!--            if (confirm('정말 탈퇴하시겠습니까?')) {-->
+<!--                location.href = '/quit';-->
+<!--            }-->
+<!--        });-->
+
+<!--        function toggleCategoryMenu() {-->
+<!--            const menu = document.getElementById('categoryMenu');-->
+<!--            const icon = document.getElementById('categoryIcon');-->
+<!--            if (menu.style.display === 'none' || menu.style.display === '') {-->
+<!--                menu.style.display = 'block';-->
+<!--                icon.classList.remove('bi-caret-down-fill');-->
+<!--                icon.classList.add('bi-caret-up-fill');-->
+<!--            } else {-->
+<!--                menu.style.display = 'none';-->
+<!--                icon.classList.remove('bi-caret-up-fill');-->
+<!--                icon.classList.add('bi-caret-down-fill');-->
+<!--            }-->
+<!--        }-->
+
+<!--        document.addEventListener('click', function (e) {-->
+<!--            const toggle = document.getElementById('categoryToggle');-->
+<!--            const menu = document.getElementById('categoryMenu');-->
+<!--            if (!toggle.contains(e.target) && !menu.contains(e.target)) {-->
+<!--                menu.style.display = 'none';-->
+<!--                document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');-->
+<!--                document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');-->
+<!--            }-->
+<!--        });-->
+
+<!--        // 페이지 로드 시 hash에 따라 탭 활성화-->
+<!--        document.addEventListener('DOMContentLoaded', function() {-->
+<!--            let hash = window.location.hash;-->
+
+<!--            // editErrorMsg나 activeEditTab이 있으면 수정 탭 활성화-->
+<!--            if ([[${editErrorMsg != null || activeEditTab != null}]]) {-->
+<!--                hash = '#edit';-->
+<!--            } else if (!hash) {-->
+<!--                hash = '#favorites'; // 기본 탭-->
+<!--            }-->
+
+<!--            // 해당 탭의 내용 표시-->
+<!--            document.querySelector(hash).classList.add('show', 'active');-->
+
+<!--            // 해당 탭 링크 활성화-->
+<!--            const tabLink = document.querySelector(`a[href="${hash}"]`);-->
+<!--            tabLink.classList.add('active');-->
+<!--        });-->
+
+<!--        // 탭 변경 시 URL hash 업데이트-->
+<!--        document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {-->
+<!--            tab.addEventListener('shown.bs.tab', function(e) {-->
+<!--                window.location.hash = e.target.getAttribute('href');-->
+<!--            });-->
+<!--        });-->
+<!--    </script>-->
+<!--    <th:block th:if="${editErrorMsg != null}">-->
+<!--        <script th:inline="javascript">-->
+<!--            alert([[${editErrorMsg}]]);-->
+<!--        </script>-->
+<!--    </th:block>-->
+<!--    <th:block th:if="${editSuccessMsg != null}">-->
+<!--        <script th:inline="javascript">-->
+<!--            alert([[${editSuccessMsg}]]);-->
+<!--        </script>-->
+<!--    </th:block>-->
+<!--</th:block>-->
+
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout.html}"
+<html
+  lang="ko"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout.html}"
 >
-<head>
+  <head>
     <style>
-        #container.container {
-            padding-left: 0;
-            padding-right: 0;
-        }
+      #container.container {
+        padding-left: 0;
+        padding-right: 0;
+      }
 
-        .quit {
-            color: #a4a4a4;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: underline;
-        }
+      .quit {
+        color: #a4a4a4;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: underline;
+      }
 
-        /* 선택된 탭(활성 탭)의 파란색 배경과 테두리 제거 */
-        .nav-tabs .nav-link.active {
-            background-color: transparent !important;
-            border-color: transparent !important;
-            color: inherit !important;
-            box-shadow: none !important;
-        }
+      /* 선택된 탭(활성 탭)의 파란색 배경과 테두리 제거 */
+      .nav-tabs .nav-link.active {
+        background-color: transparent !important;
+        border-color: transparent !important;
+        color: inherit !important;
+        box-shadow: none !important;
+      }
 
-        .nav-link {
-            color: black !important;
-        }
+      .nav-link {
+        color: black !important;
+      }
 
-        .nav-tabs .nav-link:hover,
-        .nav-tabs .nav-link:focus {
-            background-color: transparent !important;
-            border-color: transparent !important;
-            color: inherit !important;
-            box-shadow: none !important;
-        }
+      .nav-tabs .nav-link:hover,
+      .nav-tabs .nav-link:focus {
+        background-color: transparent !important;
+        border-color: transparent !important;
+        color: inherit !important;
+        box-shadow: none !important;
+      }
     </style>
-</head>
-<body>
-<header></header>
-<div id="container" class="container" layout:fragment="content">
-    <div class="row">
+  </head>
+  <body>
+    <header></header>
+    <div id="container" class="container" layout:fragment="content">
+      <div class="row">
         <!-- 사이드바 -->
         <div class="col-md-3 mb-4">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">내 정보</h5>
-                    <p class="card-text" th:text="${userInfo.userName}">닉네임</p>
-                    <p class="card-text" th:text="${userInfo.userId}">아이디</p>
-                </div>
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">내 정보</h5>
+              <p class="card-text" th:text="${userInfo.userName}">닉네임</p>
+              <p class="card-text" th:text="${userInfo.userId}">아이디</p>
             </div>
-            <ul class="nav nav-tabs flex-column list-group">
-                <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="/logout">로그아웃</a>
-                </li>
-                <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#favorites" data-bs-toggle="tab">찜 목록</a>
-                </li>
-                <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#history" data-bs-toggle="tab">시청 기록</a>
-                </li>
-                <li class="list-group-item">
-                    <a class="nav-link fw-bold" href="#edit" data-bs-toggle="tab">정보 수정</a>
-                </li>
-            </ul>
+          </div>
+          <ul class="nav nav-tabs flex-column list-group">
+            <li class="list-group-item">
+              <a class="nav-link fw-bold" href="/logout">로그아웃</a>
+            </li>
+            <li class="list-group-item">
+              <a class="nav-link fw-bold" href="#favorites" data-bs-toggle="tab"
+                >찜 목록</a
+              >
+            </li>
+            <li class="list-group-item">
+              <a class="nav-link fw-bold" href="#history" data-bs-toggle="tab"
+                >시청 기록</a
+              >
+            </li>
+            <li class="list-group-item">
+              <a class="nav-link fw-bold" href="#edit" data-bs-toggle="tab"
+                >정보 수정</a
+              >
+            </li>
+          </ul>
         </div>
 
         <!-- 메인 컨텐츠 -->
         <div class="col-md-9">
-            <div class="tab-content">
-                <!-- 찜 목록 (기본) -->
-                <div class="tab-pane fade" id="favorites">
-                    <h4>찜 목록</h4>
-                    <!-- 찜 목록 내용 -->
-                    <div th:if="${#lists.isEmpty(favorites)}">찜한 항목이 없습니다.</div>
-                    <ul th:each="item : ${favorites}">
-                        <li th:text="${item.title}">콘텐츠 제목</li>
-                    </ul>
-                </div>
-                <!-- 시청 기록 -->
-                <div class="tab-pane fade" id="history">
-                    <h4>시청 기록</h4>
-                    <!-- 시청 기록 내용 -->
-                    <div th:if="${#lists.isEmpty(history)}">시청 기록이 없습니다.</div>
-                    <ul th:each="item : ${history}">
-                        <li th:text="${item.title}">콘텐츠 제목</li>
-                    </ul>
-                </div>
-                <!-- 정보 수정 -->
-                <div class="tab-pane fade" id="edit">
-                    <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4">
-                        <h4 class="mb-4">정보 수정</h4>
-                        <form class="w-75" style="max-width:400px;" th:action="@{/mypage/edit}" method="post">
-                            <div class="mb-3">
-                                <label for="userName" class="form-label">닉네임</label>
-                                <input type="text" class="form-control" id="userName" name="userName"
-                                       th:value="${userInfo.userName}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="userPwd" class="form-label">기존 비밀번호</label>
-                                <input type="password" class="form-control" name="originalPwd" minlength="8" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="userPwd" class="form-label">새 비밀번호</label>
-                                <input type="password" class="form-control" name="newPwd" minlength="8">
-                            </div>
-                            <div class="mb-3">
-                                <label for="userPwdConfirm" class="form-label">비밀번호 확인</label>
-                                <input type="password" class="form-control" id="userPwdConfirm" name="newPwdConfirm"
-                                       minlength="8">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100"
-                                    style="background-color: rgb(255, 93, 0); border: none">수정하기
-                            </button>
-                        </form>
-                        <span class="quit mt-4">탈퇴하기</span>
-                    </div>
-                </div>
+          <div class="tab-content">
+            <!-- 찜 목록 (기본) -->
+            <div class="tab-pane fade" id="favorites">
+              <h4>찜 목록</h4>
+              <!-- 찜 목록 내용 -->
+              <div th:if="${#lists.isEmpty(favorites)}">
+                찜한 항목이 없습니다.
+              </div>
+              <ul th:each="item : ${favorites}">
+                <li th:text="${item.title}">콘텐츠 제목</li>
+              </ul>
             </div>
+            <!-- 시청 기록 -->
+            <div class="tab-pane fade" id="history">
+              <h4>시청 기록</h4>
+              <!-- 시청 기록 내용 -->
+              <div th:if="${#lists.isEmpty(history)}">
+                시청 기록이 없습니다.
+              </div>
+              <ul th:each="item : ${history}">
+                <li th:text="${item.title}">콘텐츠 제목</li>
+              </ul>
+            </div>
+            <!-- 정보 수정 -->
+            <div class="tab-pane fade" id="edit">
+              <div
+                class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4"
+              >
+                <h4 class="mb-4">정보 수정</h4>
+                <form
+                  class="w-75"
+                  style="max-width: 400px"
+                  th:action="@{/mypage/edit}"
+                  method="post"
+                  id="editForm"
+                  onsubmit="return validateEditForm()"
+                >
+                  <div class="mb-3">
+                    <label for="userName" class="form-label">닉네임</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="userName"
+                      name="userName"
+                      th:value="${userInfo.userName}"
+                      title="닉네임은 한글, 영문, 숫자로 3자 이상이어야 합니다"
+                    />
+                    <div class="invalid-feedback">
+                      닉네임은 한글, 영문, 숫자로 3자 이상이어야 합니다.
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="originalPwd" class="form-label"
+                      >기존 비밀번호</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="originalPwd"
+                      name="originalPwd"
+                      pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$"
+                      title="비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다"
+                      required
+                    />
+                    <div class="invalid-feedback">
+                      올바른 비밀번호 형식이 아닙니다.
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="newPwd" class="form-label">새 비밀번호</label>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="newPwd"
+                      name="newPwd"
+                      pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$"
+                      title="비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다"
+                    />
+                    <div class="invalid-feedback">
+                      비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야
+                      합니다.
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label for="newPwdConfirm" class="form-label"
+                      >비밀번호 확인</label
+                    >
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="newPwdConfirm"
+                      name="newPwdConfirm"
+                    />
+                    <div class="invalid-feedback">
+                      비밀번호가 일치하지 않습니다.
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    class="btn btn-primary w-100"
+                    style="background-color: rgb(255, 93, 0); border: none"
+                  >
+                    수정하기
+                  </button>
+                </form>
+                <span class="quit mt-4">탈퇴하기</span>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
 
-<footer></footer>
-<th:block layout:fragment="script">
-    <script>
+    <footer></footer>
+    <th:block layout:fragment="script">
+      <script>
         document.querySelector('.quit').addEventListener('click', function () {
             if (confirm('정말 탈퇴하시겠습니까?')) {
                 location.href = '/quit';
@@ -182,18 +448,106 @@
                 window.location.hash = e.target.getAttribute('href');
             });
         });
-    </script>
-    <th:block th:if="${editErrorMsg != null}">
-        <script th:inline="javascript">
-            alert([[${editErrorMsg}]]);
-        </script>
-    </th:block>
-    <th:block th:if="${editSuccessMsg != null}">
-        <script th:inline="javascript">
-            alert([[${editSuccessMsg}]]);
-        </script>
-    </th:block>
-</th:block>
 
-</body>
+        function validateEditForm() {
+            const userName = document.getElementById('userName');
+            const originalPwd = document.getElementById('originalPwd');
+            const newPwd = document.getElementById('newPwd');
+            const newPwdConfirm = document.getElementById('newPwdConfirm');
+            let isValid = true;
+
+            // XSS 방어를 위한 이스케이프 처리
+            const escapeHTML = (str) => {
+                if (!str) return str;
+                return str.replace(/[&<>"']/g, function(match) {
+                    const escape = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    };
+                    return escape[match];
+                });
+            }
+
+            // 정규식 패턴
+            const userNamePattern = /^[가-힣a-zA-Z0-9\s]{3,}$/;
+            const pwdPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$/;
+
+            // 닉네임 검증 (변경된 경우에만)
+            const originalUserName = [[${userInfo.userName}]];
+            if (userName.value && userName.value !== originalUserName && !userNamePattern.test(userName.value)) {
+                userName.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // 기존 비밀번호 검증 (필수 입력)
+            if (!pwdPattern.test(originalPwd.value)) {
+                originalPwd.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // 새 비밀번호 검증 (입력된 경우에만)
+            if (newPwd.value) {
+                // 새 비밀번호 형식 검증
+                if (!pwdPattern.test(newPwd.value)) {
+                    newPwd.classList.add('is-invalid');
+                    isValid = false;
+                }
+
+                // 기존 비밀번호와 동일 여부 검증
+                if (newPwd.value === originalPwd.value) {
+                    newPwd.classList.add('is-invalid');
+                    alert('새 비밀번호는 기존 비밀번호와 달라야 합니다.');
+                    isValid = false;
+                }
+
+                // 비밀번호 확인 일치 검사
+                if (newPwd.value !== newPwdConfirm.value) {
+                    newPwdConfirm.classList.add('is-invalid');
+                    isValid = false;
+                }
+            } else if (newPwdConfirm.value) {
+                // 새 비밀번호는 입력하지 않았는데 확인은 입력한 경우
+                newPwdConfirm.classList.add('is-invalid');
+                alert('새 비밀번호를 먼저 입력해주세요.');
+                isValid = false;
+            }
+
+            if (isValid) {
+                // 입력값 이스케이프 처리
+                userName.value = escapeHTML(userName.value);
+            }
+
+            return isValid;
+        }
+
+        // 입력 필드 변경 시 유효성 검사 메시지 초기화
+        document.getElementById('userName').addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+        document.getElementById('originalPwd').addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+        document.getElementById('newPwd').addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            document.getElementById('newPwdConfirm').classList.remove('is-invalid');
+        });
+        document.getElementById('newPwdConfirm').addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+      </script>
+      <th:block th:if="${editErrorMsg != null}">
+        <script th:inline="javascript">
+          alert([[${editErrorMsg}]]);
+        </script>
+      </th:block>
+      <th:block th:if="${editSuccessMsg != null}">
+        <script th:inline="javascript">
+          alert([[${editSuccessMsg}]]);
+        </script>
+      </th:block>
+    </th:block>
+  </body>
 </html>
