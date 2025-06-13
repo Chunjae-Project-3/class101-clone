@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title layout:fragment="head">크리에이터 페이지</title>
+</head>
+
+<body>
+<!-- sidebar는 부모 레이아웃에서 th:replace로 이미 삽입됨 -->
+
+<!-- 이 부분만 구현 -->
+<div layout:fragment="content" class="flex-grow-1 p-4">
+
+    <!-- 1. 커버 이미지 -->
+    <div class="mb-4">
+        <img th:src="@{${creator.coverImageUrl}}"
+             alt="메인 배너 이미지"
+             class="w-100 rounded"
+             style="height: 200px; object-fit: cover;">
+    </div>
+
+    <!-- 2. 프로필 요약 -->
+    <div class="d-flex align-items-center mb-5">
+        <img th:src="@{${creator.profileImageUrl}}"
+             alt="프로필 사진"
+             class="rounded-circle me-3"
+             style="width:80px; height:80px;">
+        <div>
+            <h2 th:text="${creator.name}">크리에이터 이름</h2>
+            <p class="text-muted small">
+                누적 수강생 <span th:text="${creator.studentCount}">0</span>명 ·
+                게시글 <span th:text="${creator.postCount}">0</span>개
+            </p>
+        </div>
+    </div>
+
+    <!-- 3. 클래스 섹션 -->
+    <section class="mb-5">
+        <h4 class="mb-3">CLASS101에 포함된 클래스</h4>
+        <div class="d-flex overflow-auto">
+            <div th:each="cls : ${creatorClasses}"
+                 class="card me-3"
+                 style="width: 200px;">
+                <img th:src="@{${cls.thumbnailUrl}}"
+                     class="card-img-top"
+                     alt="클래스 썸네일">
+                <div class="card-body p-2">
+                    <p class="card-title small mb-1" th:text="${cls.title}">클래스 제목</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- footer는 부모 레이아웃의 footer를 그대로 사용 -->
+
+<!-- 페이지별 스크립트가 필요하면 여기에 -->
+<th:block layout:fragment="script">
+    <!-- 예: 슬릭 캐러셀 초기화 스크립트 등 -->
+</th:block>
+</body>
+</html>

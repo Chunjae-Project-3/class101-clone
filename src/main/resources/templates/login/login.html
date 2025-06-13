@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko"
-      xmlns:th="http://www.thymeleaf.org"
->
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>로그인</title>
@@ -13,30 +11,94 @@
 <div class="container d-flex align-items-center justify-content-center min-vh-100">
     <div class="card shadow p-4">
         <h1 class="h2 fw-bold mb-4 text-center">로그인</h1>
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/login}" method="post" id="loginForm" onsubmit="return validateForm()">
             <div class="mb-3">
                 <label for="username" class="form-label">ID</label>
-                <input type="text" id="username" name="userId" class="form-control" required>
+                <input type="text" id="username" name="userId" class="form-control"
+                       pattern="^[a-zA-Z0-9]{6,20}$"
+                       title="ID는 영문자와 숫자로 6~20자 사이여야 합니다"
+                       required>
+                <div class="invalid-feedback">올바른 ID 형식이 아닙니다.</div>
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">비밀번호</label>
-                <input type="password" id="password" name="userPwd" class="form-control" required>
+                <input type="password" id="password" name="userPwd" class="form-control"
+                       pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$"
+                       title="비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다"
+                       required>
+                <div class="invalid-feedback">올바른 비밀번호 형식이 아닙니다.</div>
             </div>
-            <div th:if="${loginErrorMsg != null}" class="alert alert-danger mb-3 " role="alert" th:text="${loginErrorMsg}"></div>
+            <div th:if="${loginErrorMsg != null}" class="alert alert-danger mb-3" role="alert"
+                 th:text="${#strings.escapeXml(loginErrorMsg)}"></div>
             <button type="submit" class="btn btn-primary w-100 mb-2">로그인</button>
             <a href="/signup" class="btn btn-outline-secondary w-100">회원가입</a>
         </form>
     </div>
 </div>
-<th:block th:if="${signupSuccessMsg != null}">
-    <script th:inline="javascript">
-        alert([[${signupSuccessMsg}]]);
-    </script>
-</th:block>
-<th:block th:if="${loginRequired != null}">
-    <script th:inline="javascript">
-        alert([[${loginRequired}]]);
-    </script>
-</th:block>
+
+<script th:inline="javascript">
+    function validateForm() {
+        const userId = document.getElementById('username');
+        const userPwd = document.getElementById('password');
+
+        // XSS 방어를 위한 이스케이프 처리
+        const escapeHTML = (str) => {
+            return str.replace(/[&<>"']/g, function(match) {
+                const escape = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escape[match];
+            });
+        }
+
+        // 정규식 패턴
+        const userIdPattern = /^[a-zA-Z0-9]{6,20}$/;
+        const pwdPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$/;
+
+        // ID 검증
+        if (!userIdPattern.test(userId.value)) {
+            userId.classList.add('is-invalid');
+            return false;
+        }
+
+        // 비밀번호 검증
+        if (!pwdPattern.test(userPwd.value)) {
+            userPwd.classList.add('is-invalid');
+            return false;
+        }
+
+        // 입력값 이스케이프 처리
+        userId.value = escapeHTML(userId.value);
+
+        return true;
+    }
+
+    // 입력 필드 변경 시 유효성 검사 메시지 초기화
+    document.getElementById('username').addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+    });
+    document.getElementById('password').addEventListener('input', function() {
+        this.classList.remove('is-invalid');
+    });
+
+    // 알림 메시지 XSS 방어 처리
+    const showAlert = (message) => {
+        if (message) {
+            alert(message.toString().replace(/[<>]/g, ''));
+        }
+    };
+
+    // 기존 알림 메시지 처리
+    if ([[${signupSuccessMsg}]]) {
+        showAlert([[${signupSuccessMsg}]]);
+    }
+    if ([[${loginRequired}]]) {
+        showAlert([[${loginRequired}]]);
+    }
+</script>
 </body>
 </html>

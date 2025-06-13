@@ -248,7 +248,7 @@
                         </div>
 
                         <div class="text-center">
-                            <i class="bi bi-upload fs-5"></i>
+                            <i id="share-icon" class="bi bi-upload fs-5" style="cursor:pointer;"></i>
                             <div class="small">공유</div>
                         </div>
                     </div>
@@ -270,12 +270,45 @@
                 </a>
 
                 <div class="text-center">
-                    <i class="bi bi-upload fs-5"></i>
+                    <i id="share-icon-mobile" class="bi bi-upload fs-5" style="cursor:pointer;"></i>
                     <div class="small">공유</div>
                 </div>
             </div>
         </div>
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+            <div id="copyToast" class="toast align-items-center text-white bg-dark border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        URL이 복사되었습니다!
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        </div>
         <!-- JS 렌더링 스크립트 -->
+        <script>
+            function copyCurrentUrlToClipboard() {
+                const currentUrl = window.location.href;
+
+                navigator.clipboard.writeText(currentUrl)
+                    .then(() => {
+                        const toastEl = document.getElementById('copyToast');
+                        const toast = new bootstrap.Toast(toastEl);
+                        toast.show();
+                    })
+                    .catch(err => {
+                        console.error('URL 복사 실패:', err);
+                        alert("복사에 실패했습니다.");
+                    });
+            }
+
+            // 공유 아이콘 클릭 이벤트 연결
+            document.getElementById("share-icon").addEventListener("click", copyCurrentUrlToClipboard);
+
+            // (선택) 모바일용 공유 아이콘도 처리하고 싶다면 아래도 추가
+            document.getElementById("share-icon-mobile").addEventListener("click", copyCurrentUrlToClipboard);
+        </script>
         <script>
             const likeIcon = document.getElementById("like-icon");
             const likeCount = document.getElementById("like-count");
