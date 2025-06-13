@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface FileRepository extends JpaRepository<FileEntity, Integer> {
+public interface FileRepository extends JpaRepository<FileEntity, Integer>, FileRepositoryCustom {
     public Optional<FileEntity> findByFileName(String fileName);
     public void deleteByFileName(String fileName);
 }

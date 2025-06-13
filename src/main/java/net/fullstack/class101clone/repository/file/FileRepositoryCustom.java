@@ -4,5 +4,4 @@ import java.util.List;
 
 public interface FileRepositoryCustom {
     List<String> findImagePathsByClassId(Integer classId);
-
 }
