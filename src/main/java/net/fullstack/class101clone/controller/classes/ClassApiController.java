@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.service.ClassService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,9 +65,12 @@ public class ClassApiController {
 
     @GetMapping("/search")
     @Operation(summary = "클래스 및 크리에이터 검색", description = "검색어를 기반으로 클래스 제목/설명/크리에이터명을 검색합니다.")
-    public ResponseEntity<Map<String, List<?>>> searchAll(@RequestParam String q) {
-        Map<String, List<?>> result = classService.searchAll(q);
+    public ResponseEntity<Map<String, Object>> searchAll(@RequestParam String q,
+                                                         @RequestParam(defaultValue = "recent") String sort,
+                                                         Pageable pageable,
+                                                         HttpSession session) {
+        String userId = (String) session.getAttribute("loginId");
+        Map<String, Object> result = classService.searchAll(q, pageable, sort, userId);
         return ResponseEntity.ok(result);
     }
-
 }

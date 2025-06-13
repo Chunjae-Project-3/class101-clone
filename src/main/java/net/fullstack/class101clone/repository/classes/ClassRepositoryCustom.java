@@ -18,5 +18,5 @@ public interface ClassRepositoryCustom {
 
     List<Map<String, String>> getCreatorListByCategoryIdx(Integer categoryIdx);
 
-    Map<String, List<?>> searchClassesAndCreators(String keyword);
+    Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId);
 }

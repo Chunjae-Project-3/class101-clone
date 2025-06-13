@@ -97,8 +97,8 @@ public class ClassService {
         }
     }
 
-    public Map<String, List<?>> searchAll(String keyword) {
-        return classRepository.searchClassesAndCreators(keyword);
+    public Map<String, Object> searchAll(String keyword, Pageable pageable, String sort, String userId) {
+        return classRepository.searchClassesAndCreators(keyword, pageable, sort, userId);
     }
 
 }

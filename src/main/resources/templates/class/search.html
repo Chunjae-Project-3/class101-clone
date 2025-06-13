@@ -117,47 +117,14 @@
         </div>
 
         <!-- 클래스 목록 -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="fw-bold mb-2">클래스</h5>
+        </div>
         <div id="classListContainer" class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-3"></div>
         <nav class="mt-4 d-flex justify-content-center">
             <ul id="pagination" class="pagination pagination-sm"></ul>
         </nav>
         <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const params = new URLSearchParams(location.search);
-                const keyword = params.get("q");
-
-                if (!keyword) return;
-
-                console.log("✅ 검색어:", keyword);
-
-                fetch(`/api/classes/search?q=${encodeURIComponent(keyword)}`)
-                    .then(res => {
-                        if (!res.ok) throw new Error("검색 API 실패");
-                        return res.json();
-                    })
-                    .then(data => {
-                        const classList = data.classes || [];
-                        const creatorList = data.creators || [];
-
-                        renderCreators(creatorList);
-                        renderClassList(classList);
-
-                        document.getElementById("pagination")?.style?.setProperty("display", "none");
-                        document.getElementById("sortOption")?.setAttribute("disabled", true);
-                        document.getElementById("pageSizeOption")?.setAttribute("disabled", true);
-
-                        const notice = document.getElementById("searchResultNotice");
-                        if (notice) {
-                            notice.style.display = "block";
-                            notice.innerHTML = `<h4><strong>'${keyword}'</strong>에 대한 검색 결과</h4>`;
-                        }
-                    })
-                    .catch(err => {
-                        console.error("검색 실패", err);
-                        alert("검색 중 오류가 발생했습니다.");
-                    });
-            });
-
             function renderCreators(creators) {
                 if (!creators || creators.length === 0) return;
 
@@ -304,6 +271,100 @@
                     console.error("찜 상태 변경 실패:", err);
                 }
             };
+
+            function renderPagination(pageInfo) {
+                const pagination = document.getElementById("pagination");
+                pagination.innerHTML = "";
+
+                const currentPage = pageInfo.number;
+                const totalPages = pageInfo.totalPages;
+
+                pagination.style.display = "flex";
+
+                const groupSize = 10;
+                const currentGroup = Math.floor(currentPage / groupSize);
+                const startPage = currentGroup * groupSize;
+                const endPage = Math.min(startPage + groupSize, totalPages);
+
+                // <<
+                appendPageItem("<<", 0, currentPage === 0);
+
+                // <
+                appendPageItem("<", Math.max(currentPage - 1, 0), currentPage === 0);
+
+                // 숫자 페이지
+                for (let i = startPage; i < endPage; i++) {
+                    appendPageItem(i + 1, i, false, i === currentPage);
+                }
+
+                // >
+                appendPageItem(">", Math.min(currentPage + 1, totalPages - 1), currentPage === totalPages - 1);
+
+                // >>
+                appendPageItem(">>", totalPages - 1, currentPage === totalPages - 1);
+
+                function appendPageItem(label, pageIndex, isDisabled = false, isActive = false) {
+                    const li = document.createElement("li");
+                    li.className = `page-item ${isActive ? "active" : ""}`;
+
+                    const link = document.createElement("a");
+                    link.className = "page-link";
+                    link.textContent = label;
+                    link.href = "#";
+
+                    if (isDisabled) {
+                        link.classList.add("disabled");
+                        link.style.pointerEvents = "none";
+                        link.style.opacity = "0.6";
+                    } else {
+                        link.addEventListener("click", (e) => {
+                            e.preventDefault();
+                            fetchAndRender(pageIndex);
+                        });
+                    }
+
+                    li.appendChild(link);
+                    pagination.appendChild(li);
+                }
+            }
+
+            function fetchAndRender(page = 0) {
+                const params = new URLSearchParams(location.search);
+                const keyword = params.get("q");
+
+                const sort = document.getElementById("sortOption").value;
+                const size = document.getElementById("pageSizeOption").value;
+
+                fetch(`/api/classes/search?q=${encodeURIComponent(keyword)}&sort=${sort}&size=${size}&page=${page}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const classList = data.classes?.content || [];
+                        const pageInfo = data.classes || {};
+                        const creatorList = data.creators || [];
+
+                        renderCreators(creatorList);
+                        renderClassList(classList);
+                        renderPagination(pageInfo);
+
+                        document.getElementById("searchResultNotice").style.display = "block";
+                        document.getElementById("searchResultNotice").innerHTML =
+                            `<h4>
+                              <strong style="color: #FE5D01;">'${keyword}'</strong>에 대한 검색 결과
+                            </h4>`;
+                    })
+                    .catch(err => {
+                        console.error("검색 실패", err);
+                        alert("검색 중 오류가 발생했습니다.");
+                    });
+            }
+
+            document.addEventListener("DOMContentLoaded", () => {
+                fetchAndRender();  // 초기 0페이지 호출
+
+                document.getElementById("sortOption").addEventListener("change", () => fetchAndRender(0));
+                document.getElementById("pageSizeOption").addEventListener("change", () => fetchAndRender(0));
+            });
+
         </script>
     </div>
     <!-- 하단 고정 CTA 바 -->
