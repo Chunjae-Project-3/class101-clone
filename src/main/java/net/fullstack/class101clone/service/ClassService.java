@@ -97,4 +97,8 @@ public class ClassService {
         }
     }
 
+    public Map<String, List<?>> searchAll(String keyword) {
+        return classRepository.searchClassesAndCreators(keyword);
+    }
+
 }

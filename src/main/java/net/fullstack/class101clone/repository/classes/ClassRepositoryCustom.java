@@ -17,4 +17,6 @@ public interface ClassRepositoryCustom {
     List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx);
 
     List<Map<String, String>> getCreatorListByCategoryIdx(Integer categoryIdx);
+
+    Map<String, List<?>> searchClassesAndCreators(String keyword);
 }

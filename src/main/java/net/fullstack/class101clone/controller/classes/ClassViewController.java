@@ -57,4 +57,9 @@ public class ClassViewController {
         return "class/list";
     }
 
+    @GetMapping("/search")
+    public String showSearchPage() {
+        return "class/search";
+    }
+
 }

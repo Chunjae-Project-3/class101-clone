@@ -193,4 +193,58 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .fetchOne();
     }
 
+    @Override
+    public Map<String, List<?>> searchClassesAndCreators(String keyword) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+
+        List<ClassDTO> classResults = queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName,
+                        creator.creatorName,
+                        creator.creatorProfileImg,
+                        creator.creatorDescription
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.creator, creator)
+                .where(
+                        cls.classTitle.containsIgnoreCase(keyword)
+                                .or(cls.classDescription.containsIgnoreCase(keyword))
+                                .or(creator.creatorName.containsIgnoreCase(keyword))
+                                .or(creator.creatorDescription.containsIgnoreCase(keyword))
+                )
+                .orderBy(cls.createdAt.desc())
+                .fetch();
+
+        List<Map<String, String>> creatorResults = queryFactory
+                .select(creator.creatorName, creator.creatorProfileImg, creator.creatorDescription)
+                .from(cls)
+                .leftJoin(cls.creator, creator)
+                .where(
+                        creator.creatorName.containsIgnoreCase(keyword)
+                                .or(creator.creatorDescription.containsIgnoreCase(keyword))
+                )
+                .distinct()
+                .fetch()
+                .stream()
+                .map(t -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("name", t.get(creator.creatorName));
+                    map.put("profileImage", t.get(creator.creatorProfileImg));
+                    map.put("description", t.get(creator.creatorDescription));
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return Map.of("classes", classResults, "creators", creatorResults);
+    }
+
 }

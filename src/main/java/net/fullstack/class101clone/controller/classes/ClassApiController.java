@@ -62,4 +62,11 @@ public class ClassApiController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "클래스 및 크리에이터 검색", description = "검색어를 기반으로 클래스 제목/설명/크리에이터명을 검색합니다.")
+    public ResponseEntity<Map<String, List<?>>> searchAll(@RequestParam String q) {
+        Map<String, List<?>> result = classService.searchAll(q);
+        return ResponseEntity.ok(result);
+    }
+
 }
