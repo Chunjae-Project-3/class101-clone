@@ -29,6 +29,7 @@
 
         .nav-link {
             color: black !important;
+            cursor: pointer;
         }
 
         .nav-tabs .nav-link:hover,
@@ -43,6 +44,7 @@
             background-color: rgb(255, 93, 0);
             border: none;
         }
+
         .editBtn:hover {
             background-color: rgb(255, 120, 0);
         }
@@ -61,18 +63,18 @@
                     <p class="card-text" th:text="${userInfo.userId}">아이디</p>
                 </div>
             </div>
-            <ul class="nav nav-tabs flex-column list-group">
+            <ul class="nav nav-tabs flex-column list-group" id="tab-container">
                 <li class="list-group-item">
                     <a class="nav-link fw-bold" href="/logout">로그아웃</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#favorites">찜 목록</a>
+                    <a class="nav-link fw-bold" href="/mypage_wishlist">찜 목록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#history">시청 기록</a>
+                    <a class="nav-link fw-bold" href="/mypage_history">시청 기록</a>
                 </li>
                 <li class="list-group-item">
-                    <a class="nav-link fw-bold" role="tab" data-bs-toggle="tab" data-bs-target="#edit">정보 수정</a>
+                    <a class="nav-link fw-bold" href="/mypage_edit">정보 수정</a>
                 </li>
             </ul>
         </div>
@@ -80,31 +82,10 @@
         <!-- 메인 컨텐츠 -->
         <div class="col-md-9">
             <div class="tab-content">
-                <!-- 찜 목록 (기본) -->
-                <div class="tab-pane fade" id="favorites">
-                    <h4>찜 목록</h4>
-                    <!-- 찜 목록 내용 -->
-                    <div th:if="${#lists.isEmpty(favorites)}">
-                        찜한 항목이 없습니다.
-                    </div>
-                    <ul th:each="item : ${favorites}">
-                        <li th:text="${item.title}">콘텐츠 제목</li>
-                    </ul>
-                </div>
-                <!-- 시청 기록 -->
-                <div class="tab-pane fade" id="history">
-                    <h4>시청 기록</h4>
-                    <!-- 시청 기록 내용 -->
-                    <div th:if="${#lists.isEmpty(history)}">
-                        시청 기록이 없습니다.
-                    </div>
-                    <ul th:each="item : ${history}">
-                        <li th:text="${item.title}">콘텐츠 제목</li>
-                    </ul>
-                </div>
-                <!-- 정보 수정 -->
-                <div class="tab-pane fade" id="edit">
-                    <div class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4">
+                <div class="tab-pane fade show active" id="edit">
+                    <div
+                            class="d-flex flex-column align-items-center justify-content-center min-vh-50 mt-4"
+                    >
                         <h4 class="mb-4">정보 수정</h4>
                         <form
                                 class="w-75"
@@ -129,7 +110,9 @@
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label for="originalPwd" class="form-label">기존 비밀번호</label>
+                                <label for="originalPwd" class="form-label"
+                                >기존 비밀번호</label
+                                >
                                 <input
                                         type="password"
                                         class="form-control"
@@ -153,19 +136,28 @@
                                         pattern="^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$"
                                         title="비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다"
                                 />
-                                <div class="invalid-feedback">비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야 합니다.</div>
+                                <div class="invalid-feedback">
+                                    비밀번호는 영문, 숫자, 특수문자를 포함하여 8~20자여야
+                                    합니다.
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <label for="newPwdConfirm" class="form-label">비밀번호 확인</label>
+                                <label for="newPwdConfirm" class="form-label"
+                                >비밀번호 확인</label
+                                >
                                 <input
                                         type="password"
                                         class="form-control"
                                         id="newPwdConfirm"
                                         name="newPwdConfirm"
                                 />
-                                <div class="invalid-feedback">비밀번호가 일치하지 않습니다.</div>
+                                <div class="invalid-feedback">
+                                    비밀번호가 일치하지 않습니다.
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 editBtn">수정하기</button>
+                            <button type="submit" class="btn btn-primary w-100 editBtn">
+                                수정하기
+                            </button>
                         </form>
                         <span class="quit mt-4">탈퇴하기</span>
                     </div>
@@ -176,64 +168,42 @@
 </div>
 <footer></footer>
 <th:block layout:fragment="script">
-    <th:block th:if="${editErrorMsg != null}">
-        <script th:inline="javascript">
-            alert([[${editErrorMsg}]]);
-        </script>
-    </th:block>
-    <th:block th:if="${editSuccessMsg != null}">
-        <script th:inline="javascript">
-            alert([[${editSuccessMsg}]]);
-        </script>
-    </th:block>
     <script th:inline="javascript">
         function toggleCategoryMenu() {
             const menu = document.getElementById('categoryMenu');
             const icon = document.getElementById('categoryIcon');
-            if (menu.style.display === 'none' || menu.style.display === '') {
-                menu.style.display = 'block';
-                icon.classList.remove('bi-caret-down-fill');
-                icon.classList.add('bi-caret-up-fill');
-            } else {
-                menu.style.display = 'none';
-                icon.classList.remove('bi-caret-up-fill');
-                icon.classList.add('bi-caret-down-fill');
+            if (menu && icon) {
+                if (menu.style.display === 'none' || menu.style.display === '') {
+                    menu.style.display = 'block';
+                    icon.classList.remove('bi-caret-down-fill');
+                    icon.classList.add('bi-caret-up-fill');
+                } else {
+                    menu.style.display = 'none';
+                    icon.classList.remove('bi-caret-up-fill');
+                    icon.classList.add('bi-caret-down-fill');
+                }
             }
         }
 
         document.addEventListener('click', function (e) {
             const toggle = document.getElementById('categoryToggle');
             const menu = document.getElementById('categoryMenu');
-            if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                menu.style.display = 'none';
-                document.getElementById('categoryIcon').classList.remove('bi-caret-up-fill');
-                document.getElementById('categoryIcon').classList.add('bi-caret-down-fill');
+            const icon = document.getElementById('categoryIcon');
+
+            if (toggle && menu && icon) {
+                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
+                    menu.style.display = 'none';
+                    icon.classList.remove('bi-caret-up-fill');
+                    icon.classList.add('bi-caret-down-fill');
+                }
             }
         });
 
-        // 페이지 로드 시 hash에 따라 탭 활성화
-        document.addEventListener('DOMContentLoaded', function () {
-            let targetTab = '#favorites'; // 기본 탭
-
-            // editErrorMsg나 activeEditTab이 있으면 수정 탭 활성화
-            if ([[${editErrorMsg != null || activeEditTab != null}]]) {
-                targetTab = '#edit';
+        // 탈퇴 버튼 이벤트 리스너
+        document.querySelector('.quit').addEventListener('click', function () {
+            if (confirm('정말 탈퇴하시겠습니까?')) {
+                window.location.href = '/quit';
             }
-
-            // 해당 탭의 내용 표시
-            document.querySelector(targetTab).classList.add('show', 'active');
-
-            // 해당 탭 링크 활성화
-            const tabLink = document.querySelector(`[data-bs-target="${targetTab}"]`);
-            tabLink.classList.add('active');
-
-            const quitBtn = document.querySelector('.quit');
-            console.log(quitBtn);
-            quitBtn.addEventListener('click', function () {
-                if (confirm('정말 탈퇴하시겠습니까?')) {
-                    window.location.href = '/quit';
-                }
-            });
         });
 
         function validateEditForm() {
@@ -311,21 +281,48 @@
         }
 
         // 입력 필드 변경 시 유효성 검사 메시지 초기화
-        document.getElementById('userName').addEventListener('input', function () {
-            this.classList.remove('is-invalid');
-        });
-        document.getElementById('originalPwd').addEventListener('input', function () {
-            this.classList.remove('is-invalid');
-        });
-        document.getElementById('newPwd').addEventListener('input', function () {
-            this.classList.remove('is-invalid');
-            document.getElementById('newPwdConfirm').classList.remove('is-invalid');
-        });
-        document.getElementById('newPwdConfirm').addEventListener('input', function () {
-            this.classList.remove('is-invalid');
-        });
-    </script>
-</th:block>
+        const userNameField = document.getElementById('userName');
+        const originalPwdField = document.getElementById('originalPwd');
+        const newPwdField = document.getElementById('newPwd');
+        const newPwdConfirmField = document.getElementById('newPwdConfirm');
 
+        if (userNameField) {
+            userNameField.addEventListener('input', function () {
+                this.classList.remove('is-invalid');
+            });
+        }
+
+        if (originalPwdField) {
+            originalPwdField.addEventListener('input', function () {
+                this.classList.remove('is-invalid');
+            });
+        }
+
+        if (newPwdField) {
+            newPwdField.addEventListener('input', function () {
+                this.classList.remove('is-invalid');
+                if (newPwdConfirmField) {
+                    newPwdConfirmField.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        if (newPwdConfirmField) {
+            newPwdConfirmField.addEventListener('input', function () {
+                this.classList.remove('is-invalid');
+            });
+        }
+    </script>
+    <th:block th:if="${editErrorMsg != null}">
+        <script th:inline="javascript">
+            alert([[${editErrorMsg}]]);
+        </script>
+    </th:block>
+    <th:block th:if="${editSuccessMsg != null}">
+        <script th:inline="javascript">
+            alert([[${editSuccessMsg}]]);
+        </script>
+    </th:block>
+</th:block>
 </body>
 </html>

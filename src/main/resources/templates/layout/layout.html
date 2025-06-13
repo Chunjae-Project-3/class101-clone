@@ -71,23 +71,20 @@
                 </a>
 
                 <div class="position-relative" style="width: 300px; margin-left: 10px;">
-                    <input type="text" id="searchInput" class="form-control ps-3 pe-5"
+                    <input type="text" class="form-control ps-3 pe-5"
                            placeholder="관심 주제, 클래스, 크리에이터 찾기"
                            style="height: 34px; font-size: 0.8rem; background-color: #F7F7F7; border: none;">
                     <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
-                       id="searchButton"
-                       style="font-size: 0.9rem; cursor: pointer;"></i>
+                       style="font-size: 0.9rem;"></i>
                 </div>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <th:block th:if="${session.loginId == null}">
-                    <a href="/login" class="text-dark small fw-bold">로그인</a>
-                    <a href="/signup" class="text-dark small fw-bold">회원가입</a>
-                </th:block>
-                <th:block th:unless="${session.loginId == null}">
-                    <a href="/mypage" class="text-dark small fw-bold">마이페이지</a>
-                    <a href="/logout" class="text-dark small fw-bold">로그아웃</a>
-                </th:block>
+            <div class="d-flex align-items-center gap-2" th:if="${userInfo == null}">
+                <a href="/login" class="text-dark small fw-bold">로그인</a>
+                <a href="/signup" class="text-dark small fw-bold">회원가입</a>
+            </div>
+            <div class="d-flex align-items-center gap-2" th:unless="${userInfo == null}">
+                <a href="/mypage_wishlist" class="text-dark small fw-bold">마이페이지</a>
+                <a href="/logout" class="text-dark small fw-bold">로그아웃</a>
             </div>
         </div>
 
@@ -155,7 +152,7 @@
                     <a href="/signup" class="text-dark small fw-bold">회원가입</a>
                 </div>
                 <div th:unless="${userInfo == null}">
-                    <a href="/mypage" class="text-dark small fw-bold">마이페이지</a> |
+                    <a href="/mypage_wishlist" class="text-dark small fw-bold">마이페이지</a> |
                     <a href="/logout" class="text-dark small fw-bold">로그아웃</a>
                 </div>
             </div>
@@ -213,21 +210,21 @@
     <p>컨텐츠</p>
 </div>
 <footer layout:fragment="footer" class="w-100" style="background-color: #eee;">
-    <div class="row">
-        <div class="col-md-4">
-            <h6 class="fw-bold">고객센터</h6>
-            <p>support@class101.net</p>
+        <div class="row">
+            <div class="col-md-4">
+                <h6 class="fw-bold">고객센터</h6>
+                <p>support@class101.net</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">회사 정보</h6>
+                <p>서울특별시 성동구 왕십리로 125</p>
+            </div>
+            <div class="col-md-4">
+                <h6 class="fw-bold">앱 다운로드</h6>
+                <a href="#">App Store</a> | <a href="#">Google Play</a>
+            </div>
         </div>
-        <div class="col-md-4">
-            <h6 class="fw-bold">회사 정보</h6>
-            <p>서울특별시 성동구 왕십리로 125</p>
-        </div>
-        <div class="col-md-4">
-            <h6 class="fw-bold">앱 다운로드</h6>
-            <a href="#">App Store</a> | <a href="#">Google Play</a>
-        </div>
-    </div>
-    <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
+        <p class="text-center text-muted small mt-4">© 2025 CLASS101 클론</p>
 </footer>
 
 <th:block layout:fragment="script">
@@ -348,34 +345,6 @@
                     icon.classList.add('bi-caret-down-fill');
                 }
             }
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const searchInput = document.getElementById("searchInput");
-            const searchButton = document.getElementById("searchButton");
-
-            if (!searchInput || !searchButton) {
-                console.warn("❌ 검색 input 또는 버튼 요소 없음");
-                return;
-            }
-
-            searchInput.addEventListener("keypress", function (e) {
-                if (e.key === "Enter") {
-                    const keyword = searchInput.value.trim();
-                    if (!keyword) return;
-
-                    location.href = `/class/search?q=${encodeURIComponent(keyword)}`;
-                }
-            });
-
-            searchButton.addEventListener("click", function () {
-                const keyword = searchInput.value.trim();
-                if (!keyword) return;
-
-                location.href = `/class/search?q=${encodeURIComponent(keyword)}`;
-            });
-
         });
     </script>
 
