@@ -9,7 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack.class101clone.dto.file.FileResponseDTO;
-import net.fullstack.class101clone.service.file.FileServiceImpl;
+import net.fullstack.class101clone.service.file.FileService;
+import net.fullstack.class101clone.service.file.VideoConvertService;
 import net.fullstack.class101clone.type.FileType;
 import net.fullstack.class101clone.util.FileUtil;
 import org.springframework.http.MediaType;
@@ -25,7 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
 
     private final FileUtil fileUtil;
-    private final FileServiceImpl fileService;
+    private final FileService fileService;
+    private final VideoConvertService videoConvertService;
 
     @Operation(summary = "파일 업로드")
     @ApiResponse(
@@ -46,6 +48,7 @@ public class FileController {
                 fileResponseDTO = fileUtil.uploadImage(file);
             } else if (type == FileType.VIDEO) {
                 fileResponseDTO = fileUtil.uploadVideo(file);
+                videoConvertService.convert(fileResponseDTO.getFileName());
             } else {
                 return ResponseEntity.badRequest().body("type 파라미터는 'image' 또는 'video'만 허용됩니다.");
             }

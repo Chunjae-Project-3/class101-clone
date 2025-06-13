@@ -1,5 +1,6 @@
 package net.fullstack.class101clone.util;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
 import net.fullstack.class101clone.dto.file.FileResponseDTO;
@@ -11,8 +12,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,6 +23,7 @@ import java.util.*;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 public class FileUtil {
 
@@ -42,6 +46,8 @@ public class FileUtil {
     // 비디오 확장자 & 최대 용량
     private static final Set<String> VIDEO_EXTS = Set.of("mp4", "mov", "avi", "mkv");
     private static final long MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200MB
+
+    private final FFmpegUtil ffmpegUtil;
 
     public FileResponseDTO uploadImage(MultipartFile file) throws IOException {
         validateFile(file, IMAGE_EXTS, MAX_IMAGE_SIZE);
@@ -83,33 +89,68 @@ public class FileUtil {
                 .build();
     }
 
+    public void convertVideo(String fileName) {
+        Path originalPath = Paths.get(basePath, videoPath, fileName);
+        Path savePath = Paths.get(basePath, videoPath, "hls", fileName);
+
+        File directory = savePath.toFile();
+        if (!directory.exists()) directory.mkdirs();
+
+        try {
+            Process process = ffmpegUtil.convert(savePath, originalPath);
+
+//            // video convert 실시간 상태
+//            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+//                String line;
+//                while ((line = reader.readLine()) != null) {
+//                    log.info("[FFmpeg][{}] {}", fileName, line);
+//                }
+//            }
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new RuntimeException("Video Convert exited with code " + exitCode);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Video Convert failed", e);
+        }
+    }
+
     public Map<String, Boolean> deleteFile(String fileName, FileType type) throws IOException {
         Map<String, Boolean> result = new HashMap<>();
         boolean fileDeleteFlag = false;
         boolean thumbDeleteFlag = false;
+        boolean convertedDeleteFlag = false;
 
         File file;
         switch (type) {
-            case IMAGE -> file = Paths.get(basePath, imagePath, fileName).toFile();
-            case VIDEO -> file = Paths.get(basePath, videoPath, fileName).toFile();
+            case IMAGE -> {
+                file = Paths.get(basePath, imagePath, fileName).toFile();
+
+                File thumbFile = Paths.get(basePath, thumbnailPath, "s_" + fileName).toFile();
+                if (thumbFile.exists()) thumbDeleteFlag = thumbFile.delete();
+            }
+            case VIDEO -> {
+                file = Paths.get(basePath, videoPath, fileName).toFile();
+
+                Path hlsDirectory = Paths.get(basePath, videoPath, "hls", fileName);
+                if (Files.exists(hlsDirectory)) {
+                    Files.walk(hlsDirectory)
+                            .sorted(Comparator.reverseOrder())
+                            .map(Path::toFile)
+                            .forEach(File::delete);
+                    convertedDeleteFlag = true;
+                }
+            }
             default -> throw new IllegalArgumentException("지원하지 않는 파일 유형입니다. " + type);
         }
-
-        log.info("file: {}", file);
 
         if (file.exists()) {
             fileDeleteFlag = file.delete();
         }
 
-        if (type == FileType.IMAGE) {
-            File thumbFile = Paths.get(basePath, thumbnailPath, "s_" + fileName).toFile();
-            if (thumbFile.exists()) thumbDeleteFlag = thumbFile.delete();
-        }
-
         result.put("fileDeleteFlag", fileDeleteFlag);
         result.put("thumbDeleteFlag", thumbDeleteFlag);
-
-        log.info("result: {} ", result);
+        result.put("convertedDeleteFlag", convertedDeleteFlag);
 
         return result;
     }
