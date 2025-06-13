@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.dto;
+package net.fullstack.class101clone.dto.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -2,9 +2,12 @@ package net.fullstack.class101clone.util;
 
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
-import net.fullstack.class101clone.dto.FileResponseDTO;
+import net.fullstack.class101clone.dto.file.FileResponseDTO;
+import net.fullstack.class101clone.type.FileType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,10 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 @Component
@@ -83,15 +83,15 @@ public class FileUtil {
                 .build();
     }
 
-    public Map<String, Boolean> deleteFile(String fileName, String type) throws IOException {
+    public Map<String, Boolean> deleteFile(String fileName, FileType type) throws IOException {
         Map<String, Boolean> result = new HashMap<>();
         boolean fileDeleteFlag = false;
         boolean thumbDeleteFlag = false;
 
         File file;
         switch (type) {
-            case "image" -> file = Paths.get(basePath, imagePath, fileName).toFile();
-            case "video" -> file = Paths.get(basePath, videoPath, fileName).toFile();
+            case IMAGE -> file = Paths.get(basePath, imagePath, fileName).toFile();
+            case VIDEO -> file = Paths.get(basePath, videoPath, fileName).toFile();
             default -> throw new IllegalArgumentException("지원하지 않는 파일 유형입니다. " + type);
         }
 
@@ -101,7 +101,7 @@ public class FileUtil {
             fileDeleteFlag = file.delete();
         }
 
-        if (type.equals("image")) {
+        if (type == FileType.IMAGE) {
             File thumbFile = Paths.get(basePath, thumbnailPath, "s_" + fileName).toFile();
             if (thumbFile.exists()) thumbDeleteFlag = thumbFile.delete();
         }
@@ -112,6 +112,22 @@ public class FileUtil {
         log.info("result: {} ", result);
 
         return result;
+    }
+
+    public Resource getFile(String videoId, String path, FileType type) {
+        Path fullPath;
+        boolean isEmpty = (path == null || path.isBlank());
+        switch (type) {
+            case IMAGE -> fullPath = isEmpty ?
+                    Paths.get(basePath, imagePath, videoId) :
+                    Paths.get(basePath, imagePath, videoId, path);
+            case VIDEO -> fullPath = isEmpty ?
+                    Paths.get(basePath, videoPath, videoId) :
+                    Paths.get(basePath, videoPath, videoId, path);
+            default -> throw new IllegalArgumentException("지원하지 않는 파일 유형입니다. " + type);
+        }
+        if (!Files.exists(fullPath)) return null;
+        return new FileSystemResource(fullPath);
     }
 
     private void validateFile(MultipartFile file, Set<String> allowedExts, long maxSize) {

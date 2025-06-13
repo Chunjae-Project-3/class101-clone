@@ -1,6 +1,6 @@
-package net.fullstack.class101clone.service;
+package net.fullstack.class101clone.service.file;
 
-import net.fullstack.class101clone.dto.FileDTO;
+import net.fullstack.class101clone.dto.file.FileDTO;
 
 public interface FileService {
     public int insertFile(FileDTO dto);

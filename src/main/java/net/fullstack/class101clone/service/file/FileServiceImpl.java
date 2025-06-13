@@ -1,10 +1,10 @@
-package net.fullstack.class101clone.service;
+package net.fullstack.class101clone.service.file;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack.class101clone.domain.FileEntity;
-import net.fullstack.class101clone.dto.FileDTO;
+import net.fullstack.class101clone.dto.file.FileDTO;
 import net.fullstack.class101clone.repository.file.FileRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
