@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.dto;
+package net.fullstack.class101clone.dto.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +13,6 @@ public class FileResponseDTO extends FileDTO {
     private boolean imageFlag;
 
     private String thumbnailFileName;
-    // private String thumbnailFilePath; // 원본과 같은 파일에 저장한다고 가정
+    private String thumbnailFilePath;
     private long thumbnailFileSize;
 }
