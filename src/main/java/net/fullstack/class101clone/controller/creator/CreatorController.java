@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.creator;
 
 
 import lombok.RequiredArgsConstructor;
