@@ -1,0 +1,294 @@
+* {
+    box-sizing: border-box;
+}
+
+.video-container {
+    max-width: 800px;
+    margin: 20px auto;
+    overflow: hidden;
+}
+
+.video-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.video-container .disabled {
+    display: none;
+}
+
+.video-container button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+
+    width: 30px;
+    height: 30px;
+}
+
+.video-container button > svg {
+    pointer-events: none;
+    fill: white;
+}
+
+.video-container svg {
+    width: 20px;
+    height: 20px;
+}
+
+#videoPlayer {
+    width: 100%;
+    display: block;
+}
+
+/* 썸네일과 재생버튼 */
+.thumbnail-box {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background-color: black;
+}
+
+#playButton {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%; left: 50%;
+    width: 60px; height: 60px;
+    border-radius: 100%;
+    background-color: #ec2020;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#playButton:hover {
+    background-color: #d81c1c;
+}
+
+/* 동영상 플레이어 패널 */
+.panel {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.2) 40%,
+        rgba(0, 0, 0, 0) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s;
+    align-content: end;
+}
+
+.panel:hover, .panel.active {
+    opacity: 1;
+}
+
+.controller {
+    padding: 20px 10px 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 타임라인 */
+.timeline {
+    position: relative;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    overflow: hidden;
+    transition: height 0.15s ease-in-out;
+}
+
+.timeline:hover {
+    height: 8px;
+}
+
+.buffer-progress {
+    position: absolute;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 3px;
+    width: 0;
+}
+
+.progress {
+    position: absolute;
+    height: 100%;
+    background: #f45f19;
+    border-radius: 3px;
+    width: 0;
+    z-index: 1;
+}
+
+/* 패널 버튼 */
+.control-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.left-control-box, .right-control-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 볼륨 조절 */
+.volume-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.volume-container:hover .volume-slider {
+    width: 60px;
+}
+
+.volume-slider {
+    transition: width 0.2s ease-in-out;
+    width: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+.volume-progress {
+    height: 100%;
+    background: #fff;
+    width: 100%;
+}
+
+/* 재생시간 표시 */
+.time-display {
+    color: white;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* 화질 설정 */
+.quality-container {
+    position: relative;
+}
+
+.quality-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor:pointer;
+    padding: 5px 10px;
+    font-size: 14px;
+    width: initial !important;
+}
+
+.quality-options {
+    display: block;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 4px;
+    padding: 5px 0;
+    margin-bottom: 5px;
+    z-index: 2;
+}
+
+.quality-options button {
+    display: block;
+    width: 100%;
+    padding: 5px 20px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.quality-options button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 재생/일시정지 버튼 애니메이션 */
+.animate-icon {
+    animation: iconFade 0.3s ease-out;
+}
+
+@keyframes iconFade {
+    from {
+        transform: scale(0.9);
+        opacity: 0.5;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.play-pause-event {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.4);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100%;
+}
+
+.play-pause-event svg {
+    fill: white;
+}
+
+.play-pause-event.active {
+    animation: scaleAndFade 0.7s ease-out forwards;
+}
+
+@keyframes scaleAndFade {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1.7);
+        opacity: 0;
+    }
+}
+
+/* 로딩중 */
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-spinner svg {
+    width: 30px;
+    height: 30px;
+    fill: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

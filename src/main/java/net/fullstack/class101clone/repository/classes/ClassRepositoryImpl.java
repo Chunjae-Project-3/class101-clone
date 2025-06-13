@@ -193,4 +193,109 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .fetchOne();
     }
 
+    @Override
+    public Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+        QClassLikeEntity like = QClassLikeEntity.classLikeEntity;
+
+        var query = queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName,
+                        creator.creatorName,
+                        creator.creatorProfileImg,
+                        creator.creatorDescription
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.creator, creator)
+                .where(
+                        cls.classTitle.containsIgnoreCase(keyword)
+                                .or(cls.classDescription.containsIgnoreCase(keyword))
+                                .or(creator.creatorName.containsIgnoreCase(keyword))
+                                .or(creator.creatorDescription.containsIgnoreCase(keyword))
+                );
+
+        // 정렬 조건 분기
+        switch (sort) {
+            case "popular":
+                query.leftJoin(like).on(like.classLikeRef.eq(cls))
+                        .groupBy(cls.classIdx)
+                        .orderBy(like.count().desc());
+                break;
+            case "old":
+                query.orderBy(cls.createdAt.asc());
+                break;
+            default:
+                query.orderBy(cls.createdAt.desc());
+        }
+
+        // 페이징 + 결과 조회
+        List<ClassDTO> classResults = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        // 찜 여부 처리
+        if (userId != null) {
+            UserEntity user = userRepository.findByUserId(userId).orElse(null);
+            if (user != null) {
+                for (ClassDTO dto : classResults) {
+                    boolean liked = classLikeRepository.existsByClassLikeUser_UserIdAndClassLikeRef_ClassIdx(userId, dto.getClassIdx());
+                    dto.setLiked(liked);
+                }
+            } else {
+                classResults.forEach(dto -> dto.setLiked(false));
+            }
+        } else {
+            classResults.forEach(dto -> dto.setLiked(false));
+        }
+
+        // 전체 개수 (정렬/페이징과 무관하게 동일한 조건으로)
+        long total = queryFactory
+                .select(cls.count())
+                .from(cls)
+                .leftJoin(cls.creator, creator)
+                .where(
+                        cls.classTitle.containsIgnoreCase(keyword)
+                                .or(cls.classDescription.containsIgnoreCase(keyword))
+                                .or(creator.creatorName.containsIgnoreCase(keyword))
+                                .or(creator.creatorDescription.containsIgnoreCase(keyword))
+                )
+                .fetchOne();
+
+        // 크리에이터 결과
+        List<Map<String, String>> creatorResults = queryFactory
+                .select(creator.creatorName, creator.creatorProfileImg, creator.creatorDescription)
+                .from(cls)
+                .leftJoin(cls.creator, creator)
+                .where(
+                        creator.creatorName.containsIgnoreCase(keyword)
+                                .or(creator.creatorDescription.containsIgnoreCase(keyword))
+                )
+                .distinct()
+                .fetch()
+                .stream()
+                .map(t -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("name", t.get(creator.creatorName));
+                    map.put("profileImage", t.get(creator.creatorProfileImg));
+                    map.put("description", t.get(creator.creatorDescription));
+                    return map;
+                })
+                .collect(Collectors.toList());
+
+        return Map.of(
+                "classes", new PageImpl<>(classResults, pageable, total),
+                "creators", creatorResults
+        );
+    }
+
 }
