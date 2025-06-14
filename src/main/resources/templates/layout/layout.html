@@ -85,10 +85,9 @@
                     <a href="/signup" class="text-dark small fw-bold">회원가입</a>
                 </th:block>
                 <th:block th:unless="${session.loginId == null}">
-                    <a href="/chat" class="btn btn-link text-dark position-relative">
+                    <a th:href="${session.loginId == 'master'} ? '/admin/chat' : '/chat'"
+                       class="btn btn-link text-dark position-relative">
                         <i class="bi bi-chat-dots fs-4"></i>
-                        <!-- 알림 뱃지 옵션 -->
-                        <!-- <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">1</span> -->
                     </a>
                     <a href="/mypage" class="text-dark small fw-bold">마이페이지</a>
                     <a href="/logout" class="text-dark small fw-bold">로그아웃</a>

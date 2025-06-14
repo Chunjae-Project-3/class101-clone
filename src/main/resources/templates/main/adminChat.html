@@ -7,18 +7,52 @@
 <head>
     <meta charset="UTF-8">
     <title>관리자 채팅</title>
+    <style>
+        .chat-bubble {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 16px;
+            max-width: 70%;
+            word-break: break-word;
+        }
+
+        .chat-left {
+            text-align: left;
+        }
+
+        .chat-right {
+            text-align: right;
+        }
+
+        .bubble-left {
+            background-color: #f1f0f0;
+            color: #000;
+            border-top-left-radius: 0;
+        }
+
+        .bubble-right {
+            background-color: #dcf8c6;
+            color: #000;
+            border-top-right-radius: 0;
+        }
+
+        .chat-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 2px;
+        }
+    </style>
 </head>
 
 <body>
 <div layout:fragment="content">
     <div class="container py-4" style="max-width: 900px;">
-        <h4 class="mb-4">고객 채팅 관리</h4>
+        <h4 class="mb-2">고객 채팅 관리</h4>
+        <p class="text-muted small mb-3">※ 30일이 지난 메시지는 자동으로 삭제됩니다.</p>
         <div class="row">
             <!-- 유저 목록 -->
             <div class="col-md-4 border-end">
-                <ul id="userList" class="list-group">
-                    <!-- 사용자 리스트 동적 생성 -->
-                </ul>
+                <ul id="userList" class="list-group"></ul>
             </div>
 
             <!-- 채팅창 -->
@@ -35,12 +69,6 @@
         </div>
     </div>
     <div id="chatMeta" th:data-loginid="${loginId}"></div>
-
-    <script>
-        const loginId = document.getElementById("chatMeta")?.dataset.loginid || "unknown";
-        console.log("✅ 로그인 ID:", loginId);
-    </script>
-
 </div>
 
 <th:block layout:fragment="script">
@@ -48,6 +76,11 @@
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
     <script>
+        let stompClient = null;
+        let selectedUserId = null;
+
+        const loginId = document.getElementById("chatMeta")?.dataset.loginid || "master";
+
         document.addEventListener('DOMContentLoaded', () => {
             loadUserList();
             connectWebSocket();
@@ -65,7 +98,7 @@
                 };
 
                 stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-                renderMessage('나', message);
+                renderMessage('나', message, chatMessage.timestamp, true);
                 input.value = "";
             });
         });
@@ -96,8 +129,8 @@
                 .then(res => res.json())
                 .then(messages => {
                     messages.forEach(msg => {
-                        const label = msg.sender === 'master' ? '나' : msg.sender;
-                        renderMessage(label, msg.content);
+                        const isMine = msg.sender === 'master';
+                        renderMessage(isMine ? '나' : msg.sender, msg.content, msg.timestamp, isMine);
                     });
                 });
         }
@@ -107,25 +140,35 @@
             stompClient = Stomp.over(socket);
 
             stompClient.connect({}, () => {
-
                 stompClient.subscribe("/user/queue/messages", (message) => {
                     const msg = JSON.parse(message.body);
                     if (msg.sender === selectedUserId) {
-                        renderMessage(msg.sender, msg.content);
+                        renderMessage(msg.sender, msg.content, msg.timestamp, false);
                     }
                 });
             });
         }
 
-        function renderMessage(sender, text) {
+        function renderMessage(sender, text, time = null, isMine = false) {
             const chatBox = document.getElementById("chatBox");
-            const msg = document.createElement("div");
-            msg.className = "mb-2";
-            msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-            chatBox.appendChild(msg);
+            const wrapper = document.createElement("div");
+            wrapper.className = `${isMine ? "chat-right" : "chat-left"} mb-2`;
+
+            const formattedTime = formatTime(time);
+
+            wrapper.innerHTML = `
+                <div class="chat-meta">${sender} <span class="text-muted small">· ${formattedTime}</span></div>
+                <div class="chat-bubble ${isMine ? "bubble-right" : "bubble-left"}">${text}</div>
+            `;
+
+            chatBox.appendChild(wrapper);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+        }
     </script>
 </th:block>
 
