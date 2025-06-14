@@ -19,4 +19,9 @@ public class MainController {
         model.addAttribute("sections", sections);
         return "main/index";
     }
+
+    @GetMapping("/video")
+    public String video() {
+        return "video/videoPlayer";
+    }
 }

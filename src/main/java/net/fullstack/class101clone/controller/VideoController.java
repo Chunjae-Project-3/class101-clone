@@ -28,7 +28,8 @@ public class VideoController {
 
     @GetMapping("/{videoId}/master.m3u8")
     public ResponseEntity<Resource> getVideo(@PathVariable String videoId) {
-        Resource resource = fileUtil.getFile(videoId, "master.m3u8", FileType.VIDEO);
+        String path = Paths.get(videoId, "master.m3u8").toString();
+        Resource resource = fileUtil.getFile(path, FileType.VIDEO_HLS);
         return createResponseEntity(resource);
     }
 
@@ -38,8 +39,8 @@ public class VideoController {
             @PathVariable String stream,
             @PathVariable String segment
     ) {
-        String path = Paths.get(stream, segment).toString();
-        Resource resource = fileUtil.getFile(videoId, path, FileType.VIDEO);
+        String path = Paths.get(videoId, stream, segment).toString();
+        Resource resource = fileUtil.getFile(path, FileType.VIDEO_HLS);
         return createResponseEntity(resource);
     }
 

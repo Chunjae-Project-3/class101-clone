@@ -1,8 +1,8 @@
-import Timeline from "./Timeline";
-import PlayPause from "./PlayPause";
-import Volume from "./Volume";
-import Quality from "./Quality";
-import FullScreen from "./FullScreen";
+import Timeline from "./Timeline.js";
+import PlayPause from "./PlayPause.js";
+import Volume from "./Volume.js";
+import Quality from "./Quality.js";
+import FullScreen from "./FullScreen.js";
 
 export default class Controller {
     constructor(hls, videoEl, loadingSpinnerEl, panelEl) {

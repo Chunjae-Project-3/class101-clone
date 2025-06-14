@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.dto.file;
+package net.fullstack.class101clone.dto.ffmpeg;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
