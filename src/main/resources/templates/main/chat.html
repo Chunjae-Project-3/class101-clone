@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>채팅방</title>
+    <style>
+        .chat-bubble {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 16px;
+            max-width: 70%;
+            word-break: break-word;
+        }
+
+        .chat-left {
+            text-align: left;
+        }
+
+        .chat-right {
+            text-align: right;
+        }
+
+        .bubble-left {
+            background-color: #f1f0f0;
+            color: #000;
+            border-top-left-radius: 0;
+        }
+
+        .bubble-right {
+            background-color: #dcf8c6;
+            color: #000;
+            border-top-right-radius: 0;
+        }
+
+        .chat-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 2px;
+        }
+    </style>
+
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container py-4 mt-2" style="max-width: 600px;" id="chatMeta"
+         th:data-myuserid="${myUserId}" th:data-otheruserid="${otherUserId}">
+        <p class="text-muted small mb-1">※ 30일이 지난 메시지는 자동으로 삭제됩니다.</p>
+        <h4 class="mb-3">채팅방 (<span id="chatWithName">고객센터</span>)</h4>
+        <div class="border rounded p-3 mb-3" id="chatBox"
+             style="height: 400px; overflow-y: scroll; background-color: #f9f9f9;">
+            <!-- 이전 메시지 및 실시간 메시지 렌더링... -->
+        </div>
+        <div class="input-group">
+            <input type="text" id="chatInput" class="form-control" placeholder="메시지를 입력하세요" autocomplete="off">
+            <button id="sendBtn" class="btn btn-primary" type="button">보내기</button>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <script>
+        let stompClient = null;
+
+        const meta = document.getElementById("chatMeta");
+        const myUserId = meta?.dataset.myuserid || "anonymous";
+        const otherUserId = meta?.dataset.otheruserid || "master";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadChatHistory();
+            connectWebSocket();
+
+            const sendBtn = document.getElementById("sendBtn");
+            const chatInput = document.getElementById("chatInput");
+
+            sendBtn?.addEventListener("click", () => {
+                const message = chatInput.value.trim();
+                if (!message || !stompClient?.connected) return;
+
+                const chatMessage = {
+                    sender: myUserId,
+                    receiver: otherUserId,
+                    content: message,
+                    timestamp: new Date().toISOString()
+                };
+
+                stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+                renderMyMessage(message);
+                chatInput.value = "";
+            });
+        });
+
+        function connectWebSocket() {
+            const socket = new SockJS("/ws-chat");
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, () => {
+                stompClient.subscribe("/user/queue/messages", (message) => {
+                    const msg = JSON.parse(message.body);
+                    if (msg.sender === myUserId) return; // 내가 보낸 건 무시
+                    renderOtherMessage(msg.sender, msg.content);
+                });
+            }, (error) => {
+                console.error("WebSocket 연결 실패:", error);
+            });
+        }
+
+        function loadChatHistory() {
+            fetch(`/api/chat/history?userId=${myUserId}`)
+                .then(res => res.json())
+                .then(messages => {
+                    messages.forEach(msg => {
+                        if (msg.sender === myUserId) {
+                            renderMyMessage(msg.content, msg.timestamp);
+                        } else {
+                            renderOtherMessage(msg.sender, msg.content, msg.timestamp);
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.warn("채팅 기록 로딩 실패:", err);
+                });
+        }
+
+        function renderMyMessage(text, time = null) {
+            const chatBox = document.getElementById("chatBox");
+            const wrapper = document.createElement("div");
+            wrapper.className = "chat-right mb-2";
+
+            const formattedTime = formatTime(time);
+
+            wrapper.innerHTML = `
+        <div class="chat-meta">나 <span class="text-muted small">· ${formattedTime}</span></div>
+        <div class="chat-bubble bubble-right">${text}</div>
+    `;
+
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function renderOtherMessage(sender, text, time = null) {
+            const chatBox = document.getElementById("chatBox");
+            const wrapper = document.createElement("div");
+            wrapper.className = "chat-left mb-2";
+
+            const formattedTime = formatTime(time);
+
+            wrapper.innerHTML = `
+        <div class="chat-meta">${sender} <span class="text-muted small">· ${formattedTime}</span></div>
+        <div class="chat-bubble bubble-left">${text}</div>
+    `;
+
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // ISO 시간 -> "HH:mm" 포맷으로 변환
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+        }
+    </script>
+</th:block>
+
+</body>
+</html>
