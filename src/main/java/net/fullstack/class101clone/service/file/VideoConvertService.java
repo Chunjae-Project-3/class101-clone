@@ -3,7 +3,6 @@ package net.fullstack.class101clone.service.file;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.fullstack.class101clone.util.FFmpegUtil;
 import net.fullstack.class101clone.util.FileUtil;
 import org.springframework.stereotype.Service;
 

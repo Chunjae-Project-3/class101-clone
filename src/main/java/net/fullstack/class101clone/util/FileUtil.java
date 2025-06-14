@@ -3,41 +3,25 @@ package net.fullstack.class101clone.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
-import net.fullstack.class101clone.dto.file.FileResponseDTO;
 import net.fullstack.class101clone.type.FileType;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-@PropertySource("classpath:application.properties")
 public class FileUtil {
 
-    @Value("${net.fullstack.upload.path}")
-    private String basePath;
-
-    @Value("${net.fullstack.upload.image.path}")
-    private String imagePath;
-
-    @Value("${net.fullstack.upload.video.path}")
-    private String videoPath;
-
-    @Value("${net.fullstack.upload.image.thumbnail.path}")
-    private String thumbnailPath;
+    private final FilePathUtil filePathUtil;
+    private final FFmpegUtil ffmpegUtil;
 
     // 이미지 확장자 & 최대 용량
     private static final Set<String> IMAGE_EXTS = Set.of("jpg", "jpeg", "png", "gif", "webp");
@@ -47,57 +31,39 @@ public class FileUtil {
     private static final Set<String> VIDEO_EXTS = Set.of("mp4", "mov", "avi", "mkv");
     private static final long MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200MB
 
-    private final FFmpegUtil ffmpegUtil;
-
-    public FileResponseDTO uploadImage(MultipartFile file) throws IOException {
+    public String uploadImage(MultipartFile file) throws IOException {
         validateFile(file, IMAGE_EXTS, MAX_IMAGE_SIZE);
-
-        String sFileName = saveFile(file, imagePath);
-        String oFileName = file.getOriginalFilename();
-        String ext = getFileExtension(oFileName);
-
-        String thumbFileName = saveThumbnail(sFileName);
-        File thumbFile = Paths.get(basePath, thumbnailPath, thumbFileName).toFile();
-
-        return FileResponseDTO.builder()
-                .fileName(sFileName)
-                .fileExt(ext)
-                .fileOrgName(oFileName)
-                .fileSize(file.getSize())
-                .filePath(imagePath)
-                .imageFlag(true)
-                .thumbnailFileName(thumbFileName)
-                .thumbnailFileSize(thumbFile.length())
-                .thumbnailFilePath(thumbnailPath)
-                .build();
+        return saveFile(file, FileType.IMAGE);
     }
 
-    public FileResponseDTO uploadVideo(MultipartFile file) throws IOException {
+    public String uploadVideo(MultipartFile file) throws IOException {
         validateFile(file, VIDEO_EXTS, MAX_VIDEO_SIZE);
+        return saveFile(file, FileType.VIDEO);
+    }
 
-        String sFileName = saveFile(file, videoPath);
-        String oFileName = file.getOriginalFilename();
-        String ext = getFileExtension(oFileName);
+    public String generateThumbnail(String fileName) throws IOException {
+        Path thumbPath = filePathUtil.getFullPath(FileType.THUMBNAIL);
 
-        return FileResponseDTO.builder()
-                .fileName(sFileName)
-                .fileExt(ext)
-                .fileOrgName(oFileName)
-                .fileSize(file.getSize())
-                .filePath(videoPath)
-                .imageFlag(false)
-                .build();
+        File directory = thumbPath.toFile();
+        if (!directory.exists()) directory.mkdirs();
+
+        String thumbFileName = "s_" + fileName;
+        File thumbFile = new File(directory, thumbFileName);
+        File saveFile =  filePathUtil.getFullPath(FileType.IMAGE, fileName).toFile();
+        Thumbnailator.createThumbnail(saveFile, thumbFile, 200, 200);
+
+        return thumbFileName;
     }
 
     public void convertVideo(String fileName) {
-        Path originalPath = Paths.get(basePath, videoPath, fileName);
-        Path savePath = Paths.get(basePath, videoPath, "hls", fileName);
+        Path videoPath = filePathUtil.getFullPath(FileType.VIDEO, fileName);
+        Path hlsPath = filePathUtil.getFullPath(FileType.VIDEO_HLS, fileName);
 
-        File directory = savePath.toFile();
+        File directory = hlsPath.toFile();
         if (!directory.exists()) directory.mkdirs();
 
         try {
-            Process process = ffmpegUtil.convert(savePath, originalPath);
+            Process process = ffmpegUtil.convert(hlsPath, videoPath);
 
 //            // video convert 실시간 상태
 //            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
@@ -106,6 +72,7 @@ public class FileUtil {
 //                    log.info("[FFmpeg][{}] {}", fileName, line);
 //                }
 //            }
+
             int exitCode = process.waitFor();
             if (exitCode != 0) {
                 throw new RuntimeException("Video Convert exited with code " + exitCode);
@@ -124,15 +91,14 @@ public class FileUtil {
         File file;
         switch (type) {
             case IMAGE -> {
-                file = Paths.get(basePath, imagePath, fileName).toFile();
-
-                File thumbFile = Paths.get(basePath, thumbnailPath, "s_" + fileName).toFile();
+                file = filePathUtil.getFullPath(FileType.IMAGE, fileName).toFile();
+                File thumbFile = filePathUtil.getFullPath(FileType.THUMBNAIL, "s_" + fileName).toFile();
                 if (thumbFile.exists()) thumbDeleteFlag = thumbFile.delete();
             }
             case VIDEO -> {
-                file = Paths.get(basePath, videoPath, fileName).toFile();
+                file = filePathUtil.getFullPath(FileType.VIDEO, fileName).toFile();
 
-                Path hlsDirectory = Paths.get(basePath, videoPath, "hls", fileName);
+                Path hlsDirectory = filePathUtil.getFullPath(FileType.VIDEO_HLS, fileName);
                 if (Files.exists(hlsDirectory)) {
                     Files.walk(hlsDirectory)
                             .sorted(Comparator.reverseOrder())
@@ -155,21 +121,25 @@ public class FileUtil {
         return result;
     }
 
-    public Resource getFile(String videoId, String path, FileType type) {
-        Path fullPath;
-        boolean isEmpty = (path == null || path.isBlank());
-        switch (type) {
-            case IMAGE -> fullPath = isEmpty ?
-                    Paths.get(basePath, imagePath, videoId) :
-                    Paths.get(basePath, imagePath, videoId, path);
-            case VIDEO -> fullPath = isEmpty ?
-                    Paths.get(basePath, videoPath, videoId) :
-                    Paths.get(basePath, videoPath, videoId, path);
-            default -> throw new IllegalArgumentException("지원하지 않는 파일 유형입니다. " + type);
-        }
-        if (!Files.exists(fullPath)) return null;
-        return new FileSystemResource(fullPath);
+    public Resource getFile(String path, FileType type) {
+        File file = filePathUtil.getFullPath(type, path).toFile();
+        if (!file.exists()) return null;
+        return new FileSystemResource(file);
     }
+
+    public String getFileExtension(String fileName) {
+        if (fileName == null || fileName.isBlank()) {
+            throw new IllegalArgumentException("파일명이 비어 있거나 null입니다.");
+        }
+
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex == -1 || dotIndex == fileName.length() - 1) {
+            throw new IllegalArgumentException("파일 확장자가 존재하지 않거나 올바르지 않은 파일명입니다: " + fileName);
+        }
+
+        return fileName.substring(dotIndex + 1).toLowerCase();
+    }
+
 
     private void validateFile(MultipartFile file, Set<String> allowedExts, long maxSize) {
         if (file.isEmpty()) {
@@ -191,16 +161,10 @@ public class FileUtil {
         }
     }
 
-    private String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex == -1 || dotIndex == fileName.length() - 1) return "";
-        return fileName.substring(dotIndex + 1).toLowerCase();
-    }
+    private String saveFile(MultipartFile file, FileType type) throws IOException {
+        Path path = filePathUtil.getFullPath(type);
 
-    private String saveFile(MultipartFile file, String path) throws IOException {
-        Path fullPath = Paths.get(basePath, path);
-
-        File directory = fullPath.toFile();
+        File directory = path.toFile();
         if (!directory.exists()) directory.mkdirs();
 
         String oFileName = file.getOriginalFilename();
@@ -212,17 +176,4 @@ public class FileUtil {
         return sFileName;
     }
 
-    private String saveThumbnail(String sFileName) throws IOException {
-        Path fullPath = Paths.get(basePath, thumbnailPath);
-
-        File directory = fullPath.toFile();
-        if (!directory.exists()) directory.mkdirs();
-
-        String thumbFileName = "s_" + sFileName;
-        File thumbFile = new File(directory, thumbFileName);
-        File saveFile = Paths.get(basePath, imagePath, sFileName).toFile();
-        Thumbnailator.createThumbnail(saveFile, thumbFile, 200, 200);
-
-        return thumbFileName;
-    }
 }
