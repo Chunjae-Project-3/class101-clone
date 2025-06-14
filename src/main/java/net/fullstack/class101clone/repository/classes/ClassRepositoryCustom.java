@@ -10,6 +10,10 @@ import java.util.Map;
 public interface ClassRepositoryCustom {
     List<ClassDTO> getClasses(String category, String userId);
 
+    List<ClassDTO> getTopLikedClasses(int limit);
+
+    List<ClassDTO> getRecentClasses(int limit);
+
     ClassDTO getClassDetailById(Integer classId);
 
     Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, Pageable pageable, String sort);

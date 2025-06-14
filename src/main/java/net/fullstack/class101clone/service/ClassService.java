@@ -28,6 +28,14 @@ public class ClassService {
         return classRepository.getClasses(category, userId);
     }
 
+    public List<ClassDTO> getTopLikedClasses(int limit) {
+        return classRepository.getTopLikedClasses(limit);
+    }
+
+    public List<ClassDTO> getRecentClasses(int limit) {
+        return classRepository.getRecentClasses(limit);
+    }
+
     public List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx) {
         return classRepository.getClassesByCategoryIdx(categoryIdx);
     }
@@ -52,6 +60,7 @@ public class ClassService {
         dto.setCreatorDescription(entity.getCreator().getCreatorDescription());
         dto.setCreatorProfileImg(entity.getCreator().getCreatorProfileImg());
         dto.setThumbnailUrl(entity.getClassThumbnailImg().getFilePath());
+        dto.setCreatedAt(entity.getCreatedAt());
 
         return dto;
     }

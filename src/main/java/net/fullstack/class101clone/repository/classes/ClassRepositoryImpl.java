@@ -66,6 +66,62 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
 
         return classList;
     }
+    @Override
+    public List<ClassDTO> getTopLikedClasses(int limit) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QClassLikeEntity like = QClassLikeEntity.classLikeEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+
+        return queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName,
+                        creator.creatorName,
+                        creator.creatorProfileImg,
+                        creator.creatorDescription
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.creator, creator)
+                .leftJoin(like).on(like.classLikeRef.eq(cls))
+                .groupBy(cls.classIdx)
+                .orderBy(like.count().desc())
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public List<ClassDTO> getRecentClasses(int limit) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+
+        return queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName,
+                        creator.creatorName,
+                        creator.creatorProfileImg,
+                        creator.creatorDescription
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.creator, creator)
+                .orderBy(cls.createdAt.desc())
+                .limit(limit)
+                .fetch();
+    }
 
     @Override
     public List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx) {
