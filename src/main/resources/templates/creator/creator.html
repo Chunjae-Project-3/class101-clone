@@ -3,65 +3,98 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout.html}">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title layout:fragment="head">크리에이터 페이지</title>
+    <title th:text="|${creator.creatorName} - 크리에이터 페이지|">크리에이터 페이지</title>
+    <style>
+        .creator-header {
+            position: relative;
+            height: 240px;
+            background-size: cover;
+            background-position: center;
+        }
+        .creator-header .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .creator-header .overlay h1 {
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .creator-profile {
+            margin-top: -40px;
+        }
+        .creator-profile img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 3px solid #fff;
+        }
+        .badge-status {
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
-
 <body>
-<!-- sidebar는 부모 레이아웃에서 th:replace로 이미 삽입됨 -->
-
-<!-- 이 부분만 구현 -->
-<div layout:fragment="content" class="flex-grow-1 p-4">
-
-    <!-- 1. 커버 이미지 -->
-    <div class="mb-4">
-        <img th:src="@{${creator.coverImageUrl}}"
-             alt="메인 배너 이미지"
-             class="w-100 rounded"
-             style="height: 200px; object-fit: cover;">
+<div layout:fragment="content">
+    <!-- 헤더 배경 -->
+    <div class="creator-header">
+<!--    <div class="creator-header"-->
+<!--         th:style="|background-image: url(${creator.headerImageUrl});|">-->
+        <div class="overlay">
+            <h1>헤더 제목</h1>
+<!--            <h1 th:text="${creator.headerTitle}">헤더 제목</h1>-->
+        </div>
     </div>
-
-    <!-- 2. 프로필 요약 -->
-    <div class="d-flex align-items-center mb-5">
-        <img th:src="@{${creator.profileImageUrl}}"
-             alt="프로필 사진"
-             class="rounded-circle me-3"
-             style="width:80px; height:80px;">
-        <div>
-            <h2 th:text="${creator.name}">크리에이터 이름</h2>
-            <p class="text-muted small">
-                누적 수강생 <span th:text="${creator.studentCount}">0</span>명 ·
-                게시글 <span th:text="${creator.postCount}">0</span>개
-            </p>
+    <!-- 프로필 카드 -->
+    <div class="container creator-profile d-flex align-items-center">
+        <img th:src="@{/upload/creator/{img}(img=${creator.creatorProfileImg})}"
+             class="rounded-circle" alt="프로필 사진"/>
+        <div class="ms-3">
+            <h2 th:text="${creator.creatorName}">크리에이터 이름</h2>
+            <p th:text="${creator.creatorDescription}" class="text-muted">크리에이터 소개</p>
         </div>
     </div>
 
-    <!-- 3. 클래스 섹션 -->
-    <section class="mb-5">
-        <h4 class="mb-3">CLASS101에 포함된 클래스</h4>
-        <div class="d-flex overflow-auto">
-            <div th:each="cls : ${creatorClasses}"
-                 class="card me-3"
-                 style="width: 200px;">
-                <img th:src="@{${cls.thumbnailUrl}}"
-                     class="card-img-top"
-                     alt="클래스 썸네일">
-                <div class="card-body p-2">
-                    <p class="card-title small mb-1" th:text="${cls.title}">클래스 제목</p>
+    <!-- 클래스 섹션 -->
+    <div class="container mt-4">
+        <h3>클래스</h3>
+        <!-- 카테고리 버튼 그룹 -->
+        <div class="btn-group mb-3" role="group">
+            <button type="button"
+                    class="btn btn-outline-secondary"
+                    th:each="cat : ${categories}"
+                    th:text="${cat.label}"
+                    th:classappend="${cat.value == selectedCategory} ? ' active' : ''"
+                    th:onclick="|window.location.href='?category=${cat.value}'|">
+                전체
+            </button>
+        </div>
+        <!-- 클래스 카드 그리드 -->
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="cls : ${classes}">
+                <div class="card h-100 position-relative">
+                    <img th:src="${cls.thumbnailUrl}" class="card-img-top" alt="클래스 썸네일"/>
+                    <div class="badge bg-secondary position-absolute top-0 start-0 m-2 badge-status"
+                         th:text="${cls.status}">상태</div>
+                    <button class="btn btn-light position-absolute top-0 end-0 m-2">
+                        <i class="bi bi-bookmark"></i>
+                    </button>
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${cls. }">클래스 제목</h5>
+                        <p class="card-text text-muted" th:text="${cls.level}">레벨</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+        <div>end of body</div>
+    </div>
 </div>
-
-<!-- footer는 부모 레이아웃의 footer를 그대로 사용 -->
-
-<!-- 페이지별 스크립트가 필요하면 여기에 -->
-<th:block layout:fragment="script">
-    <!-- 예: 슬릭 캐러셀 초기화 스크립트 등 -->
-</th:block>
 </body>
 </html>
