@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.dto.LectureDTO;
 import net.fullstack.class101clone.service.ClassService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,5 +90,12 @@ public class ClassApiController {
         String userId = (String) session.getAttribute("loginId");
         List<ClassDTO> wishlist = classService.getWishlist(userId);
         return ResponseEntity.ok(wishlist);
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<LectureDTO>> getHistory(HttpSession session) {
+        String userId = (String) session.getAttribute("loginId");
+        List<LectureDTO> history = classService.getLectureHistory(userId);
+        return ResponseEntity.ok(history);
     }
 }
