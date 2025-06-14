@@ -17,21 +17,25 @@ import java.time.LocalTime;
 public class LectureHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "int(11) not null comment '강의 시청 기록 인덱스'")
+    @Column(name = "lecture_history_idx",columnDefinition = "int(11) not null comment '강의 시청 기록 인덱스'")
     private int lectureHistoryIdx;
 
-    @ManyToOne
-    @JoinColumn(name = "lecture_history_user_id", foreignKey = @ForeignKey(name = "FK_tbl_lecture_history_tbl_user"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lecture_history_user_id", nullable = false,
+            foreignKey = @ForeignKey(name = "FK_tbl_lecture_history_tbl_user"))
     private UserEntity lectureHistoryUser;
 
-    @ManyToOne
-    @JoinColumn(name = "lecture_history_ref_idx", foreignKey = @ForeignKey(name = "FK_tbl_lecture_history_tbl_lecture"))
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lecture_history_ref_idx", nullable = false,
+            foreignKey = @ForeignKey(name = "FK_tbl_lecture_history_tbl_lecture"))
     private LectureEntity lectureHistoryRef;
 
-    @Column(columnDefinition = "time null default null comment '마지막 본 위치'")
+    @Column(name = "lecture_history_last_position",columnDefinition = "time null default null comment '마지막 본 위치'")
     private LocalTime lectureHistoryLastPosition;
-    @Column(columnDefinition = "time null default null comment '시청한 총 시간'")
+
+    @Column(name = "lecture_history_total_watch_time",columnDefinition = "time null default null comment '시청한 총 시간'")
     private LocalTime lectureHistoryTotalWatchTime;
-    @Column(columnDefinition = "datetime null default null comment '마지막 시청 날짜'")
+
+    @Column(name = "lecture_history_last_watch_date",columnDefinition = "datetime null default null comment '마지막 시청 날짜'")
     private LocalDateTime lectureHistoryLastWatchDate;
 }

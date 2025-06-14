@@ -1,0 +1,28 @@
+package net.fullstack.class101clone.service.classes;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import net.fullstack.class101clone.domain.ClassEntity;
+import net.fullstack.class101clone.dto.classes.CurriculumDTO;
+import net.fullstack.class101clone.dto.classes.SectionDTO;
+import net.fullstack.class101clone.exception.NotFoundException;
+import net.fullstack.class101clone.repository.ClassRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Log4j2
+@Service
+@RequiredArgsConstructor
+public class ClassServiceImpl implements ClassService {
+
+    private final ModelMapper modelMapper;
+    private final ClassRepository classRepository;
+
+    @Override
+    public CurriculumDTO getCurriculum(int classIdx) {
+        ClassEntity entity = classRepository.getCurriculumByClassIdx(classIdx);
+        return modelMapper.map(entity, CurriculumDTO.class);
+    }
+}

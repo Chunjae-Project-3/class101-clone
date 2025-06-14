@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @Log4j2
 @SpringBootTest
-public class UserRepositoryIfTests {
+public class UserRepositoryTests {
     @Autowired
     private UserRepositoryIf userRepositoryIf;
 

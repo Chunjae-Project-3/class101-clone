@@ -3,7 +3,10 @@ package net.fullstack.class101clone.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@ToString(exclude = "classList")
+@ToString(exclude = { "classList" })
 public class CreatorEntity extends BaseEntity {
 
     @Id
@@ -30,6 +33,7 @@ public class CreatorEntity extends BaseEntity {
     @Column(name = "creator_description", columnDefinition = "text null comment '크리에이터 소개'")
     private String creatorDescription;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    private List<ClassEntity> classList;
+    // 양방향 관계 설정
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClassEntity> classList = new ArrayList<>();
 }

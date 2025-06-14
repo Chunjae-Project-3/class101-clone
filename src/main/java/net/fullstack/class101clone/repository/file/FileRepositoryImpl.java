@@ -17,11 +17,12 @@ public class FileRepositoryImpl implements FileRepositoryCustom {
         QLectureEntity lec = QLectureEntity.lectureEntity;
         QFileEntity file = QFileEntity.fileEntity;
 
-        return queryFactory
-                .select(file.filePath.concat("/").concat(file.fileName))
-                .from(lec)
-                .join(lec.lectureVideo, file)
-                .where(lec.lectureRef.classIdx.eq(classId))
-                .fetch();
+//        return queryFactory
+//                .select(file.filePath.concat("/").concat(file.fileName))
+//                .from(lec)
+//                .join(lec.lectureVideo, file)
+//                .where(lec.lectureRef.classIdx.eq(classId))
+//                .fetch();
+        return null;
     }
 }
