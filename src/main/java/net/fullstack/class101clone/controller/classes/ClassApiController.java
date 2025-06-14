@@ -83,4 +83,11 @@ public class ClassApiController {
         Map<String, Object> result = classService.searchAll(q, pageable, sort, userId);
         return ResponseEntity.ok(result);
     }
+
+    @GetMapping("/wishlist")
+    public ResponseEntity<List<ClassDTO>> getWishlist(HttpSession session) {
+        String userId = (String) session.getAttribute("loginId");
+        List<ClassDTO> wishlist = classService.getWishlist(userId);
+        return ResponseEntity.ok(wishlist);
+    }
 }
