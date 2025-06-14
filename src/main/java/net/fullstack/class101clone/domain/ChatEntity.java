@@ -31,4 +31,8 @@ public class ChatEntity extends BaseEntity {
 
     @Column(columnDefinition = "datetime comment '전송 시간'", nullable = false)
     private LocalDateTime timestamp;
+
+    @Column(name = "is_read", nullable = false, columnDefinition = "boolean default false comment '읽음 여부'")
+    private boolean read = false;
+
 }

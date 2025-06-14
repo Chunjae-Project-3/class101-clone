@@ -37,6 +37,9 @@ public class ChatController {
             throw new IllegalArgumentException("관리자는 고객센터 채팅을 이용할 수 없습니다.");
         }
 
+        // 채팅방 진입 시 읽음 처리
+        chatMessageService.markMessagesAsRead(myUserId);
+
         Optional<UserEntity> masterUser = userRepository.findByUserId(otherUserId);
         if (masterUser.isEmpty()) {
             throw new IllegalStateException("관리자 계정이 존재하지 않습니다.");

@@ -29,4 +29,11 @@ public interface ChatRepository extends JpaRepository<ChatEntity, Long> {
     @Query("DELETE FROM ChatEntity c WHERE c.timestamp < :expiry")
     void deleteOldMessages(@Param("expiry") LocalDateTime expiry);
 
+    boolean existsByReceiverAndReadFalse(String receiver);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ChatEntity c SET c.read = true WHERE c.receiver = :userId AND c.read = false")
+    void markAllAsRead(@Param("userId") String userId);
+
 }

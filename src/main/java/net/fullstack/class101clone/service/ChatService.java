@@ -5,6 +5,7 @@ import net.fullstack.class101clone.domain.ChatEntity;
 import net.fullstack.class101clone.dto.ChatDTO;
 import net.fullstack.class101clone.repository.ChatRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,4 +41,14 @@ public class ChatService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public boolean hasUnreadMessages(String userId) {
+        return chatRepository.existsByReceiverAndReadFalse(userId);
+    }
+
+    @Transactional
+    public void markMessagesAsRead(String userId) {
+        chatRepository.markAllAsRead(userId);
+    }
+
 }
