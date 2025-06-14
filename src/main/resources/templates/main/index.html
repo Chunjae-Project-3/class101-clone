@@ -146,8 +146,64 @@
             </div>
         </div>
 
-        <!-- 상단 홍보 캐러셀 -->
-        <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+        <div id="classSections"></div>
+
+        <script>
+            const renderCarouselSection = (title, index, classList) => {
+                const sectionId = `top-carousel-${index}`;
+
+                const slides = [];
+                for (let i = 0; i < classList.length; i += 5) {
+                    slides.push(classList.slice(i, i + 5));
+                }
+
+                const slideItemsHtml = slides.map((group, idx) => `
+        <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                ${group.map(cls => `
+                    <div class="col">
+                        <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
+                            <div class="card h-100">
+                                <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
+                                     onerror="this.onerror=null; this.src='/images/default-image.png';">
+                                <div class="card-body" style="padding: 5px 0;">
+                                    <p class="card-text fw-semibold mb-0">${cls.classTitle}</p>
+                                    <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                        ${cls.classDescription || ''}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `).join('');
+
+                const mainCarouselHtml = `
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold mb-0">${title}</h5>
+                <div>
+                    <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
+                        <i class="bi bi-chevron-left fs-5 text-dark"></i>
+                    </button>
+                    <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
+                        <i class="bi bi-chevron-right fs-5 text-dark"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
+                <div class="carousel-inner">
+                    ${slideItemsHtml}
+                </div>
+            </div>
+        </section>
+    `;
+
+                // 프로모션 캐러셀 HTML
+                const promoCarouselHtml = `
+        <div id="promoCarousel" class="carousel slide mt-5 mb-5" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active bg-dark"
                         aria-current="true" aria-label="Slide 1"></button>
@@ -189,8 +245,75 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
+    `;
 
-        <div id="classSections"></div>
+                const container = document.getElementById('classSections');
+                container.insertAdjacentHTML('afterbegin', mainCarouselHtml);
+
+                // title이 "🔥 지금 가장 인기 있는 클래스"일 때만 프로모션 삽입
+                if (title.includes("가장 인기")) {
+                    container.insertAdjacentHTML('beforeend', promoCarouselHtml);
+                }
+            };
+
+        </script>
+
+        <script>
+            const renderSimpleClassSection = (title, classList) => {
+                const container = document.getElementById('classSections');
+
+                let html = `
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="fw-bold mb-0">${title}</h5>
+            </div>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                ${classList.map(cls => `
+                <div class="col">
+                    <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
+                        <div class="card h-100">
+                            <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
+                                 onerror="this.onerror=null; this.src='/images/default-image.png';">
+                            <div class="card-body" style="padding: 5px 0;">
+                                <p class="card-text fw-semibold mb-0">${cls.classTitle}</p>
+                                <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${cls.classDescription || ''}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                `).join('')}
+            </div>
+        </section>`;
+
+                container.insertAdjacentHTML('afterbegin', html);
+            }
+
+            const loadPopularAndRecent = async () => {
+                try {
+                    const [popularRes, recentRes] = await Promise.all([
+                        fetch('/api/classes/top-liked'),
+                        fetch('/api/classes/recent')
+                    ]);
+
+                    const [popularClasses, recentClasses] = await Promise.all([
+                        popularRes.json(),
+                        recentRes.json()
+                    ]);
+
+                    if (popularClasses.length > 0) {
+                        renderCarouselSection('🔥 지금 가장 인기 있는 클래스', 0, popularClasses);
+                    }
+                    if (recentClasses.length > 0) {
+                        renderCarouselSection('🆕 신규 오픈 클래스', 1, recentClasses);
+                    }
+                } catch (err) {
+                    console.error('TOP 클래스 불러오기 실패:', err);
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', loadPopularAndRecent);
+        </script>
+
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const allCategoryBtn = document.getElementById('allCategoryBtn');
