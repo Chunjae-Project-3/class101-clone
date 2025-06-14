@@ -2,6 +2,7 @@ package net.fullstack.class101clone.repository.classes;
 
 import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.dto.LectureDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +28,6 @@ public interface ClassRepositoryCustom {
     Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId);
 
     List<ClassDTO> getWishListByUserId(String userId);
+
+    List<LectureDTO> getLectureHistoryByUserId(String userId);
 }

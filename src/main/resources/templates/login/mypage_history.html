@@ -12,14 +12,6 @@
             padding-right: 0;
         }
 
-        .quit {
-            color: #a4a4a4;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: underline;
-        }
-
-        /* 선택된 탭(활성 탭)의 파란색 배경과 테두리 제거 */
         .nav-tabs .nav-link.active {
             background-color: transparent !important;
             border-color: transparent !important;
@@ -40,23 +32,40 @@
             box-shadow: none !important;
         }
 
-        .editBtn {
-            background-color: rgb(255, 93, 0);
+        .card {
             border: none;
+            border-radius: 5px !important;
+            transition: transform 0.2s;
         }
 
-        .editBtn:hover {
-            background-color: rgb(255, 120, 0);
+        .card:hover {
+            transform: translateY(-5px);
         }
+
+        .card-img-top {
+            border-radius: 5px !important;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .progress-bar {
+            background-color: #FE5D01;
+        }
+
+        .user-info:hover {
+            transform: none;
+            transition: none;
+        }
+
     </style>
 </head>
 <body>
 <header></header>
 <div id="container" class="container" layout:fragment="content">
     <div class="row">
-        <!-- 사이드바 -->
         <div class="col-md-3 mb-4">
-            <div class="card mb-3">
+            <div class="card user-info mb-3">
                 <div class="card-body">
                     <h5 class="card-title">내 정보</h5>
                     <p class="card-text" th:text="${userInfo.userName}">닉네임</p>
@@ -83,19 +92,81 @@
         <div class="col-md-9">
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="history">
-                    <h4>시청 기록</h4>
-                    <!-- 시청 기록 내용 -->
-                    <div th:if="${#lists.isEmpty(history)}">
-                        시청 기록이 없습니다.
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold mb-0">시청 기록</h4>
                     </div>
-                    <ul th:each="item : ${history}">
-                        <li th:text="${item.title}">콘텐츠 제목</li>
-                    </ul>
+                    <div id="history-container" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 <footer></footer>
+<th:block layout:fragment="script">
+    <script layout:fragment="script" th:replace="~{layout/layout :: script}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            const container = document.querySelector('#history-container');
+
+            axios.get('/api/classes/history', {
+                withCredentials: true
+            })
+                .then(function (response) {
+                    const history = response.data;
+                    if (history && history.length > 0) {
+                        const html = history.map(item => `
+                        <div class="col">
+<!--                            <a href="/class/${item.classIdx}" class="text-dark text-decoration-none">-->
+                                <div class="card h-100">
+                                    <img src="${item.thumbnailUrl || '/images/default-image.png'}"
+                                         class="card-img-top"
+                                         alt="${item.lectureTitle}"
+                                         onerror="this.onerror=null; this.src='/images/default-image.png';"
+                                         style="aspect-ratio: 16/9; object-fit: cover;">
+                                    <div class="card-body" style="padding: 5px 0;">
+                                        <p class="card-text fw-semibold mb-0">${item.lectureTitle}</p>
+                                        <p class="card-text text-muted mb-0"
+                                           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            ${item.classDescription || ''}
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center mt-2">
+                                            <small class="text-muted">최근 시청: ${new Date(item.lastWatchDate).toLocaleDateString()}</small>
+                                        </div>
+                                        <div class="progress mt-2" style="height: 5px;">
+                                            <div class="progress-bar bg-warning" role="progressbar"
+                                                 style="width: ${item.progress}%;"
+                                                 aria-valuenow="${item.progress}"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    `).join('');
+                        container.innerHTML = html;
+                    } else {
+                        container.innerHTML = `
+                        <div class="col-12">
+                            <div class="text-center my-5">
+                                <p class="text-muted">아직 시청한 강의가 없습니다.</p>
+                                <a href="/" class="btn btn-warning mt-3">강의 둘러보기</a>
+                            </div>
+                        </div>`;
+                    }
+                })
+                .catch(function (error) {
+                    console.error('시청 기록을 가져오는데 실패했습니다:', error);
+                    container.innerHTML = `
+                    <div class="col-12">
+                        <p class="text-center mt-4 text-danger">시청 기록을 불러오는데 실패했습니다.</p>
+                    </div>`;
+                });
+        });
+    </script>
+</th:block>
 </body>
 </html>
