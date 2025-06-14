@@ -36,4 +36,9 @@ public class MainController {
         return "main/index";
     }
 
+
+    @GetMapping("/video")
+    public String video() {
+        return "video/videoPlayer";
+    }
 }

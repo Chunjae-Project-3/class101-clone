@@ -144,8 +144,8 @@ public class LoginController {
 		}
 	}
 
-	@GetMapping("/mypage")
-	public String myPage(
+	@GetMapping("/mypage_wishlist")
+	public String mypage_wishlist(
 			HttpServletRequest req,
 			RedirectAttributes ra,
 			Model model
@@ -159,7 +159,44 @@ public class LoginController {
 		}
 
 		model.addAttribute("userInfo", userInfo);
-		return "login/mypage";
+		return "login/mypage_wishlist";
+	}
+
+	@GetMapping("/mypage_history")
+	public String mypage_history(
+			HttpServletRequest req,
+			RedirectAttributes ra,
+			Model model
+	) {
+		UserDTO userInfo = (UserDTO) req.getSession().getAttribute("userInfo");
+		log.info(userInfo == null ? "User not logged in." : "User is logged in: {}", userInfo);
+		if (userInfo == null) {
+			log.warn("User not logged in, redirecting to login page.");
+			ra.addFlashAttribute("loginRequired", "로그인이 필요합니다.");
+			return "redirect:/login";
+		}
+
+		model.addAttribute("userInfo", userInfo);
+		return "login/mypage_history";
+	}
+
+
+	@GetMapping("/mypage_edit")
+	public String mypage_edit(
+			HttpServletRequest req,
+			RedirectAttributes ra,
+			Model model
+	) {
+		UserDTO userInfo = (UserDTO) req.getSession().getAttribute("userInfo");
+		log.info(userInfo == null ? "User not logged in." : "User is logged in: {}", userInfo);
+		if (userInfo == null) {
+			log.warn("User not logged in, redirecting to login page.");
+			ra.addFlashAttribute("loginRequired", "로그인이 필요합니다.");
+			return "redirect:/login";
+		}
+
+		model.addAttribute("userInfo", userInfo);
+		return "login/mypage_edit";
 	}
 
 	@PostMapping("/mypage/edit")
@@ -188,20 +225,20 @@ public class LoginController {
 		if (!userService.verifyPassword(userInfo.getUserId(), originalPwd)) {
 			log.error("Original password is incorrect for user: {}", userInfo.getUserId());
 			ra.addFlashAttribute("editErrorMsg", "현재 비밀번호가 일치하지 않습니다.");
-			return "redirect:/mypage";
+			return "redirect:/mypage_edit";
 		}
 		// 새 비밀번호와 확인이 일치하는지 확인
 		if (newPwd != null && !newPwd.isEmpty() && !newPwd.equals(newPwdConfirm)) {
 			log.error("New password and confirmation do not match.");
 			ra.addFlashAttribute("editErrorMsg", "새 비밀번호와 확인이 일치하지 않습니다.");
-			return "redirect:/mypage";
+			return "redirect:/mypage_edit";
 		}
 
 		// 비밀번호가 UserDTO 의 패턴을 따르는지 확인
 		if (newPwd != null && !newPwd.isEmpty() && !newPwd.matches("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d])[^\\s]{8,20}$")) {
 			log.error("New password does not meet the required pattern.");
 			ra.addFlashAttribute("editErrorMsg", "비밀번호는 8~20자의 영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.");
-			return "redirect:/mypage";
+			return "redirect:/mypage_edit";
 		}
 
 		if (
@@ -212,7 +249,7 @@ public class LoginController {
 		) {
 			log.warn("XSS attempt detected for userId: {}", userInfo.getUserId());
 			ra.addFlashAttribute("editErrorMsg", "포함할 수 없는 문자가 존재합니다.");
-			return "redirect:/mypage";
+			return "redirect:/mypage_edit";
 		}
 
 		String userId = userInfo.getUserId();
@@ -228,7 +265,7 @@ public class LoginController {
 		if (updatedUser == null) {
 			log.error("Failed to update user info for userId: {}", userId);
 			ra.addFlashAttribute("editErrorMsg", "회원 정보 수정에 실패했습니다. 다시 시도해주세요.");
-			return "redirect:/mypage";
+			return "redirect:/mypage_edit";
 		}
 
 		log.info("User info updated successfully for userId: {}", userId);
@@ -236,6 +273,6 @@ public class LoginController {
 		session.setAttribute("userInfo", updatedUser);
 		ra.addFlashAttribute("editSuccessMsg", "회원 정보 수정을 완료했습니다.");
 		model.addAttribute("userInfo", updatedUser);
-		return "redirect:/mypage";
+		return "redirect:/mypage_edit";
 	}
 }

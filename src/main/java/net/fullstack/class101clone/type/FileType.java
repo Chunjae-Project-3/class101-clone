@@ -1,25 +1,40 @@
 package net.fullstack.class101clone.type;
 
+import java.util.Arrays;
+
 public enum FileType {
-    IMAGE("image"),
-    VIDEO("video");
+    IMAGE("image", "/image"),
+    THUMBNAIL("thumbnail", "/image/thumbnail"),
+    VIDEO("video", "/video"),
+    VIDEO_HLS("hls", "/video/hls");
 
-    private final String value;
+    private final String type;
+    private final String path;
 
-    FileType(String value) {
-        this.value = value;
+    FileType(String type, String path) {
+        this.type = type;
+        this.path = path;
     }
 
-    public String getValue() {
-        return value;
+    public String getType() {
+        return type;
     }
 
-    public static FileType getFileType(String value) {
-        for (FileType type : FileType.values()) {
-            if (type.getValue().equalsIgnoreCase(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Unknown file type: " + value);
+    public String getPath() {
+        return path;
+    }
+
+    public static FileType fromValue(String value) {
+        return Arrays.stream(FileType.values())
+                .filter(type -> type.type.equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown file type: " + value));
+    }
+
+    public static FileType fromPath(String path) {
+        return Arrays.stream(FileType.values())
+                .filter(type -> type.path.equalsIgnoreCase(path))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown file path: " + path));
     }
 }

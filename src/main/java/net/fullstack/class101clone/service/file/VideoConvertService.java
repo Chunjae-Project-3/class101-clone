@@ -13,17 +13,14 @@ import java.util.concurrent.ExecutorService;
 @Transactional
 @RequiredArgsConstructor
 public class VideoConvertService {
-    private final ExecutorService videoExecutor;
+
+    private final ExecutorService executorService;
+
     private final FileUtil fileUtil;
 
-    public void convert(String videoId) {
-        videoExecutor.submit(() -> {
-           try {
-
-           } catch (Exception e) {
-
-           }
+    public void convert(String fileName) {
+        executorService.submit(() -> {
+            fileUtil.convertVideo(fileName);
         });
     }
-
 }
