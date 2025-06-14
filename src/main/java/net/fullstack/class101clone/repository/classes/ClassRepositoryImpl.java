@@ -5,6 +5,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.*;
 import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.dto.LectureDTO;
 import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -390,5 +391,42 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
         classList.forEach(dto -> dto.setLiked(true));
 
         return classList;
+    }
+
+    @Override
+    public List<LectureDTO> getLectureHistoryByUserId(String userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        QLectureEntity lecture = QLectureEntity.lectureEntity;
+        QLectureHistoryEntity history = QLectureHistoryEntity.lectureHistoryEntity;
+
+        return queryFactory
+                .select(Projections.constructor(LectureDTO.class,
+                        lecture.lectureIdx,
+                        lecture.lectureTitle,
+                        lecture.lectureDurationSec,
+                        history.lectureHistoryTotalWatchTime.hour().multiply(3600)
+                                .add(history.lectureHistoryTotalWatchTime.minute().multiply(60))
+                                .add(history.lectureHistoryTotalWatchTime.second()).sum(),
+                        history.lectureHistoryTotalWatchTime.hour().multiply(3600)
+                                .add(history.lectureHistoryTotalWatchTime.minute().multiply(60))
+                                .add(history.lectureHistoryTotalWatchTime.second()).sum()
+                                .multiply(100)
+                                .divide(lecture.lectureDurationSec)
+                                .castToNum(Integer.class),
+                        history.lectureHistoryLastWatchDate.max()
+                ))
+                .from(history)
+                .innerJoin(history.lectureHistoryRef, lecture)
+                .where(history.lectureHistoryUser.userId.eq(userId))
+                .groupBy(
+                        lecture.lectureIdx,
+                        lecture.lectureTitle,
+                        lecture.lectureDurationSec
+                )
+                .orderBy(history.lectureHistoryLastWatchDate.max().desc())
+                .fetch();
     }
 }
