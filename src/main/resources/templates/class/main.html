@@ -184,7 +184,7 @@
                 <div class="row gy-2 mb-5">
                     <div class="col-md-6 d-flex align-items-center">
                         <i class="bi bi-calendar3 me-2 text-primary"></i>
-                        <span class="text-primary fw-semibold small">2023년 3월 3일 수강 시작</span>
+                        <span id="created-at-date" class="text-primary fw-semibold small">로딩 중...</span>
                         <!--createdAt으로 수정해야 됨-->
                     </div>
                     <div class="col-md-6 d-flex align-items-center">
@@ -259,8 +259,8 @@
         <div class="d-block d-lg-none fixed-bottom bg-white shadow-sm py-2 px-3">
             <div class="d-flex align-items-center justify-content-between">
                 <div class="text-center">
-                    <i class="bi bi-bookmark fs-5"></i>
-                    <div class="small">1356</div>
+                    <i id="like-icon-mobile" class="bi bi-bookmark fs-5" style="cursor:pointer;"></i>
+                    <div class="small" id="like-count-mobile">1356</div>
                 </div>
 
                 <a href="#"
@@ -287,6 +287,67 @@
             </div>
         </div>
         <!-- JS 렌더링 스크립트 -->
+        <script>
+            const likeIcon = document.getElementById("like-icon");
+            const likeIconMobile = document.getElementById("like-icon-mobile");
+            const likeCount = document.getElementById("like-count");
+            const likeCountMobile = document.getElementById("like-count-mobile");
+            const classId = location.pathname.split("/").pop();
+
+            // ✅ 초기 찜 상태 조회
+            (async () => {
+                const res = await fetch(`/api/class-like/status/${classId}`, {
+                    credentials: "same-origin"
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    const isLiked = result.liked;
+
+                    // 데스크탑 + 모바일 둘 다 토글
+                    if (isLiked) {
+                        likeIcon.classList.replace("bi-bookmark", "bi-bookmark-fill");
+                        likeIconMobile.classList.replace("bi-bookmark", "bi-bookmark-fill");
+                    } else {
+                        likeIcon.classList.replace("bi-bookmark-fill", "bi-bookmark");
+                        likeIconMobile.classList.replace("bi-bookmark-fill", "bi-bookmark");
+                    }
+
+                    likeCount.textContent = result.likeCount;
+                    likeCountMobile.textContent = result.likeCount;
+                }
+            })();
+
+            // ✅ 공통 찜 토글 함수
+            async function toggleLike() {
+                const res = await fetch(`/api/class-like/${classId}`, {
+                    method: "POST",
+                    credentials: "same-origin"
+                });
+
+                if (res.status === 401) {
+                    alert("로그인이 필요합니다.");
+                    return;
+                }
+
+                const result = await res.json();
+                const isLiked = result.liked;
+
+                if (isLiked) {
+                    likeIcon.classList.replace("bi-bookmark", "bi-bookmark-fill");
+                    likeIconMobile.classList.replace("bi-bookmark", "bi-bookmark-fill");
+                } else {
+                    likeIcon.classList.replace("bi-bookmark-fill", "bi-bookmark");
+                    likeIconMobile.classList.replace("bi-bookmark-fill", "bi-bookmark");
+                }
+
+                likeCount.textContent = result.likeCount;
+                likeCountMobile.textContent = result.likeCount;
+            }
+
+            // ✅ 이벤트 연결
+            likeIcon.addEventListener("click", toggleLike);
+            likeIconMobile.addEventListener("click", toggleLike);
+        </script>
         <script>
             function copyCurrentUrlToClipboard() {
                 const currentUrl = window.location.href;
@@ -381,6 +442,13 @@
                 document.querySelector("#creator-image").src = creatorProfileImg || "/images/default-image.png";
                 document.querySelector("#sidebar-creator-name").textContent = creatorName || "크리에이터명";
                 document.querySelector("#sidebar-creator-img").src = creatorProfileImg || "/images/default-image.png";
+
+                const createdAt = classInfo.createdAt;
+                if (createdAt) {
+                    const date = new Date(createdAt);
+                    const formatted = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 수강 시작`;
+                    document.querySelector("#created-at-date").textContent = formatted;
+                }
 
                 // 총 시간 및 강의 수 계산
                 let totalMinutes = 0;

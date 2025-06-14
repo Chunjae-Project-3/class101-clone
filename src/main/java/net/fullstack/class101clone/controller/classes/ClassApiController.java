@@ -31,6 +31,16 @@
 //        return classService.getClasses(category, userId);
 //    }
 //
+//    @GetMapping("/top-liked")
+//    public ResponseEntity<List<ClassDTO>> getTopLikedClasses() {
+//        return ResponseEntity.ok(classService.getTopLikedClasses(10));
+//    }
+//
+//    @GetMapping("/recent")
+//    public ResponseEntity<List<ClassDTO>> getRecentClasses() {
+//        return ResponseEntity.ok(classService.getRecentClasses(10));
+//    }
+//
 //    @GetMapping("/{id}")
 //    @Operation(summary = "클래스 상세 전체 조회", description = "클래스, 이미지, 커리큘럼까지 포함된 정보를 반환합니다.")
 //    public Map<String, Object> getClassAllDetail(@PathVariable Integer id) {
@@ -72,5 +82,12 @@
 //        String userId = (String) session.getAttribute("loginId");
 //        Map<String, Object> result = classService.searchAll(q, pageable, sort, userId);
 //        return ResponseEntity.ok(result);
+//    }
+//
+//    @GetMapping("/wishlist")
+//    public ResponseEntity<List<ClassDTO>> getWishlist(HttpSession session) {
+//        String userId = (String) session.getAttribute("loginId");
+//        List<ClassDTO> wishlist = classService.getWishlist(userId);
+//        return ResponseEntity.ok(wishlist);
 //    }
 //}

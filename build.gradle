@@ -64,6 +64,10 @@ dependencies {
     implementation 'com.auth0:java-jwt:4.5.0'
 
     implementation 'org.springframework.boot:spring-boot-starter-security:3.4.6'
+
+    // 채팅
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 }
 
 tasks.named('test') {

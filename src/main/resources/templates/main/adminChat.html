@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 채팅</title>
+    <style>
+        .chat-bubble {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 16px;
+            max-width: 70%;
+            word-break: break-word;
+        }
+
+        .chat-left {
+            text-align: left;
+        }
+
+        .chat-right {
+            text-align: right;
+        }
+
+        .bubble-left {
+            background-color: #f1f0f0;
+            color: #000;
+            border-top-left-radius: 0;
+        }
+
+        .bubble-right {
+            background-color: #dcf8c6;
+            color: #000;
+            border-top-right-radius: 0;
+        }
+
+        .chat-meta {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container py-4" style="max-width: 900px;">
+        <h4 class="mb-2">고객 채팅 관리</h4>
+        <p class="text-muted small mb-3">※ 30일이 지난 메시지는 자동으로 삭제됩니다.</p>
+        <div class="row">
+            <!-- 유저 목록 -->
+            <div class="col-md-4 border-end">
+                <ul id="userList" class="list-group"></ul>
+            </div>
+
+            <!-- 채팅창 -->
+            <div class="col-md-8">
+                <div class="border rounded p-3 mb-3" id="chatBox"
+                     style="height: 400px; overflow-y: scroll; background-color: #f9f9f9;">
+                    <div class="text-muted">사용자를 선택하세요</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="chatInput" class="form-control" placeholder="메시지를 입력하세요" autocomplete="off" disabled>
+                    <button id="sendBtn" class="btn btn-primary" type="button" disabled>보내기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="chatMeta" th:data-loginid="${loginId}"></div>
+</div>
+
+<th:block layout:fragment="script">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+    <script>
+        let stompClient = null;
+        let selectedUserId = null;
+
+        const loginId = document.getElementById("chatMeta")?.dataset.loginid || "master";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserList();
+            connectWebSocket();
+
+            document.getElementById("sendBtn").addEventListener("click", () => {
+                const input = document.getElementById("chatInput");
+                const message = input.value.trim();
+                if (!message || !selectedUserId) return;
+
+                const chatMessage = {
+                    sender: 'master',
+                    receiver: selectedUserId,
+                    content: message,
+                    timestamp: new Date().toISOString()
+                };
+
+                stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+                renderMessage('나', message, chatMessage.timestamp, true);
+                input.value = "";
+            });
+        });
+
+        function loadUserList() {
+            fetch('/admin/chat/users')
+                .then(res => res.json())
+                .then(users => {
+                    const list = document.getElementById("userList");
+                    list.innerHTML = '';
+                    users.forEach(userId => {
+                        const li = document.createElement("li");
+                        li.className = "list-group-item list-group-item-action";
+                        li.textContent = userId;
+                        li.onclick = () => selectUser(userId);
+                        list.appendChild(li);
+                    });
+                });
+        }
+
+        function selectUser(userId) {
+            selectedUserId = userId;
+            document.getElementById("chatInput").disabled = false;
+            document.getElementById("sendBtn").disabled = false;
+            document.getElementById("chatBox").innerHTML = "";
+
+            fetch(`/admin/chat/${userId}`)
+                .then(res => res.json())
+                .then(messages => {
+                    messages.forEach(msg => {
+                        const isMine = msg.sender === 'master';
+                        renderMessage(isMine ? '나' : msg.sender, msg.content, msg.timestamp, isMine);
+                    });
+                });
+        }
+
+        function connectWebSocket() {
+            const socket = new SockJS("/ws-chat");
+            stompClient = Stomp.over(socket);
+
+            stompClient.connect({}, () => {
+                stompClient.subscribe("/user/queue/messages", (message) => {
+                    const msg = JSON.parse(message.body);
+                    if (msg.sender === selectedUserId) {
+                        renderMessage(msg.sender, msg.content, msg.timestamp, false);
+                    }
+                });
+            });
+        }
+
+        function renderMessage(sender, text, time = null, isMine = false) {
+            const chatBox = document.getElementById("chatBox");
+            const wrapper = document.createElement("div");
+            wrapper.className = `${isMine ? "chat-right" : "chat-left"} mb-2`;
+
+            const formattedTime = formatTime(time);
+
+            wrapper.innerHTML = `
+                <div class="chat-meta">${sender} <span class="text-muted small">· ${formattedTime}</span></div>
+                <div class="chat-bubble ${isMine ? "bubble-right" : "bubble-left"}">${text}</div>
+            `;
+
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'});
+        }
+    </script>
+</th:block>
+
+</body>
+</html>

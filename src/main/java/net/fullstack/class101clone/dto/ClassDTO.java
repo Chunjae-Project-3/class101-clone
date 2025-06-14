@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +21,8 @@ public class ClassDTO {
     private String creatorDescription;
 
     private boolean liked;
+
+    private LocalDateTime createdAt;
 
     public ClassDTO(Integer classIdx, String classTitle, String classDescription, String thumbnailUrl, String categoryName) {
         this.classIdx = classIdx;
