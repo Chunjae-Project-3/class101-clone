@@ -110,4 +110,11 @@ public class ClassService {
         return classRepository.searchClassesAndCreators(keyword, pageable, sort, userId);
     }
 
+    public List<ClassDTO> getWishlist(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        return classRepository.getWishListByUserId(userId);
+    }
 }

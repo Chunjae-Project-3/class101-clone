@@ -97,38 +97,5 @@
     </div>
 </div>
 <footer></footer>
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-        function toggleCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
-            if (menu && icon) {
-                if (menu.style.display === 'none' || menu.style.display === '') {
-                    menu.style.display = 'block';
-                    icon.classList.remove('bi-caret-down-fill');
-                    icon.classList.add('bi-caret-up-fill');
-                } else {
-                    menu.style.display = 'none';
-                    icon.classList.remove('bi-caret-up-fill');
-                    icon.classList.add('bi-caret-down-fill');
-                }
-            }
-        }
-
-        document.addEventListener('click', function (e) {
-            const toggle = document.getElementById('categoryToggle');
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
-
-            if (toggle && menu && icon) {
-                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                    menu.style.display = 'none';
-                    icon.classList.remove('bi-caret-up-fill');
-                    icon.classList.add('bi-caret-down-fill');
-                }
-            }
-        });
-    </script>
-</th:block>
 </body>
 </html>

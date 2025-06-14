@@ -71,7 +71,7 @@ public class LoginController {
 			session.setAttribute("loginId", userInfo.getUserId());
 			model.addAttribute("userInfo", userInfo);
 			session.setAttribute("userInfo", userInfo);
-			ra.addFlashAttribute("welcomeMsg", "반갑습니다, " + userInfo.getUserName() + "님!");
+//			ra.addFlashAttribute("welcomeMsg", "반갑습니다, " + userInfo.getUserName() + "님!");
 			return "redirect:/";
 		}
 	}
