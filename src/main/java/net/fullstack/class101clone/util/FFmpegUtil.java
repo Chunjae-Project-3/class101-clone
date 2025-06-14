@@ -2,7 +2,7 @@ package net.fullstack.class101clone.util;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.fullstack.class101clone.dto.file.FFprobeResult;
+import net.fullstack.class101clone.dto.ffmpeg.FFprobeResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

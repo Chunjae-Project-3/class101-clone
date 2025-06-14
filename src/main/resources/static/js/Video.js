@@ -1,4 +1,4 @@
-import Controller from "./Controller";
+import Controller from "./Controller.js";
 
 export default class Video {
     constructor(videoEl, panelEl, playlistUrl) {
@@ -22,13 +22,13 @@ export default class Video {
 
     #addLoadingEvent() {
         // 로딩 시작
-        this.videoEl.addEventListener('waiting', () => {
+        this.video.addEventListener('waiting', () => {
             this.loadingSpinner.classList.remove('disabled');
             this.controller.panel.classList.add('active');
         });
 
         // 로딩 완료
-        this.videoEl.addEventListener('canplay', () => {
+        this.video.addEventListener('canplay', () => {
             this.loadingSpinner.classList.add('disabled');
             this.controller.panel.classList.remove('active');
         });
@@ -45,7 +45,7 @@ export default class Video {
 
     #initPlayButtonEvent() {
         this.thumbnail.remove();
-        this.controller.panel.classList.remove(DISABLED);
+        this.controller.panel.classList.remove('disabled');
         this.play();
     }
 

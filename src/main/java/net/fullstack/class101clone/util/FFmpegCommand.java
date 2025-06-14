@@ -2,9 +2,9 @@ package net.fullstack.class101clone.util;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import net.fullstack.class101clone.dto.file.AudioStream;
-import net.fullstack.class101clone.dto.file.FFprobeResult;
-import net.fullstack.class101clone.dto.file.VideoStream;
+import net.fullstack.class101clone.dto.ffmpeg.AudioStream;
+import net.fullstack.class101clone.dto.ffmpeg.FFprobeResult;
+import net.fullstack.class101clone.dto.ffmpeg.VideoStream;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

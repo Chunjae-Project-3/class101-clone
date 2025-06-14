@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 @Component
 @RequiredArgsConstructor
 public class FilePathUtil {
-    @Value("${upload.path}")
+    @Value("${net.fullstack.upload.path}")
     private String basePath;
 
     public Path getFullPath(FileType type) {

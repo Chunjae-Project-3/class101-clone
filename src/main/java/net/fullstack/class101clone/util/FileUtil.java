@@ -9,8 +9,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -65,13 +67,15 @@ public class FileUtil {
         try {
             Process process = ffmpegUtil.convert(hlsPath, videoPath);
 
-//            // video convert 실시간 상태
-//            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-//                String line;
-//                while ((line = reader.readLine()) != null) {
-//                    log.info("[FFmpeg][{}] {}", fileName, line);
-//                }
-//            }
+            // video convert 실시간 상태
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                log.info("==================================================");
+                while ((line = reader.readLine()) != null) {
+                    log.info("[🎥][{}] {}", fileName, line);
+                }
+                log.info("==================================================");
+            }
 
             int exitCode = process.waitFor();
             if (exitCode != 0) {
@@ -122,6 +126,7 @@ public class FileUtil {
     }
 
     public Resource getFile(String path, FileType type) {
+        log.info("Find file ... : {}", filePathUtil.getFullPath(type, path).toString());
         File file = filePathUtil.getFullPath(type, path).toFile();
         if (!file.exists()) return null;
         return new FileSystemResource(file);

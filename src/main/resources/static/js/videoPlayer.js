@@ -1,14 +1,14 @@
-import Video from "./Video";
+import Video from "./Video.js";
 
 window.addEventListener('load', () => {
     const videoEl = document.querySelector('#videoPlayer');
     const videoId = videoEl.getAttribute('aria-id');
-    const playlistUrl = '';
+    const playlistUrl = `/api/video/${videoId}/master.m3u8`;
 
     const video = new Video(
         videoEl,
-        playlistUrl,
-        document.querySelector('.panel')
+        document.querySelector('.panel'),
+        playlistUrl
     );
 
     video.setPlayButton(
@@ -26,5 +26,5 @@ window.addEventListener('load', () => {
     );
     video.controller.setKeyShortCuts();
     video.initialEventListener();
-    // video.autoPlay();
+    video.autoPlay();
 });
