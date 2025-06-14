@@ -167,162 +167,130 @@
     </div>
 </div>
 <footer></footer>
-<th:block layout:fragment="script">
-    <script th:inline="javascript">
-        function toggleCategoryMenu() {
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
-            if (menu && icon) {
-                if (menu.style.display === 'none' || menu.style.display === '') {
-                    menu.style.display = 'block';
-                    icon.classList.remove('bi-caret-down-fill');
-                    icon.classList.add('bi-caret-up-fill');
-                } else {
-                    menu.style.display = 'none';
-                    icon.classList.remove('bi-caret-up-fill');
-                    icon.classList.add('bi-caret-down-fill');
-                }
-            }
+<script th:inline="javascript">
+    // 탈퇴 버튼 이벤트 리스너
+    document.querySelector('.quit').addEventListener('click', function () {
+        if (confirm('정말 탈퇴하시겠습니까?')) {
+            window.location.href = '/quit';
+        }
+    });
+
+    function validateEditForm() {
+        const userName = document.getElementById('userName');
+        const originalPwd = document.getElementById('originalPwd');
+        const newPwd = document.getElementById('newPwd');
+        const newPwdConfirm = document.getElementById('newPwdConfirm');
+        let isValid = true;
+
+        // XSS 방어를 위한 이스케이프 처리
+        const escapeHTML = (str) => {
+            if (!str) return str;
+            return str.replace(/[&<>"']/g, function (match) {
+                const escape = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#39;'
+                };
+                return escape[match];
+            });
         }
 
-        document.addEventListener('click', function (e) {
-            const toggle = document.getElementById('categoryToggle');
-            const menu = document.getElementById('categoryMenu');
-            const icon = document.getElementById('categoryIcon');
+        // 정규식 패턴
+        const userNamePattern = /^[가-힣a-zA-Z0-9\s]{3,}$/;
+        const pwdPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$/;
 
-            if (toggle && menu && icon) {
-                if (!toggle.contains(e.target) && !menu.contains(e.target)) {
-                    menu.style.display = 'none';
-                    icon.classList.remove('bi-caret-up-fill');
-                    icon.classList.add('bi-caret-down-fill');
-                }
-            }
-        });
+        // 닉네임 검증 (변경된 경우에만)
+        const originalUserName = [[${userInfo.userName}]];
+        if (userName.value && userName.value !== originalUserName && !userNamePattern.test(userName.value)) {
+            userName.classList.add('is-invalid');
+            isValid = false;
+        }
 
-        // 탈퇴 버튼 이벤트 리스너
-        document.querySelector('.quit').addEventListener('click', function () {
-            if (confirm('정말 탈퇴하시겠습니까?')) {
-                window.location.href = '/quit';
-            }
-        });
+        // 기존 비밀번호 검증 (필수 입력)
+        if (!pwdPattern.test(originalPwd.value)) {
+            originalPwd.classList.add('is-invalid');
+            isValid = false;
+        }
 
-        function validateEditForm() {
-            const userName = document.getElementById('userName');
-            const originalPwd = document.getElementById('originalPwd');
-            const newPwd = document.getElementById('newPwd');
-            const newPwdConfirm = document.getElementById('newPwdConfirm');
-            let isValid = true;
-
-            // XSS 방어를 위한 이스케이프 처리
-            const escapeHTML = (str) => {
-                if (!str) return str;
-                return str.replace(/[&<>"']/g, function (match) {
-                    const escape = {
-                        '&': '&amp;',
-                        '<': '&lt;',
-                        '>': '&gt;',
-                        '"': '&quot;',
-                        "'": '&#39;'
-                    };
-                    return escape[match];
-                });
-            }
-
-            // 정규식 패턴
-            const userNamePattern = /^[가-힣a-zA-Z0-9\s]{3,}$/;
-            const pwdPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z\d])[^\s]{8,20}$/;
-
-            // 닉네임 검증 (변경된 경우에만)
-            const originalUserName = [[${userInfo.userName}]];
-            if (userName.value && userName.value !== originalUserName && !userNamePattern.test(userName.value)) {
-                userName.classList.add('is-invalid');
+        // 새 비밀번호 검증 (입력된 경우에만)
+        if (newPwd.value) {
+            // 새 비밀번호 형식 검증
+            if (!pwdPattern.test(newPwd.value)) {
+                newPwd.classList.add('is-invalid');
                 isValid = false;
             }
 
-            // 기존 비밀번호 검증 (필수 입력)
-            if (!pwdPattern.test(originalPwd.value)) {
-                originalPwd.classList.add('is-invalid');
+            // 기존 비밀번호와 동일 여부 검증
+            if (newPwd.value === originalPwd.value) {
+                newPwd.classList.add('is-invalid');
+                alert('새 비밀번호는 기존 비밀번호와 달라야 합니다.');
                 isValid = false;
             }
 
-            // 새 비밀번호 검증 (입력된 경우에만)
-            if (newPwd.value) {
-                // 새 비밀번호 형식 검증
-                if (!pwdPattern.test(newPwd.value)) {
-                    newPwd.classList.add('is-invalid');
-                    isValid = false;
-                }
-
-                // 기존 비밀번호와 동일 여부 검증
-                if (newPwd.value === originalPwd.value) {
-                    newPwd.classList.add('is-invalid');
-                    alert('새 비밀번호는 기존 비밀번호와 달라야 합니다.');
-                    isValid = false;
-                }
-
-                // 비밀번호 확인 일치 검사
-                if (newPwd.value !== newPwdConfirm.value) {
-                    newPwdConfirm.classList.add('is-invalid');
-                    isValid = false;
-                }
-            } else if (newPwdConfirm.value) {
-                // 새 비밀번호는 입력하지 않았는데 확인은 입력한 경우
+            // 비밀번호 확인 일치 검사
+            if (newPwd.value !== newPwdConfirm.value) {
                 newPwdConfirm.classList.add('is-invalid');
-                alert('새 비밀번호를 먼저 입력해주세요.');
                 isValid = false;
             }
+        } else if (newPwdConfirm.value) {
+            // 새 비밀번호는 입력하지 않았는데 확인은 입력한 경우
+            newPwdConfirm.classList.add('is-invalid');
+            alert('새 비밀번호를 먼저 입력해주세요.');
+            isValid = false;
+        }
 
-            if (isValid) {
-                // 입력값 이스케이프 처리
-                userName.value = escapeHTML(userName.value);
+        if (isValid) {
+            // 입력값 이스케이프 처리
+            userName.value = escapeHTML(userName.value);
+        }
+
+        return isValid;
+    }
+
+    // 입력 필드 변경 시 유효성 검사 메시지 초기화
+    const userNameField = document.getElementById('userName');
+    const originalPwdField = document.getElementById('originalPwd');
+    const newPwdField = document.getElementById('newPwd');
+    const newPwdConfirmField = document.getElementById('newPwdConfirm');
+
+    if (userNameField) {
+        userNameField.addEventListener('input', function () {
+            this.classList.remove('is-invalid');
+        });
+    }
+
+    if (originalPwdField) {
+        originalPwdField.addEventListener('input', function () {
+            this.classList.remove('is-invalid');
+        });
+    }
+
+    if (newPwdField) {
+        newPwdField.addEventListener('input', function () {
+            this.classList.remove('is-invalid');
+            if (newPwdConfirmField) {
+                newPwdConfirmField.classList.remove('is-invalid');
             }
+        });
+    }
 
-            return isValid;
-        }
-
-        // 입력 필드 변경 시 유효성 검사 메시지 초기화
-        const userNameField = document.getElementById('userName');
-        const originalPwdField = document.getElementById('originalPwd');
-        const newPwdField = document.getElementById('newPwd');
-        const newPwdConfirmField = document.getElementById('newPwdConfirm');
-
-        if (userNameField) {
-            userNameField.addEventListener('input', function () {
-                this.classList.remove('is-invalid');
-            });
-        }
-
-        if (originalPwdField) {
-            originalPwdField.addEventListener('input', function () {
-                this.classList.remove('is-invalid');
-            });
-        }
-
-        if (newPwdField) {
-            newPwdField.addEventListener('input', function () {
-                this.classList.remove('is-invalid');
-                if (newPwdConfirmField) {
-                    newPwdConfirmField.classList.remove('is-invalid');
-                }
-            });
-        }
-
-        if (newPwdConfirmField) {
-            newPwdConfirmField.addEventListener('input', function () {
-                this.classList.remove('is-invalid');
-            });
-        }
+    if (newPwdConfirmField) {
+        newPwdConfirmField.addEventListener('input', function () {
+            this.classList.remove('is-invalid');
+        });
+    }
+</script>
+<th:block th:if="${editErrorMsg != null}">
+    <script th:inline="javascript">
+        alert([[${editErrorMsg}]]);
     </script>
-    <th:block th:if="${editErrorMsg != null}">
-        <script th:inline="javascript">
-            alert([[${editErrorMsg}]]);
-        </script>
-    </th:block>
-    <th:block th:if="${editSuccessMsg != null}">
-        <script th:inline="javascript">
-            alert([[${editSuccessMsg}]]);
-        </script>
-    </th:block>
+</th:block>
+<th:block th:if="${editSuccessMsg != null}">
+    <script th:inline="javascript">
+        alert([[${editSuccessMsg}]]);
+    </script>
 </th:block>
 </body>
 </html>
