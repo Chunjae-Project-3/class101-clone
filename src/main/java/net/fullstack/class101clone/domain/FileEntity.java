@@ -27,4 +27,8 @@ public class FileEntity {
     private long fileSize;
     @Column(columnDefinition = "varchar(200) not null comment '원본 파일 이름'")
     private String fileOrgName;
+
+    public String getFullUrl() {
+        return "/" + filePath + fileName + "." + fileExt;
+    }
 }
