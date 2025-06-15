@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.*;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.LectureDTO;
+import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -530,6 +531,21 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         file.filePath.isNotNull())
                 .orderBy(lec.lectureIdx.asc()) // 또는 원하는 순서 기준
                 .limit(5) // 필요 시 제한
+                .fetch();
+    }
+
+    @Override
+    public List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx) {
+        QSubCategoryEntity sub = QSubCategoryEntity.subCategoryEntity;
+
+        return queryFactory
+                .select(Projections.constructor(SubCategoryDTO.class,
+                        sub.subCategoryIdx,
+                        sub.subCategoryName
+                ))
+                .from(sub)
+                .where(sub.parentCategory.categoryIdx.eq(categoryIdx))
+                .orderBy(sub.subCategoryIdx.asc()) // 순서 정렬
                 .fetch();
     }
 

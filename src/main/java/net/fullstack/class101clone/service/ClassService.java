@@ -5,6 +5,7 @@ import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.LectureEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.LectureDTO;
+import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.file.FileRepository;
 import net.fullstack.class101clone.repository.LectureRepository;
@@ -135,4 +136,7 @@ public class ClassService {
         return classRepository.getLectureThumbnailsByClassId(classId);
     }
 
+    public List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx) {
+        return classRepository.getSubCategoriesByCategory(categoryIdx);
+    }
 }

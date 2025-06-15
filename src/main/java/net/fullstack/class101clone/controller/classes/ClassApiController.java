@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.LectureDTO;
+import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.service.ClassService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +69,12 @@ public class ClassApiController {
             @RequestParam(defaultValue = "recent") String sort
     ) {
         return classService.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, page, size, sort);
+    }
+
+    @GetMapping("/sub-categories/{categoryIdx}")
+    public ResponseEntity<List<SubCategoryDTO>> getSubCategories(@PathVariable Integer categoryIdx) {
+        List<SubCategoryDTO> result = classService.getSubCategoriesByCategory(categoryIdx);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/creators/category/{categoryIdx}")

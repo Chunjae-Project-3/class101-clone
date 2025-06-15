@@ -105,7 +105,7 @@
         }
 
         #subCategoryList li a.active {
-            color: #fe5d01;
+            color: #fe5d01 !important;
             font-weight: bold;
         }
 
@@ -167,58 +167,67 @@
 
                     window.addEventListener("DOMContentLoaded", () => {
                         document.getElementById("categoryTitle").textContent = categoryName;
+                        loadSubCategories(categoryIdx);
                         loadCreators(categoryIdx);
                         loadClasses(0);
                     });
 
-                    function renderSubCategoryListFromClasses(classList) {
-                        const subCategorySet = new Set();
-                        classList.forEach(cls => {
-                            if (cls.subCategoryName) {
-                                subCategorySet.add(cls.subCategoryName);
-                            }
-                        });
+                    function loadSubCategories(categoryIdx) {
+                        fetch(`/api/classes/sub-categories/${categoryIdx}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                renderSubCategoryList(data);
+                            })
+                            .catch(err => console.error("서브카테고리 로딩 실패:", err));
+                    }
 
+                    function renderSubCategoryList(subCategories) {
                         const container = document.getElementById("subCategoryList");
                         container.innerHTML = "";
 
                         const allItem = document.createElement("li");
                         allItem.innerHTML = `
-  <a href="javascript:void(0)" data-sub-id="all"
-     class="${selectedSubCategoryName === null ? 'active' : ''}"
-     onclick="selectSubCategoryByName(null)">
-     전체
-  </a>`;
+        <a href="javascript:void(0)" data-sub-id="all"
+           class="sub-category-item"
+           onclick="selectSubCategoryByName(null)">
+           전체
+        </a>`;
                         container.appendChild(allItem);
-                        Array.from(subCategorySet).forEach(name => {
+
+                        subCategories.forEach(sub => {
                             const li = document.createElement("li");
                             li.innerHTML = `
-      <a href="javascript:void(0)"
-         data-sub-id="${name}"
-         class="${selectedSubCategoryName === name ? 'active' : ''}"
-         onclick="selectSubCategoryByName('${name}')">
-         ${name}
-      </a>`;
+            <a href="javascript:void(0)"
+               data-sub-id="${sub.subCategoryName}"
+               class="sub-category-item"
+               onclick="selectSubCategoryByName('${sub.subCategoryName}')">
+               ${sub.subCategoryName}
+            </a>`;
                             container.appendChild(li);
                         });
+
+                        highlightSelectedSubCategory();
                     }
 
                     function selectSubCategoryByName(name) {
-                        selectedSubCategoryName = name;
+                        selectedSubCategoryName = (name === "null" || name === null) ? null : name;
                         currentPage = 0;
+                        highlightSelectedSubCategory();
                         loadClasses(0);
                     }
 
-                    function highlightSelectedSub(subIdx) {
-                        document.querySelectorAll("#subCategoryList a").forEach(el => {
-                            el.classList.remove("active");
-                        });
+                    function highlightSelectedSubCategory() {
+                        document.querySelectorAll(".sub-category-item").forEach(el => {
+                            el.classList.remove("fw-bold", "text-orange", "active");
 
-                        if (subIdx == null) {
-                            document.querySelector("#subCategoryList a[data-sub-id='all']")?.classList.add("active");
-                        } else {
-                            document.querySelector(`#subCategoryList a[data-sub-id='${subIdx}']`)?.classList.add("active");
-                        }
+                            const subId = el.getAttribute("data-sub-id");
+                            const isAll = subId === "all";
+                            const isMatch = subId === selectedSubCategoryName;
+
+                            if ((isAll && selectedSubCategoryName === null) || isMatch) {
+                                el.classList.add("fw-bold", "text-orange", "active");
+                            }
+                        });
                     }
 
                     function loadClasses(page) {
@@ -228,8 +237,6 @@
                         fetch(`/api/classes/category/${categoryIdx}?` + params.toString())
                             .then(res => res.json())
                             .then(data => {
-                                renderSubCategoryListFromClasses(data.content);
-
                                 let filtered = selectedSubCategoryName
                                     ? data.content.filter(cls => cls.subCategoryName === selectedSubCategoryName)
                                     : data.content;
