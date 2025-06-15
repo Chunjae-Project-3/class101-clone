@@ -414,6 +414,79 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total != null ? total : 0);
     }
+  
+ @Override
+    public List<ClassDTO> getWishListByUserId(String userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
 
+        QClassEntity cls = QClassEntity.classEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+        QClassLikeEntity like = QClassLikeEntity.classLikeEntity;
+
+        List<ClassDTO> classList = queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName,
+                        creator.creatorName,
+                        creator.creatorProfileImg,
+                        creator.creatorDescription
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.creator, creator)
+                .innerJoin(like).on(like.classLikeRef.eq(cls))  // leftJoin -> innerJoin
+                .where(like.classLikeUser.userId.eq(userId))
+                .orderBy(cls.createdAt.desc())
+                .fetch();
+
+        classList.forEach(dto -> dto.setLiked(true));
+
+        return classList;
+    }
+
+    @Override
+    public List<LectureDTO> getLectureHistoryByUserId(String userId) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+
+        QLectureEntity lecture = QLectureEntity.lectureEntity;
+        QLectureHistoryEntity history = QLectureHistoryEntity.lectureHistoryEntity;
+
+        return queryFactory
+                .select(Projections.constructor(LectureDTO.class,
+                        lecture.lectureIdx,
+                        lecture.lectureTitle,
+                        lecture.lectureDurationSec,
+                        history.lectureHistoryTotalWatchTime.hour().multiply(3600)
+                                .add(history.lectureHistoryTotalWatchTime.minute().multiply(60))
+                                .add(history.lectureHistoryTotalWatchTime.second()).sum(),
+                        history.lectureHistoryTotalWatchTime.hour().multiply(3600)
+                                .add(history.lectureHistoryTotalWatchTime.minute().multiply(60))
+                                .add(history.lectureHistoryTotalWatchTime.second()).sum()
+                                .multiply(100)
+                                .divide(lecture.lectureDurationSec)
+                                .castToNum(Integer.class),
+                        history.lectureHistoryLastWatchDate.max()
+                ))
+                .from(history)
+                .innerJoin(history.lectureHistoryRef, lecture)
+                .where(history.lectureHistoryUser.userId.eq(userId))
+                .groupBy(
+                        lecture.lectureIdx,
+                        lecture.lectureTitle,
+                        lecture.lectureDurationSec
+                )
+                .orderBy(history.lectureHistoryLastWatchDate.max().desc())
+                .fetch();
+    }
 
 }

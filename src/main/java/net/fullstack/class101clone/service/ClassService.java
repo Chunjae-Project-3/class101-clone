@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.LectureEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.dto.LectureDTO;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.file.FileRepository;
 import net.fullstack.class101clone.repository.LectureRepository;
@@ -115,4 +116,18 @@ public class ClassService {
         return classRepository.searchClassesAndCreators(keyword, pageable, sort, userId);
     }
 
+    public List<ClassDTO> getWishlist(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+
+        return classRepository.getWishListByUserId(userId);
+    }
+
+    public List<LectureDTO> getLectureHistory(String userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("로그인이 필요합니다.");
+        }
+        return classRepository.getLectureHistoryByUserId(userId);
+    }
 }
