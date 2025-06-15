@@ -5,11 +5,13 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.*;
 import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.dto.LectureDTO;
 import net.fullstack.class101clone.repository.login.UserRepositoryIf;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
