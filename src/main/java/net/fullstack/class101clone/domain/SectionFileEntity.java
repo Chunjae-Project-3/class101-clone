@@ -18,6 +18,9 @@ public class SectionFileEntity {
     @Column(name = "idx",columnDefinition = "int(11) not null comment '섹션 파일 인덱스'")
     private int idx;
 
+    @Column(name = "ord", nullable = false, columnDefinition = "int not null comment '섹션 파일 순서'")
+    private int ord;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_idx", nullable = false,
             foreignKey = @ForeignKey(name = "FK_tbl_section_file_tbl_section"))
