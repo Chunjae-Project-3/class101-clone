@@ -24,6 +24,8 @@ public class ClassDTO {
 
     private LocalDateTime createdAt;
 
+    private String subCategoryName;
+
     public ClassDTO(Integer classIdx, String classTitle, String classDescription, String thumbnailUrl, String categoryName) {
         this.classIdx = classIdx;
         this.classTitle = classTitle;
@@ -44,6 +46,21 @@ public class ClassDTO {
         this.creatorProfileImg = creatorProfileImg;
         this.creatorDescription = creatorDescription;
     }
-
+    public ClassDTO(Integer classIdx, String classTitle, String classDescription,
+                    String thumbnailUrl, String categoryName,
+                    String creatorName, String creatorProfileImg, String creatorDescription,
+                    LocalDateTime createdAt,
+                    String subCategoryName) {
+        this.classIdx = classIdx;
+        this.classTitle = classTitle;
+        this.classDescription = classDescription;
+        this.thumbnailUrl = thumbnailUrl;
+        this.categoryName = categoryName;
+        this.creatorName = creatorName;
+        this.creatorProfileImg = creatorProfileImg;
+        this.creatorDescription = creatorDescription;
+        this.createdAt = createdAt;
+        this.subCategoryName = subCategoryName;
+    }
 
 }
