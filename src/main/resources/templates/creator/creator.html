@@ -89,6 +89,35 @@
             font-size: 1rem;
             margin: 0.5rem;
         }
+
+        .recent-post-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3개 열 */
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .recent-post-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .recent-post-card h5 {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .recent-post-card p {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
     </style>
 </head>
 <body>
@@ -119,9 +148,9 @@
             <!-- 왼쪽 네비게이션 -->
             <div class="col-md-3">
                 <nav class="nav flex-column bg-light p-3 rounded shadow-sm">
-                    <a class="nav-link" href="#profile">프로필</a>
-                    <a class="nav-link" href="#all-classes">전체 클래스</a>
-                    <a class="nav-link" href="#recent-classes">최근 클래스</a>
+                    <a class="nav-link" href="#profile">[[${creator.creatorName}]] 홈</a>
+                    <a class="nav-link" href="#all-classes">영상 클래스</a>
+                    <a class="nav-link" href="#recent-classes">게시글</a>
                 </nav>
             </div>
 
@@ -141,9 +170,6 @@
                             전체
                         </button>
                     </div>
-
-                    <div id="creatorClassCarousel"></div>
-
                     <div class="recent-class-section container mt-4">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <h3 class="mb-0">[[${creator.creatorName}]]의 최신 클래스</h3>
@@ -154,7 +180,9 @@
                         </div>
                         <div class="recent-class-list">
                             <div class="recent-class-card" th:each="recent : ${recentClasses}">
-                                <img th:src="${recent.thumbnailUrl != null} ? ${recent.thumbnailUrl} : '/images/default-thumbnail.png'" alt="썸네일">
+                                <img th:src="${recent.thumbnailUrl}"
+                                     onerror="this.onerror=null; this.src='/images/default-thumbnail.png';"
+                                     alt="썸네일">
                                 <div class="class-info">
                                     <h5 th:text="${recent.classTitle}">클래스 제목</h5>
                                     <p th:text="${recent.classDescription}">클래스 설명</p>
@@ -163,99 +191,118 @@
                         </div>
                     </div>
                     <hr>
-                    <!--        <div th:if="${cls.thumbnailUrl  != null}">-->
-                    <!--            <img th:src="${cls.thumbnailUrl != null} ? ${cls.thumbnailUrl} : '/images/default-thumbnail.png'"-->
-                    <!--                 alt="클래스 썸네일" class="card-img-top" />-->
-                </div>
-                <div>
-                    썸네일이 존재하지 않을 경우 기본 이미지 출력
-                    <!--            <div th:if="${cls.thumbnailUrl  == null}">-->
-                    <!--                <img src="/images/default-thumbnail.png"-->
-                    <!--                     alt="기본 썸네일"-->
-                    <!--                     class="card-img-top" />-->
-                    <!--            </div>-->
-                </div>
-                <!-- 클래스 카드 그리드 -->
 
-                <div class="row row-cols-1 row-cols-md-3 g-4">
-                    <div class="col" th:each="cls : ${classes}">
-                        <div class="card h-100 position-relative">
-                            <!--                    <img th:src="|/${cls.classThumbnailImg.filePath}${cls.classThumbnailImg.fileName}.${cls.classThumbnailImg.fileExt}|" class="card-img-top" alt="클래스 썸네일"/>-->
-                            <button class="btn btn-light position-absolute top-0 end-0 m-2">
-                                <i class="bi bi-bookmark"></i>
-                            </button>
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${cls.classTitle }">클래스 제목</h5>
+                    <div class="recent-post-section container mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-0">최근 글</h3>
+                            <button class="btn btn-link" onclick="showAllPosts()">전체 글 보기 &gt;</button>
+                        </div>
+
+                        <div class="recent-post-list">
+                            <div class="recent-post-card" th:each="post : ${recentPosts}">
+                                <div class="post-info">
+                                    <h5 th:text="${post.title}">글 제목</h5>
+                                    <p class="text-muted small" th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd')}">작성일</p>
+                                    <p th:text="${post.content.length() > 80 ? post.content.substring(0, 80) + '...' : post.content}">내용 미리보기</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 전체 글 영역 -->
+                    <div id="section-all-posts" class="d-none mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-0">전체 글</h3>
+                            <button class="btn btn-link text-secondary" onclick="showRecent()">← 돌아가기</button>
+                        </div>
+                        <div class="row row-cols-1 row-cols-md-2 g-3">
+                            <div class="col" th:each="post : ${allPosts}">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${post.title}">글 제목</h5>
+                                        <p class="card-text text-muted small" th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd')}">날짜</p>
+                                        <p class="card-text" th:text="${post.content.length() > 100 ? post.content.substring(0, 100) + '...' : post.content}">내용</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div>end of body</div>
-            </div>
             </div>
         </div>
     </div>
+</div>
+
 
 
 
     <!-- 헤더 배경 -->
 
-</div>
 
 <script>
-    const renderCarouselSection = (title, index, classList) => {
-        const sectionId = `creator-carousel-${index}`;
-        const slides = [];
-        for (let i = 0; i < classList.length; i += 5) {
-            slides.push(classList.slice(i, i + 5));
-        }
+    function showAllPosts() {
+        document.getElementById("section-recent-posts").classList.add("d-none");
+        document.getElementById("section-all-posts").classList.remove("d-none");
+    }
 
-        const slideItemsHtml = slides.map((group, idx) => `
-            <div class="carousel-item ${idx === 0 ? 'active' : ''}">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-                    ${group.map(cls => `
-                        <div class="col">
-                            <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
-                                <div class="card h-100">
-                                    <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
-                                         onerror="this.onerror=null; this.src='/images/default-image.png';">
-                                    <div class="card-body" style="padding: 5px 0;">
-                                        <p class="card-text fw-semibold mb-0">${cls.classTitle}</p>
-                                        <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            ${cls.classDescription || ''}
-                                        </p>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `).join('');
+    function showRecent() {
+        document.getElementById("section-all-posts").classList.add("d-none");
+        document.getElementById("section-recent-posts").classList.remove("d-none");
+    }
 
-        const mainCarouselHtml = `
-            <section>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="fw-bold mb-0">${title}</h5>
-                    <div>
-                        <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
-                            <i class="bi bi-chevron-left fs-5 text-dark"></i>
-                        </button>
-                        <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
-                            <i class="bi bi-chevron-right fs-5 text-dark"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
-                    <div class="carousel-inner">
-                        ${slideItemsHtml}
-                    </div>
-                </div>
-            </section>
-        `;
-
-        document.getElementById("creatorClassCarousel").innerHTML = mainCarouselHtml;
-    };
+    // const renderCarouselSection = (title, index, classList) => {
+    //     const sectionId = `creator-carousel-${index}`;
+    //     const slides = [];
+    //     for (let i = 0; i < classList.length; i += 5) {
+    //         slides.push(classList.slice(i, i + 5));
+    //     }
+    //
+    //     const slideItemsHtml = slides.map((group, idx) => `
+    //         <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+    //             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+    //                 ${group.map(cls => `
+    //                     <div class="col">
+    //                         <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
+    //                             <div class="card h-100">
+    //                                 <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
+    //                                      onerror="this.onerror=null; this.src='/images/default-image.png';">
+    //                                 <div class="card-body" style="padding: 5px 0;">
+    //                                     <p class="card-text fw-semibold mb-0">${cls.classTitle}</p>
+    //                                     <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+    //                                         ${cls.classDescription || ''}
+    //                                     </p>
+    //                                 </div>
+    //                             </div>
+    //                         </a>
+    //                     </div>
+    //                 `).join('')}
+    //             </div>
+    //         </div>
+    //     `).join('');
+    //
+    //     const mainCarouselHtml = `
+    //         <section>
+    //             <div class="d-flex justify-content-between align-items-center mb-2">
+    //                 <h5 class="fw-bold mb-0">${title}</h5>
+    //                 <div>
+    //                     <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
+    //                         <i class="bi bi-chevron-left fs-5 text-dark"></i>
+    //                     </button>
+    //                     <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
+    //                         <i class="bi bi-chevron-right fs-5 text-dark"></i>
+    //                     </button>
+    //                 </div>
+    //             </div>
+    //             <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
+    //                 <div class="carousel-inner">
+    //                     ${slideItemsHtml}
+    //                 </div>
+    //             </div>
+    //         </section>
+    //     `;
+    //
+    //     document.getElementById("creatorClassCarousel").innerHTML = mainCarouselHtml;
+    // };
 </script>
 </body>
 </html>
