@@ -27,6 +27,8 @@ public interface ClassRepositoryCustom {
 
     Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId);
 
+    Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, Pageable pageable, String sort);
+
     List<ClassDTO> getWishListByUserId(String userId);
 
     List<LectureDTO> getLectureHistoryByUserId(String userId);

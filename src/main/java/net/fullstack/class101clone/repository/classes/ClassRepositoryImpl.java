@@ -357,6 +357,67 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
     }
 
     @Override
+    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, Pageable pageable, String sort) {
+        QClassEntity cls = QClassEntity.classEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+        QSubCategoryEntity sub = QSubCategoryEntity.subCategoryEntity;
+        QCreatorEntity creator = QCreatorEntity.creatorEntity;
+        QClassLikeEntity like = QClassLikeEntity.classLikeEntity;
+
+        var query = queryFactory
+                .select(Projections.constructor(ClassDTO.class,
+                        cls.classIdx,
+                        cls.classTitle,
+                        cls.classDescription,
+                        file.filePath,
+                        cat.categoryName,
+                        creator.creatorName,
+                        creator.creatorProfileImg,
+                        creator.creatorDescription,
+                        cls.createdAt,
+                        sub.subCategoryName
+                ))
+                .from(cls)
+                .leftJoin(cls.classThumbnailImg, file)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.classSubCategory, sub)
+                .leftJoin(cls.creator, creator)
+                .where(
+                        cat.categoryIdx.eq(categoryIdx),
+                        subCategoryIdx != null ? sub.subCategoryIdx.eq(subCategoryIdx) : null
+                );
+
+        switch (sort) {
+            case "popular" -> {
+                query.leftJoin(like).on(like.classLikeRef.eq(cls))
+                        .groupBy(cls.classIdx)
+                        .orderBy(like.count().desc());
+            }
+            case "old" -> query.orderBy(cls.createdAt.asc());
+            default -> query.orderBy(cls.createdAt.desc());
+        }
+
+        List<ClassDTO> content = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long total = queryFactory
+                .select(cls.count())
+                .from(cls)
+                .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.classSubCategory, sub)
+                .where(
+                        cat.categoryIdx.eq(categoryIdx),
+                        subCategoryIdx != null ? sub.subCategoryIdx.eq(subCategoryIdx) : null
+                )
+                .fetchOne();
+
+        return new PageImpl<>(content, pageable, total != null ? total : 0);
+    }
+  
+ @Override
     public List<ClassDTO> getWishListByUserId(String userId) {
         if (userId == null) {
             return Collections.emptyList();
@@ -429,4 +490,5 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .orderBy(history.lectureHistoryLastWatchDate.max().desc())
                 .fetch();
     }
+
 }
