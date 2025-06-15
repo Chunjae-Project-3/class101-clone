@@ -142,20 +142,25 @@
         const socket = new SockJS("/ws-chat");
         stompClient = Stomp.over(socket);
 
-        stompClient.connect(
-            {userId: myUserId},
-            () => {
-                stompClient.subscribe("/user/queue/messages", (message) => {
-                    const msg = JSON.parse(message.body);
-                    if (msg.sender === myUserId) return;
-                    renderOtherMessage(msg.sender, msg.content, msg.timestamp);
-                    fetch(`/api/chat/unread`);
-                });
-            },
-            (error) => {
-                console.error("WebSocket 연결 실패:", error);
-            }
-        );
+        stompClient.connect({}, () => {
+            // ✅ 연결 성공 후에 구독
+            stompClient.subscribe("/user/queue/messages", (message) => {
+                const msg = JSON.parse(message.body);
+                if (msg.sender === myUserId) return;
+
+                renderOtherMessage(msg.sender, msg.content, msg.timestamp);
+
+                // 배지 제거 요청
+                fetch(`/api/chat/unread`)
+                    .then(res => res.json())
+                    .then(hasUnread => {
+                        if (!hasUnread) {
+                            const badge = document.getElementById("chatAlertBadge");
+                            if (badge) badge.remove();
+                        }
+                    });
+            });
+        });
     }
 
     function loadChatHistory() {
