@@ -56,14 +56,15 @@ public class ClassApiController {
     }
 
     @GetMapping("/category/{categoryIdx}")
-    @Operation(summary = "카테고리 인덱스로 클래스 목록 조회 (페이징)", description = "카테고리 인덱스로 등록된 클래스 목록을 페이지네이션하여 반환합니다.")
+    @Operation(summary = "카테고리 인덱스로 클래스 목록 조회 (페이징)", description = "카테고리 및 서브카테고리 인덱스로 등록된 클래스 목록을 페이지네이션하여 반환합니다.")
     public Page<ClassDTO> getPagedClassesByCategoryIdx(
             @PathVariable Integer categoryIdx,
+            @RequestParam(required = false) Integer subCategoryIdx,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "recent") String sort
     ) {
-        return classService.getPagedClassesByCategoryIdx(categoryIdx, page, size, sort);
+        return classService.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, page, size, sort);
     }
 
     @GetMapping("/creators/category/{categoryIdx}")

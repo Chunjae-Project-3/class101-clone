@@ -45,6 +45,11 @@ public class ClassService {
         return classRepository.getPagedClassesByCategoryIdx(categoryIdx, pageable, sort);
     }
 
+    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(page, size);
+        return classRepository.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, pageable, sort);
+    }
+
     public List<Map<String, String>> getCreatorsByCategory(Integer categoryIdx) {
         return classRepository.getCreatorListByCategoryIdx(categoryIdx);
     }

@@ -42,4 +42,8 @@ public class ClassEntity extends BaseEntity {
     @JoinColumn(name = "creator_id", foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_creator"))
     private CreatorEntity creator;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_sub_category_idx", foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_sub_category"))
+    private SubCategoryEntity classSubCategory;
+
 }
