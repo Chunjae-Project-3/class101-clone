@@ -22,4 +22,13 @@ public class CreatorRepositoryImpl implements CreatorRepositoryCustom {
                 .getResultList();
 
     }
+
+    @Override
+    public List<ClassEntity> allClasses(int creatorId) {
+        return entityManager.createQuery(
+                        "SELECT c FROM ClassEntity c WHERE c.creator.creatorId = :creatorId ORDER BY c.createdAt DESC",
+                        ClassEntity.class
+                ).setParameter("creatorId", creatorId)
+                .getResultList();
+    }
 }
