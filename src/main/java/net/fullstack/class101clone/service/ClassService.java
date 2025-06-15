@@ -6,6 +6,7 @@ import net.fullstack.class101clone.domain.LectureEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.LectureDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
+import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.file.FileRepository;
 import net.fullstack.class101clone.repository.LectureRepository;
@@ -22,6 +23,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class ClassService {
+    private final ClassLikeRepository classLikeRepository;
     private final ClassRepository classRepository;
     private final FileRepository fileRepository;
     private final LectureRepository lectureRepository;
@@ -47,10 +49,20 @@ public class ClassService {
         return classRepository.getPagedClassesByCategoryIdx(categoryIdx, pageable, sort);
     }
 
-    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, int page, int size, String sort) {
+    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, int page, int size, String sort, String userId) {
         Pageable pageable = PageRequest.of(page, size);
-        return classRepository.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, pageable, sort);
+        Page<ClassDTO> resultPage = classRepository.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, pageable, sort);
+
+        if (userId != null) {
+            for (ClassDTO dto : resultPage.getContent()) {
+                boolean liked = classLikeRepository.existsByClassLikeUser_UserIdAndClassLikeRef_ClassIdx(userId, dto.getClassIdx());
+                dto.setLiked(liked);
+            }
+        }
+
+        return resultPage;
     }
+
 
     public List<Map<String, String>> getCreatorsByCategory(Integer categoryIdx) {
         return classRepository.getCreatorListByCategoryIdx(categoryIdx);
