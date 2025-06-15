@@ -32,4 +32,7 @@ public class CreatorEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     private List<ClassEntity> classList;
+
+    @Column(name = "creator_banner_img", columnDefinition = "varchar(255) null comment '크리에이터 배너 이미지 경로'")
+    private String creatorBannerImg;
 }
