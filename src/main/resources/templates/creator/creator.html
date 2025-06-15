@@ -44,25 +44,26 @@
         }
 
         .recent-class-list {
-            display: flex;
-            overflow-x: auto;
-            gap: 1rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 딱 3개로 고정 */
+            gap: 1.5rem;
             padding: 1rem 0;
         }
 
         .recent-class-card {
-            flex: 0 0 auto;
-            width: 220px;
             border: 1px solid #ccc;
             border-radius: 8px;
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* 내부 높이 균일하게 */
         }
 
         .recent-class-card img {
             width: 100%;
-            height: 140px;
+            aspect-ratio: 4 / 3; /* 비율 유지 */
             object-fit: cover;
             display: block;
         }
@@ -91,14 +92,17 @@
     </style>
 </head>
 <body>
+<script th:inline="javascript">
+    const classList = [[${recentClasses}]];
+    renderCarouselSection("이 크리에이터의 클래스", 0, classList);
+</script>
 <div layout:fragment="content">
-    <div>start of body</div>
-
-    <!-- 헤더 배경 -->
+    <p th:text="'배너 파일명: ' + ${creator.creatorBannerImg}">배너 파일명</p>
     <div class="creator-header"
-         th:style="|background-image: url('/upload/creator/creator_banner.png');|">
+         th:style="|background-image: url('/upload/creator/${creator.creatorBannerImg != null ? creator.creatorBannerImg : 'default_banner.png'}');|">
+
         <div class="overlay">
-<!--            <h1 th:text="${creator.headerTitle}">헤더 제목</h1>-->
+            <!--            <h1 th:text="${creator.headerTitle}">헤더 제목</h1>-->
         </div>
     </div>
     <!-- 프로필 카드 -->
@@ -110,72 +114,148 @@
             <p th:text="${creator.creatorDescription}" class="text-muted">크리에이터 소개</p>
         </div>
     </div>
-
-    <!-- 클래스 섹션 -->
     <div class="container mt-4">
-        <h3>클래스</h3>
-        <!-- 카테고리 버튼 그룹 -->
-        <div class="btn-group mb-3" role="group">
-            <button type="button"
-                    class="btn btn-outline-secondary"
-                    th:each="cat : ${categories}"
-                    th:text="${cat.label}"
-                    th:classappend="${cat.value == selectedCategory} ? ' active' : ''"
-                    th:onclick="|window.location.href='?category=${cat.value}'|">
-                전체
-            </button>
-        </div>
-        <div class="recent-class-section container mt-4">
-            <h3>이 크리에이터의 최근 클래스</h3>
-            <div class="recent-class-list">
-                <div class="recent-class-card" th:each="cls : ${recentClasses}">
-                    <img th:if="${cls.classThumbnailImg != null}"
-                         th:src="@{'/' + ${cls.classThumbnailImg.filePath} + ${cls.classThumbnailImg.fileName} + '.' + ${cls.classThumbnailImg.fileExt}}"
-                         alt="썸네일">
-                    <img th:if="${cls.classThumbnailImg == null}"
-                         src="/images/default-thumbnail.png"
-                         alt="기본 썸네일">
-                    <div class="class-info">
-                        <h5 th:text="${cls.classTitle}">클래스 제목</h5>
-                        <p th:text="${cls.classDescription}">클래스 설명</p>
-                    </div>
-                </div>
+        <div class="row">
+            <!-- 왼쪽 네비게이션 -->
+            <div class="col-md-3">
+                <nav class="nav flex-column bg-light p-3 rounded shadow-sm">
+                    <a class="nav-link" href="#profile">프로필</a>
+                    <a class="nav-link" href="#all-classes">전체 클래스</a>
+                    <a class="nav-link" href="#recent-classes">최근 클래스</a>
+                </nav>
             </div>
-        </div>
-        <hr>
 
-        <div th:if="${cls.classThumbnailImg != null}">
-            <img th:src="@{'/' + ${cls.classThumbnailImg.filePath} + ${cls.classThumbnailImg.fileName} + '.' + ${cls.classThumbnailImg.fileExt}}"
-                 alt="클래스 썸네일"
-                 class="card-img-top" />
-        </div>
-        <div>
-          썸네일이 존재하지 않을 경우 기본 이미지 출력
-            <div th:if="${cls.classThumbnailImg == null}">
-                <img src="/images/default-thumbnail.png"
-                     alt="기본 썸네일"
-                     class="card-img-top" />
-            </div>
-        </div>
-        <!-- 클래스 카드 그리드 -->
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" th:each="cls : ${classes}">
-                <div class="card h-100 position-relative">
-<!--                    <img th:src="|/${cls.classThumbnailImg.filePath}${cls.classThumbnailImg.fileName}.${cls.classThumbnailImg.fileExt}|" class="card-img-top" alt="클래스 썸네일"/>-->
-                    <div class="badge bg-secondary position-absolute top-0 start-0 m-2 badge-status"
-                         th:text="${cls.status}">상태</div>
-                    <button class="btn btn-light position-absolute top-0 end-0 m-2">
-                        <i class="bi bi-bookmark"></i>
-                    </button>
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${cls.title }">클래스 제목</h5>
-                        <p class="card-text text-muted" th:text="${cls.level}">레벨</p>
+            <!-- 오른쪽 본문 (기존 내용들 여기로 이동) -->
+            <div class="col-md-9">
+                <!-- 클래스 섹션 -->
+                <div class="container mt-4">
+                    <h3>클래스</h3>
+                    <!-- 카테고리 버튼 그룹 -->
+                    <div class="btn-group mb-3" role="group">
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                th:each="cat : ${categories}"
+                                th:text="${cat.label}"
+                                th:classappend="${cat.value == selectedCategory} ? ' active' : ''"
+                                th:onclick="|window.location.href='?category=${cat.value}'|">
+                            전체
+                        </button>
+                    </div>
+
+                    <div id="creatorClassCarousel"></div>
+
+                    <div class="recent-class-section container mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h3 class="mb-0">[[${creator.creatorName}]]의 최신 클래스</h3>
+                            <a th:href="@{/creators/{creatorId}/classes(creatorId=${creator.creatorId})}"
+                               class="text-decoration-none text-secondary small fw-semibold">
+                                전체 보기 &gt;
+                            </a>
+                        </div>
+                        <div class="recent-class-list">
+                            <div class="recent-class-card" th:each="recent : ${recentClasses}">
+                                <img th:src="${recent.thumbnailUrl != null} ? ${recent.thumbnailUrl} : '/images/default-thumbnail.png'" alt="썸네일">
+                                <div class="class-info">
+                                    <h5 th:text="${recent.classTitle}">클래스 제목</h5>
+                                    <p th:text="${recent.classDescription}">클래스 설명</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <!--        <div th:if="${cls.thumbnailUrl  != null}">-->
+                    <!--            <img th:src="${cls.thumbnailUrl != null} ? ${cls.thumbnailUrl} : '/images/default-thumbnail.png'"-->
+                    <!--                 alt="클래스 썸네일" class="card-img-top" />-->
+                </div>
+                <div>
+                    썸네일이 존재하지 않을 경우 기본 이미지 출력
+                    <!--            <div th:if="${cls.thumbnailUrl  == null}">-->
+                    <!--                <img src="/images/default-thumbnail.png"-->
+                    <!--                     alt="기본 썸네일"-->
+                    <!--                     class="card-img-top" />-->
+                    <!--            </div>-->
+                </div>
+                <!-- 클래스 카드 그리드 -->
+
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    <div class="col" th:each="cls : ${classes}">
+                        <div class="card h-100 position-relative">
+                            <!--                    <img th:src="|/${cls.classThumbnailImg.filePath}${cls.classThumbnailImg.fileName}.${cls.classThumbnailImg.fileExt}|" class="card-img-top" alt="클래스 썸네일"/>-->
+                            <button class="btn btn-light position-absolute top-0 end-0 m-2">
+                                <i class="bi bi-bookmark"></i>
+                            </button>
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${cls.classTitle }">클래스 제목</h5>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                <div>end of body</div>
+            </div>
             </div>
         </div>
-        <div>end of body</div>
     </div>
+
+
+
+    <!-- 헤더 배경 -->
+
 </div>
+
+<script>
+    const renderCarouselSection = (title, index, classList) => {
+        const sectionId = `creator-carousel-${index}`;
+        const slides = [];
+        for (let i = 0; i < classList.length; i += 5) {
+            slides.push(classList.slice(i, i + 5));
+        }
+
+        const slideItemsHtml = slides.map((group, idx) => `
+            <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                    ${group.map(cls => `
+                        <div class="col">
+                            <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
+                                <div class="card h-100">
+                                    <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
+                                         onerror="this.onerror=null; this.src='/images/default-image.png';">
+                                    <div class="card-body" style="padding: 5px 0;">
+                                        <p class="card-text fw-semibold mb-0">${cls.classTitle}</p>
+                                        <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            ${cls.classDescription || ''}
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+
+        const mainCarouselHtml = `
+            <section>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="fw-bold mb-0">${title}</h5>
+                    <div>
+                        <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
+                            <i class="bi bi-chevron-left fs-5 text-dark"></i>
+                        </button>
+                        <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
+                            <i class="bi bi-chevron-right fs-5 text-dark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
+                    <div class="carousel-inner">
+                        ${slideItemsHtml}
+                    </div>
+                </div>
+            </section>
+        `;
+
+        document.getElementById("creatorClassCarousel").innerHTML = mainCarouselHtml;
+    };
+</script>
 </body>
 </html>
