@@ -3,6 +3,7 @@ package net.fullstack.class101clone.repository.classes;
 import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.LectureDTO;
+import net.fullstack.class101clone.dto.SubCategoryDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +33,8 @@ public interface ClassRepositoryCustom {
     List<ClassDTO> getWishListByUserId(String userId);
 
     List<LectureDTO> getLectureHistoryByUserId(String userId);
+
+    List<String> getLectureThumbnailsByClassId(Integer classId);
+    List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx);
+
 }
