@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.CreatorEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
+import net.fullstack.class101clone.service.creator.CreatorCommunityService;
 import net.fullstack.class101clone.service.creator.CreatorServiceImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,19 +20,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CreatorController {
     private final CreatorServiceImpl creatorService;
+    private final CreatorCommunityService communityService;
 
     @GetMapping("/creators/{creatorId}")
     public String showCreator(@PathVariable Integer creatorId, Model model) {
         CreatorEntity creator = creatorService.getCreator(creatorId);
         List<ClassDTO> recentClasses = creatorService.showRecentClassesOfCreator(creatorId);
 
-        log.info("recentClasses size: {}", recentClasses.size());
-
         model.addAttribute("creator", creator);
         model.addAttribute("recentClasses", recentClasses);
+        model.addAttribute("allClasses", creatorService.showAllClassesOfCreator(creatorId));
+
+        // 💡 추가할 부분
+        model.addAttribute("recentPosts", communityService.getRecentPostsByCreator(creatorId.longValue()));
+        model.addAttribute("allPosts", communityService.getCommunityPostsByCreator(creatorId.longValue()));
 
         return "creator/creator";
     }
-
 
 }
