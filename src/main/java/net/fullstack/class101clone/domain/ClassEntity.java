@@ -36,6 +36,7 @@ public class ClassEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "lectureRef", cascade = CascadeType.ALL, orphanRemoval = true)
     @BatchSize(size = 20)
+    @Builder.Default
     private List<LectureEntity> lectureList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
