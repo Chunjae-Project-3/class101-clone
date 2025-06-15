@@ -32,4 +32,7 @@ public interface ClassRepositoryCustom {
     List<ClassDTO> getWishListByUserId(String userId);
 
     List<LectureDTO> getLectureHistoryByUserId(String userId);
+
+    List<String> getLectureThumbnailsByClassId(Integer classId);
+
 }

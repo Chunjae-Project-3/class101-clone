@@ -230,11 +230,33 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .collect(Collectors.toList());
     }
 
+//    @Override
+//    public ClassDTO getClassDetailById(Integer classId) {
+//        QClassEntity cls = QClassEntity.classEntity;
+//        QFileEntity file = QFileEntity.fileEntity;
+//        QCategoryEntity cat = QCategoryEntity.categoryEntity;
+//
+//        return queryFactory
+//                .select(Projections.constructor(ClassDTO.class,
+//                        cls.classIdx,
+//                        cls.classTitle,
+//                        cls.classDescription,
+//                        file.filePath,
+//                        cat.categoryName
+//                ))
+//                .from(cls)
+//                .leftJoin(cls.classThumbnailImg, file)
+//                .leftJoin(cls.classCategory, cat)
+//                .where(cls.classIdx.eq(classId))
+//                .fetchOne();
+//    }
+
     @Override
     public ClassDTO getClassDetailById(Integer classId) {
         QClassEntity cls = QClassEntity.classEntity;
         QFileEntity file = QFileEntity.fileEntity;
         QCategoryEntity cat = QCategoryEntity.categoryEntity;
+        QSubCategoryEntity sub = QSubCategoryEntity.subCategoryEntity;
 
         return queryFactory
                 .select(Projections.constructor(ClassDTO.class,
@@ -242,11 +264,15 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         cls.classTitle,
                         cls.classDescription,
                         file.filePath,
-                        cat.categoryName
+                        cat.categoryIdx,
+                        cat.categoryName,
+                        sub.subCategoryIdx,
+                        sub.subCategoryName
                 ))
                 .from(cls)
                 .leftJoin(cls.classThumbnailImg, file)
                 .leftJoin(cls.classCategory, cat)
+                .leftJoin(cls.classSubCategory, sub)
                 .where(cls.classIdx.eq(classId))
                 .fetchOne();
     }
@@ -490,5 +516,22 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .orderBy(history.lectureHistoryLastWatchDate.max().desc())
                 .fetch();
     }
+
+    @Override
+    public List<String> getLectureThumbnailsByClassId(Integer classId) {
+        QLectureEntity lec = QLectureEntity.lectureEntity;
+        QFileEntity file = QFileEntity.fileEntity;
+
+        return queryFactory
+                .select(file.filePath)
+                .from(lec)
+                .leftJoin(lec.lectureThumbnail, file)
+                .where(lec.lectureRef.classIdx.eq(classId),
+                        file.filePath.isNotNull())
+                .orderBy(lec.lectureIdx.asc()) // 또는 원하는 순서 기준
+                .limit(5) // 필요 시 제한
+                .fetch();
+    }
+
 
 }

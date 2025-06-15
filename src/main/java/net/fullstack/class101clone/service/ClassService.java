@@ -130,4 +130,9 @@ public class ClassService {
         }
         return classRepository.getLectureHistoryByUserId(userId);
     }
+
+    public List<String> getLectureThumbnailList(Integer classId) {
+        return classRepository.getLectureThumbnailsByClassId(classId);
+    }
+
 }

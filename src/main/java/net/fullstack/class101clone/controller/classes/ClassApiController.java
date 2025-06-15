@@ -48,11 +48,13 @@ public class ClassApiController {
         ClassDTO classInfo = classService.getClassDetail(id);
         List<String> imageList = classService.getClassImageList(id);
         Map<String, List<Map<String, String>>> curriculum = classService.getLectureCurriculum(id);
+        List<String> lectureThumbnails = classService.getLectureThumbnailList(id);
 
         return Map.of(
                 "class", classInfo,
                 "classImageList", imageList,
-                "lectureCurriculum", curriculum
+                "lectureCurriculum", curriculum,
+                "lectureThumbnails", lectureThumbnails
         );
     }
 
