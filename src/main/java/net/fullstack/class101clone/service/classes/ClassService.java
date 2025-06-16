@@ -102,7 +102,7 @@ public class ClassService {
     public List<SectionDTO> getCurriculum(Integer classIdx, @Nullable String userId, boolean includeFiles) {
         List<SectionDTO> sectionList = (includeFiles
                 ? classRepository.getSectionsWithFilesByClassIdx(classIdx)
-                : classRepository.getSectionsByClassIdx(classIdx));
+                : classRepository.findSectionsByClassIdx(classIdx));
 
         return sectionList.stream()
                 .map(section -> {

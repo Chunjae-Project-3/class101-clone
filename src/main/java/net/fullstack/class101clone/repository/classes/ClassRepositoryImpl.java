@@ -269,7 +269,8 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         creatorQ.creatorId,
                         creatorQ.creatorName,
                         creatorQ.creatorProfileImg,
-                        creatorQ.creatorDescription
+                        creatorQ.creatorDescription,
+                        creatorQ.createdAt
                 ))
                 .from(classQ)
                 .leftJoin(classQ.classThumbnailImg, fileQ)
@@ -499,10 +500,10 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
     }
 
     @Override
-    public List<SectionDTO> getSectionsByClassIdx(Integer classIdx) {
+    public List<SectionDTO> findSectionsByClassIdx(Integer classIdx) {
         QSectionEntity sectionQ = QSectionEntity.sectionEntity;
 
-        List<SectionDTO> result = queryFactory
+        return queryFactory
                 .select(Projections.bean(SectionDTO.class,
                         sectionQ.sectionIdx,
                         sectionQ.sectionRef.classIdx.as("sectionRefIdx"),
@@ -513,12 +514,6 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .where(sectionQ.sectionRef.classIdx.eq(classIdx))
                 .orderBy(sectionQ.sectionOrder.asc())
                 .fetch();
-
-        if (result.isEmpty()) {
-            throw new NotFoundException("Sections not found. id: " + classIdx);
-        }
-
-        return result;
     }
 
     @Override
