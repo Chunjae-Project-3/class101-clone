@@ -383,16 +383,16 @@
                         ${group.map(creator => {
                                 if (!creator) return `<div class="col"></div>`;
                                 return `
-                                <div class="col">
-                                    <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
-                                        <img src="${creator.profileImage}" alt="프로필"
-                                             class="rounded-circle mb-2"
-                                             style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
-                                        <p class="fw-bold small mb-1">${creator.name}</p>
-                                        <p class="text-muted small mb-0 text-truncate">${creator.description}</p>
-                                    </div>
-                                </div>
-                            `;
+    <div class="col">
+        <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
+            <img src="${creator.creatorProfileImg}" alt="프로필"
+                 class="rounded-circle mb-2"
+                 style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
+            <p class="fw-bold small mb-1">${creator.creatorName}</p>
+            <p class="text-muted small mb-0 text-truncate">${creator.creatorDescription}</p>
+        </div>
+    </div>
+`;
                             }).join('')}
                     </div>
                 </div>
