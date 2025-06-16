@@ -17,6 +17,6 @@ public class SectionDTO {
     private int sectionRefIdx;
     private String sectionTitle;
     private int sectionOrder;
-    private List<FileDTO> sectionThumbnailList;
+    private List<String> sectionThumbnailUrls;
     private List<LectureDTO> lectureList;
 }

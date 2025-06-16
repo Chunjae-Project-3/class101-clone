@@ -133,7 +133,7 @@
             const res = await fetch(`/api/classes/${classId}`);
             const data = await res.json();
 
-            const lectureThumbnails = data.lectureThumbnails || [];
+            const thumbnailUrls = data.thumbnailUrls || [];
             const carouselInner = document.querySelector(".carousel-inner");
             const counter = document.getElementById("carouselCounter");
 
@@ -141,7 +141,7 @@
             carouselInner.innerHTML = "";
 
             // 이미지가 없을 경우 기본 이미지 하나만 표시
-            if (lectureThumbnails.length === 0) {
+            if (thumbnailUrls.length === 0) {
                 carouselInner.innerHTML = `
             <div class="carousel-item active">
                 <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="기본 이미지">
@@ -152,28 +152,28 @@
             }
 
             // 썸네일 이미지 삽입
-            lectureThumbnails.forEach((url, idx) => {
+            thumbnailUrls.forEach((url, idx) => {
                 const item = document.createElement("div");
                 item.className = `carousel-item${idx === 0 ? ' active' : ''}`;
                 item.innerHTML = `
-            <img src="${url}" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드 ${idx + 1}"
-                 onerror="this.onerror=null; this.src='/images/default-image.png';">
+                <img src="${url}" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드 ${idx + 1}"
+                     onerror="this.onerror=null; this.src='/images/default-image.png';">
         `;
                 carouselInner.appendChild(item);
             });
 
             // 숫자 초기 설정
-            counter.textContent = `1 / ${lectureThumbnails.length}`;
+            counter.textContent = `1 / ${thumbnailUrls.length}`;
 
             // 슬라이드 시 숫자 동기화
             const carousel = document.getElementById('classCarousel');
             carousel.addEventListener('slide.bs.carousel', function (event) {
-                counter.textContent = `${event.to + 1} / ${lectureThumbnails.length}`;
+                counter.textContent = `${event.to + 1} / ${thumbnailUrls.length}`;
             });
 
             // 클래스 소개 대표 이미지도 첫 썸네일로 설정
             const introImage = document.getElementById("class-intro-image");
-            introImage.src = lectureThumbnails[0] || "/images/default-image.png";
+            introImage.src = thumbnailUrls[0] || "/images/default-image.png";
         })();
     </script>
     <div class="container d-flex mt-2">
@@ -453,7 +453,7 @@
 
                 const res = await fetch(`/api/classes/${classId}`);
                 const data = await res.json();
-                const {class: classInfo, lectureCurriculum} = data;
+                const { classInfo, curriculum } = data;
 
                 const {
                     classTitle,
@@ -500,22 +500,22 @@
                 let totalMinutes = 0;
                 let totalLectureCount = 0;
 
-                if (lectureCurriculum && typeof lectureCurriculum === 'object') {
-                    Object.values(lectureCurriculum).forEach(lectures => {
-                        lectures.forEach(lec => {
-                            if (!lec.duration) return;
-                            const parts = lec.duration.split(":").map(Number);
-                            if (parts.length === 3) {
-                                const [hh, mm, ss] = parts;
-                                totalMinutes += hh * 60 + mm + Math.floor(ss / 60);
-                            } else if (parts.length === 2) {
-                                const [mm, ss] = parts;
-                                totalMinutes += mm + Math.floor(ss / 60);
-                            }
-                        });
-                        totalLectureCount += lectures.length;
-                    });
-                }
+                // if (curriculum && typeof curriculum === 'object') {
+                //     Object.values(curriculum).forEach(section => {
+                //         section.forEach(lec => {
+                //             if (!lec.duration) return;
+                //             const parts = lec.duration.split(":").map(Number);
+                //             if (parts.length === 3) {
+                //                 const [hh, mm, ss] = parts;
+                //                 totalMinutes += hh * 60 + mm + Math.floor(ss / 60);
+                //             } else if (parts.length === 2) {
+                //                 const [mm, ss] = parts;
+                //                 totalMinutes += mm + Math.floor(ss / 60);
+                //             }
+                //         });
+                //         totalLectureCount += section.length;
+                //     });
+                // }
 
                 const hours = Math.floor(totalMinutes / 60);
                 const minutes = totalMinutes % 60;
@@ -525,23 +525,23 @@
 
                 // 커리큘럼 렌더링
                 const wrapper = document.getElementById("curriculum-wrapper");
-                const curriculumEntries = Object.entries(lectureCurriculum);
 
-                curriculumEntries.forEach(([section, lectures]) => {
+                curriculum.forEach(section => {
                     const scrollRow = document.createElement("div");
                     scrollRow.className = "scroll-row d-flex overflow-auto gap-2 px-3 pb-2 mt-3";
-                    lectures.forEach(lec => {
-                        const thumb = document.createElement("div");
-                        thumb.style.flex = "0 0 auto";
-                        thumb.style.width = "130px";
-                        thumb.innerHTML = `
-                <div class="overflow-hidden" style="aspect-ratio: 16 / 9; border-radius: 5px;">
-                    <img src="${lec.thumbnailUrl || '/images/default-image.png'}"
-                         class="w-100 h-100 object-fit-cover"
-                         alt="강의 썸네일"
-                         onerror="this.onerror=null; this.src='/images/default-image.png';">
-                </div>`;
-                        scrollRow.appendChild(thumb);
+
+                    section.sectionThumbnailUrls.forEach(url => {
+                        const thumbnailDiv = document.createElement("div");
+                        thumbnailDiv.style.flex = "0 0 auto";
+                        thumbnailDiv.style.width = "130px";
+                        thumbnailDiv.innerHTML = `
+                            <div class="overflow-hidden" style="aspect-ratio: 16 / 9; border-radius: 5px;">
+                                <img src="${url || '/images/default-image.png'}"
+                                     class="w-100 h-100 object-fit-cover"
+                                     alt="강의 썸네일"
+                                     onerror="this.onerror=null; this.src='/images/default-image.png';">
+                            </div>`;
+                        scrollRow.appendChild(thumbnailDiv);
                     });
                     wrapper.appendChild(scrollRow);
 
@@ -550,20 +550,20 @@
 
                     const sectionTitle = document.createElement("h6");
                     sectionTitle.className = "fw-bold px-3 mb-1";
-                    sectionTitle.textContent = section;
+                    sectionTitle.textContent = section.sectionTitle;
                     sectionBlock.appendChild(sectionTitle);
 
                     const ul = document.createElement("ul");
                     ul.className = "list-group px-3";
-                    lectures.forEach((lec, i) => {
+                    section.lectureList.forEach((lecture, i) => {
                         const li = document.createElement("li");
                         li.className = "list-group-item d-flex justify-content-between border-0 px-0 py-1";
                         li.innerHTML = `
-                <span>${i + 1}. ${lec.title}</span>
-                <span>
-                    <span>${lec.duration}</span>
-                    <i class="bi bi-lock-fill text-muted"></i>
-                </span>`;
+                            <span>${i + 1}. ${lecture.lectureTitle}</span>
+                            <span>
+                                <span>${lecture.lectureDuration}</span>
+                                <i class="bi bi-lock-fill text-muted"></i>
+                            </span>`;
                         ul.appendChild(li);
                     });
 
