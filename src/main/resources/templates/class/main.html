@@ -244,7 +244,6 @@
             <hr>
             <!-- 브레드크럼 -->
             <section class="mb-5">
-                <!-- 브레드크럼 -->
                 <nav aria-label="breadcrumb" class="mb-3 small">
                     <ol class="breadcrumb bg-white px-0 mb-2">
                         <li class="breadcrumb-item"><a href="/">홈</a></li>
@@ -483,7 +482,7 @@
 
                 if (createdAt) {
                     const date = new Date(createdAt);
-                    const formatted = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 수강 시작`;
+                    const formatted = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 개설`;
                     document.querySelector("#created-at-date").textContent = formatted;
                 }
 
@@ -521,7 +520,7 @@
                 const minutes = totalMinutes % 60;
 
                 document.querySelector("#total-duration").textContent = `총 ${hours}시간 ${minutes}분`;
-                document.querySelector("#lecture-count").textContent = `영상 ${totalLectureCount}개`;
+                document.querySelector("#lecture-count").textContent = `강의 ${totalLectureCount}개`;
 
                 // 커리큘럼 렌더링
                 const wrapper = document.getElementById("curriculum-wrapper");
