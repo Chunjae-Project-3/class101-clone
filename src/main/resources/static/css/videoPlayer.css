@@ -5,6 +5,7 @@
 .video-container {
     max-width: 800px;
     overflow: hidden;
+    margin: auto auto 10px auto;
 }
 
 .video-wrapper {
@@ -52,9 +53,9 @@
     position: absolute;
     transform: translate(-50%, -50%);
     top: 50%; left: 50%;
-    width: 60px; height: 60px;
-    border-radius: 100%;
-    background-color: #ec2020;
+    width: 60px; height: 40px;
+    border-radius: 5px;
+    background-color: rgb(255, 93, 0);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -62,7 +63,7 @@
 }
 
 #playButton:hover {
-    background-color: #d81c1c;
+    background-color: rgb(255, 136, 69);
 }
 
 /* 동영상 플레이어 패널 */
