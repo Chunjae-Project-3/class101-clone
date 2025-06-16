@@ -1,40 +1,41 @@
 package net.fullstack.class101clone.repository.classes;
 
-import net.fullstack.class101clone.domain.ClassEntity;
+import net.fullstack.class101clone.domain.CreatorEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
-import net.fullstack.class101clone.dto.LectureDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
+import net.fullstack.class101clone.dto.classes.LectureDTO;
+import net.fullstack.class101clone.dto.classes.SectionDTO;
+import net.fullstack.class101clone.dto.file.FileDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
 
 public interface ClassRepositoryCustom {
-    List<ClassDTO> getClasses(String category, String userId);
+    public ClassDTO getClassByIdx(int classIdx);
 
-    List<ClassDTO> getTopLikedClasses(int limit);
+    public List<ClassDTO> getClasses(String category, String userId);
+    public List<ClassDTO> getTopLikedClasses(int limit);
+    public List<ClassDTO> getRecentClasses(int limit);
+    public List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx);
+    public Page<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx, Pageable pageable, String sort);
 
-    List<ClassDTO> getRecentClasses(int limit);
+    public List<CreatorEntity> getCreatorsByCategoryIdx(Integer categoryIdx);
 
-    ClassDTO getClassDetailById(Integer classId);
+    public Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId);
+    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, Pageable pageable, String sort);
 
-    Page<ClassDTO> getPagedClassesByCategoryIdx(Integer categoryIdx, Pageable pageable, String sort);
+    public List<ClassDTO> getWishListByUserId(String userId);
 
-    List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx);
+    public List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx);
 
-    List<Map<String, String>> getCreatorListByCategoryIdx(Integer categoryIdx);
+    public List<SectionDTO> getSectionsByClassIdx(Integer classIdx);
+    public List<SectionDTO> getSectionsWithFilesByClassIdx(Integer classIdx);
+    public List<FileDTO> findFilesByClassIdx(Integer classIdx);
 
-    Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId);
+    public List<LectureDTO> findLecturesBySectionIdx(Integer sectionIdx);
+    public List<LectureDTO> findLecturesBySectionIdx(String userId, Integer sectionIdx);
 
-    Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, Pageable pageable, String sort);
-
-    List<ClassDTO> getWishListByUserId(String userId);
-
-    List<LectureDTO> getLectureHistoryByUserId(String userId);
-
-    List<String> getLectureThumbnailsByClassId(Integer classId);
-    List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx);
-
+    public List<LectureDTO> findLectureHistory(String userId);
 }

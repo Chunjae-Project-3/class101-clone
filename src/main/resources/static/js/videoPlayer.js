@@ -3,7 +3,7 @@ import Video from "./Video.js";
 window.addEventListener('load', () => {
     const videoEl = document.querySelector('#videoPlayer');
     const videoId = videoEl.getAttribute('aria-id');
-    const playlistUrl = `/api/video/${videoId}/master.m3u8`;
+    const playlistUrl = '/api/video/' + videoId + '/master.m3u8';
 
     const video = new Video(
         videoEl,

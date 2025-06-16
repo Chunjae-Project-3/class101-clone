@@ -1,0 +1,47 @@
+body {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #ffffff;
+    color: #0c0c0c;
+    font-size: 1rem;
+}
+
+a {
+    color: #0c0c0c;
+    text-decoration: none;
+}
+
+/* 헤더 */
+#desktopMenu  a {
+    color: #0c0c0c;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    font-size: 1rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+}
+
+.reaction-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#default-news {
+    padding: 64px 20px;
+}
+
+/* 커리큘럼 */
+#curriculum div {
+    padding: 0;
+}
+
+@media (min-width: 992px) {
+    #curriculum {
+        /*max-height: 600px;*/
+        overflow-y: auto;
+        scrollbar-gutter: stable;
+    }
+}

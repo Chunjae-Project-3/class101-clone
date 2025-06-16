@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.service;
+package net.fullstack.class101clone.service.classes;
 
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.domain.ClassEntity;
