@@ -39,6 +39,18 @@ export default class Video {
         this.playButton = playButtonEl;
     }
 
+    setCurrentTime(seconds) {
+        if (!this.video || isNaN(seconds)) return;
+
+        this.video.addEventListener('loadedmetadata', () => {
+            this.video.currentTime = seconds;
+        }, { once: true });
+
+        if (this.video.readyState >= 1) {
+            this.video.currentTime = seconds;
+        }
+    }
+
     initialEventListener() {
         this.controller.initialDependenciesEventListener();
     }

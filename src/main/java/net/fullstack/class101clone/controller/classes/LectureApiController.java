@@ -43,17 +43,45 @@ public class LectureApiController {
         return ResponseEntity.ok().body(responseDTO);
     }
 
+    @GetMapping("/history")
+    @Operation(summary = "영상 시청 내역 조회")
+    public ResponseEntity<LectureHistoryDTO> getLectureHistory(
+            @RequestParam("lectureIdx") int lectureIdx,
+            HttpSession session
+    ) {
+        String userId = (String) session.getAttribute("loginId");
+
+        LectureHistoryDTO history = null;
+
+        // 비회원: 세션에서 조회
+        if (userId == null) {
+            List<LectureHistoryDTO> guestHistory = (List<LectureHistoryDTO>) session.getAttribute("guestHistory");
+            if (guestHistory != null) {
+                history = guestHistory.stream()
+                        .filter(dto -> dto.getLectureIdx() == lectureIdx)
+                        .findFirst()
+                        .orElse(null);
+            }
+            return ResponseEntity.ok().body(history);
+        }
+
+        // 회원: DB에서 조회
+        history = lectureHistoryService.getLectureHistoryByLectureId(userId, lectureIdx);
+        return ResponseEntity.ok().body(history);
+
+    }
+
     @PostMapping("/history")
-    @Operation(summary = "영상 시청 내역 기록")
+    @Operation(summary = "영상 시청 내역 저장")
     public ResponseEntity<?> saveLectureHistory(
-            @RequestBody LectureHistoryRequestDTO reqDTO,
+            @RequestBody LectureHistoryDTO reqDTO,
             HttpSession session
     ) {
         String userId = (String) session.getAttribute("loginId");
 
         // 비회원: 세션에 저장
         if (userId == null) {
-            List<LectureHistoryRequestDTO> guestHistory = (List<LectureHistoryRequestDTO>) session.getAttribute("guestHistory");
+            List<LectureHistoryDTO> guestHistory = (List<LectureHistoryDTO>) session.getAttribute("guestHistory");
             if (guestHistory == null) guestHistory = new ArrayList<>();
 
             // 중복 제거
@@ -65,7 +93,7 @@ public class LectureApiController {
         }
 
         // 회원: DB에 저장
-        lectureHistoryService.save(userId, reqDTO);
+        lectureHistoryService.saveLectureHistory(userId, reqDTO);
         return ResponseEntity.ok().build();
     }
 }

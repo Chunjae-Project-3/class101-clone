@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.fullstack.class101clone.dto.file.FileDTO;
 
 import java.util.List;
 

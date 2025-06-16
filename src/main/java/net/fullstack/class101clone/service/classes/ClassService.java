@@ -8,6 +8,7 @@ import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.LectureDTO;
+import net.fullstack.class101clone.dto.classes.LectureHistoryResponseDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
@@ -88,7 +89,7 @@ public class ClassService {
         return classRepository.getWishListByUserId(userId);
     }
 
-    public List<LectureDTO> getLectureHistory(String userId) {
+    public List<LectureHistoryResponseDTO> getLectureHistory(String userId) {
         if (userId == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
