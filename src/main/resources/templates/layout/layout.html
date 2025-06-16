@@ -404,7 +404,6 @@
                 if (!btn || !input) return;
 
                 btn.addEventListener("click", function () {
-                    console.log("🔍 검색 버튼 클릭됨");
                     const keyword = input.value.trim();
                     if (!keyword) return;
                     location.href = `/class/search?q=${encodeURIComponent(keyword)}`;
