@@ -77,8 +77,8 @@
                 </ul>
 
                 <div class="tab-content">
-                    <div class="tab-pane active">
-                        <div class="d-flex flex-column gap-2" id="curriculum">
+                    <div class="tab-pane active" id="curriculum">
+                        <div class="d-flex flex-column gap-2">
 <!--                            <div class="section-info">-->
 <!--                                <p>섹션 제목</p>-->
 <!--                            </div>-->
@@ -127,22 +127,78 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const params = new URLSearchParams(location.search);
-            const classIdx = parseInt(params.get("classIdx"), 10);
-            const lectureIdx = parseInt(params.get("lectureIdx"), 10);
+        const params = new URLSearchParams(location.search);
+        const lectureIdx = parseInt(params.get("lectureIdx"), 10);
 
+        let lastPosition = 0;
+        let totalWatchTime = 0;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            init();
+
+            const videoElement = document.querySelector('video');
+
+            let intervalId;
+            videoElement.addEventListener('play', function() {
+                intervalId = setInterval(() => {
+                    if (videoElement.paused) return;
+
+                    lastPosition = Math.floor(videoElement.currentTime);
+                    totalWatchTime += 5;
+
+                    saveWatchHistory(lectureIdx, lastPosition, totalWatchTime);
+                }, 5000);
+            });
+
+            videoElement.addEventListener('pause', () => {
+                clearInterval(intervalId);
+                lastPosition = Math.floor(videoElement.currentTime);
+                saveWatchHistory(lectureIdx, lastPosition, totalWatchTime);
+            });
+
+            videoElement.addEventListener('ended', () => {
+                clearInterval(intervalId);
+                lastPosition = Math.floor(videoElement.duration);
+                saveWatchHistory(lectureIdx, lastPosition, totalWatchTime);
+            });
+
+            // 창이 닫히거나 새로고침 시 마지막 시청 기롥 저장
+            window.addEventListener('beforeunload', () => {
+                lastPosition = Math.floor(videoElement.currentTime);
+                sendBeaconWatchHistory(lectureIdx, lastPosition, totalWatchTime);
+            });
+        });
+
+        function saveWatchHistory(lectureIdx, lastPosition, totalWatchTime) {
+            axios.post('/api/lecture/history', {
+                lectureIdx,
+                lastPosition,
+                totalWatchTime
+            }).catch(e => {
+                console.error("영상 시청 내역 저장 실패", e);
+            });
+        }
+
+        // 페이지가 닫힐 때 비동기 요청이 중단되지 않고 서버에 데이터 전송
+        function sendBeaconWatchHistory(lectureIdx, lastPosition, totalWatchTime) {
+            const data = JSON.stringify({ lectureIdx, lastPosition, totalWatchTime });
+            const blob = new Blob([data], { type: 'application/json '});
+            navigator.sendBeacon('/api/lecture/history', blob);
+        }
+
+        function init() {
+            const classIdx = parseInt(params.get("classIdx"), 10);
             axios.get('/api/lecture/curriculum/' + classIdx)
                 .then(async response => {
-                    const curriculum = response.data;
-                    console.log("data: " + JSON.stringify(curriculum));
+                    const { classInfo, curriculum } = response.data;
 
                     // 영상 초기화
                     let videoId;
 
                     let currentSection;
                     let currentLecture;
-                    for (const section of curriculum.sectionList) {
+
+                    for (const section of curriculum) {
                         const lecture = section.lectureList.find(lecture => lecture.lectureIdx === lectureIdx);
                         if (lecture) {
                             currentSection = section;
@@ -181,14 +237,14 @@
                     video.autoPlay();
 
                     // 컨텐츠 초기화
-                    document.querySelector('#header-category').textContent = curriculum.classInfo.categoryName;
-                    document.querySelector('#header-title').innerHTML = curriculum.classInfo.classTitle + '&nbsp;<i class="bi bi-chevron-right"></i>';
+                    document.querySelector('#header-category').textContent = classInfo.categoryName;
+                    document.querySelector('#header-title').innerHTML = classInfo.classTitle + '&nbsp;<i class="bi bi-chevron-right"></i>';
                     document.querySelector('#content-section-title').textContent = currentSection.sectionTitle;
                     document.querySelector('#content-lecture-title').textContent = currentLecture.lectureTitle;
 
                     // 커리큘럼 초기화
-                    const content = document.querySelector('#curriculum');
-                    for (const section of curriculum.sectionList) {
+                    const content = document.querySelector('#curriculum').closest('div');
+                    for (const section of curriculum) {
 
                         const sectionDiv = document.createElement('div');
                         sectionDiv.classList.add('section-info');
@@ -224,7 +280,7 @@
                         }
                     }
                 })
-        });
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
