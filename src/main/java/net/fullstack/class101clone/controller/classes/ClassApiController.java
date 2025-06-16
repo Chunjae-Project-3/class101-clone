@@ -8,7 +8,6 @@ import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.ClassResponseDTO;
-import net.fullstack.class101clone.dto.classes.LectureDTO;
 import net.fullstack.class101clone.dto.classes.LectureHistoryResponseDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.service.classes.ClassService;
