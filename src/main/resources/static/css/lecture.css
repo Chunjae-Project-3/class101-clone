@@ -74,11 +74,11 @@ a {
 }
 
 /* 탭 전체 스크롤 적용 */
-.tab-pane .d-flex.flex-column.gap-2.p-3 {
+.tab-content {
     max-height: 30rem;
     overflow-y: auto;
 }
-.tab-pane .d-flex.flex-column.gap-2.p-3::-webkit-scrollbar {
+.tab-content::-webkit-scrollbar {
     display: none;
 }
 
