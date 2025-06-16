@@ -30,7 +30,7 @@ public interface ClassRepositoryCustom {
 
     public List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx);
 
-    public List<SectionDTO> getSectionsByClassIdx(Integer classIdx);
+    public List<SectionDTO> findSectionsByClassIdx(Integer classIdx);
     public List<SectionDTO> getSectionsWithFilesByClassIdx(Integer classIdx);
     public List<FileDTO> findFilesByClassIdx(Integer classIdx);
 

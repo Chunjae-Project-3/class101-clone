@@ -7,7 +7,6 @@ import net.fullstack.class101clone.domain.CreatorEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
-import net.fullstack.class101clone.dto.classes.CurriculumDTO;
 import net.fullstack.class101clone.dto.classes.LectureDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
@@ -100,14 +99,12 @@ public class ClassService {
         return classRepository.getSubCategoriesByCategory(categoryIdx);
     }
 
-    public CurriculumDTO getCurriculum(Integer classIdx, @Nullable String userId, boolean includeFiles) {
-        ClassDTO classDTO = classRepository.getClassByIdx(classIdx);
-
+    public List<SectionDTO> getCurriculum(Integer classIdx, @Nullable String userId, boolean includeFiles) {
         List<SectionDTO> sectionList = (includeFiles
                 ? classRepository.getSectionsWithFilesByClassIdx(classIdx)
-                : classRepository.getSectionsByClassIdx(classIdx));
+                : classRepository.findSectionsByClassIdx(classIdx));
 
-        sectionList.stream()
+        return sectionList.stream()
                 .map(section -> {
                     List<LectureDTO> lectureList;
                     if (userId != null) {
@@ -119,11 +116,6 @@ public class ClassService {
                     return section;
                 })
                 .collect(Collectors.toList());
-
-        return CurriculumDTO.builder()
-                .classInfo(classDTO)
-                .sectionList(sectionList)
-                .build();
     }
 
     public List<String> getSectionThumbnailUrlsByClassIdx(Integer classIdx) {

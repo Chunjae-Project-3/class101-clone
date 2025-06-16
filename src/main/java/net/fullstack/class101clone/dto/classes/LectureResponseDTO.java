@@ -4,9 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
-import net.fullstack.class101clone.dto.file.FileDTO;
 
 import java.util.List;
 
@@ -14,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CurriculumDTO {
+public class LectureResponseDTO {
     private ClassDTO classInfo;
-    private List<SectionDTO> sectionList;
+    private List<SectionDTO> curriculum;
 }

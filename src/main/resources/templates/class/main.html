@@ -496,28 +496,20 @@
                 document.getElementById("breadcrumb-class").textContent = classTitle;
 
                 // 총 시간 및 강의 수 계산
-                let totalMinutes = 0;
+                let totalSeconds = 0;
                 let totalLectureCount = 0;
 
-                // if (curriculum && typeof curriculum === 'object') {
-                //     Object.values(curriculum).forEach(section => {
-                //         section.forEach(lec => {
-                //             if (!lec.duration) return;
-                //             const parts = lec.duration.split(":").map(Number);
-                //             if (parts.length === 3) {
-                //                 const [hh, mm, ss] = parts;
-                //                 totalMinutes += hh * 60 + mm + Math.floor(ss / 60);
-                //             } else if (parts.length === 2) {
-                //                 const [mm, ss] = parts;
-                //                 totalMinutes += mm + Math.floor(ss / 60);
-                //             }
-                //         });
-                //         totalLectureCount += section.length;
-                //     });
-                // }
+                if (curriculum) {
+                    curriculum.forEach(section => {
+                        totalLectureCount += section.lectureList.length
+                        section.lectureList.forEach(lecture => {
+                            totalSeconds += lecture.lectureDuration;
+                        })
+                    });
+                }
 
-                const hours = Math.floor(totalMinutes / 60);
-                const minutes = totalMinutes % 60;
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
 
                 document.querySelector("#total-duration").textContent = `총 ${hours}시간 ${minutes}분`;
                 document.querySelector("#lecture-count").textContent = `강의 ${totalLectureCount}개`;
