@@ -48,7 +48,7 @@
         }
 
         h5 {
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
 
         h6 {
@@ -56,7 +56,7 @@
         }
 
         span {
-            font-size: 0.7rem;
+            font-size: 0.9rem;
         }
 
         #classCarousel {
@@ -113,18 +113,10 @@
         <div id="carouselCounter"
              class="position-absolute top-0 end-0 mt-2 me-2 px-2 py-1 bg-white text-dark rounded-pill small"
              style="z-index: 20;">
-            1 / 3
+            1 / 1
         </div>
         <div class="carousel-inner" style="height: 420px;">
-            <div class="carousel-item active">
-                <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드1">
-            </div>
-            <div class="carousel-item">
-                <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드2">
-            </div>
-            <div class="carousel-item">
-                <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드3">
-            </div>
+            <!-- JavaScript에서 동적으로 채워짐 -->
         </div>
         <button class="carousel-control-prev" type="button" data-bs-target="#classCarousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon custom-carousel-icon" aria-hidden="true"></span>
@@ -134,22 +126,56 @@
             <span class="carousel-control-next-icon custom-carousel-icon" aria-hidden="true"></span>
             <span class="visually-hidden">다음</span>
         </button>
+    </div>
+    <script>
+        (async () => {
+            const classId = location.pathname.split("/").pop();
+            const res = await fetch(`/api/classes/${classId}`);
+            const data = await res.json();
 
-        <script>
-            const carousel = document.getElementById('classCarousel');
-            const counter = document.getElementById('carouselCounter');
-            const items = carousel.querySelectorAll('.carousel-item');
-            const total = items.length;
+            const lectureThumbnails = data.lectureThumbnails || [];
+            const carouselInner = document.querySelector(".carousel-inner");
+            const counter = document.getElementById("carouselCounter");
 
-            carousel.addEventListener('slide.bs.carousel', function (event) { // 슬라이드 시작 직전에 숫자 바꿈
-                const nextIndex = event.to + 1;
-                counter.textContent = `${nextIndex} / ${total}`;
+            // 캐러셀 이미지 비우기
+            carouselInner.innerHTML = "";
+
+            // 이미지가 없을 경우 기본 이미지 하나만 표시
+            if (lectureThumbnails.length === 0) {
+                carouselInner.innerHTML = `
+            <div class="carousel-item active">
+                <img src="/images/default-image.png" class="d-block w-100 h-100 object-fit-cover" alt="기본 이미지">
+            </div>
+        `;
+                counter.textContent = `1 / 1`;
+                return;
+            }
+
+            // 썸네일 이미지 삽입
+            lectureThumbnails.forEach((url, idx) => {
+                const item = document.createElement("div");
+                item.className = `carousel-item${idx === 0 ? ' active' : ''}`;
+                item.innerHTML = `
+            <img src="${url}" class="d-block w-100 h-100 object-fit-cover" alt="슬라이드 ${idx + 1}"
+                 onerror="this.onerror=null; this.src='/images/default-image.png';">
+        `;
+                carouselInner.appendChild(item);
             });
 
-            // 초기값 설정
-            counter.textContent = `1 / ${total}`;
-        </script>
-    </div>
+            // 숫자 초기 설정
+            counter.textContent = `1 / ${lectureThumbnails.length}`;
+
+            // 슬라이드 시 숫자 동기화
+            const carousel = document.getElementById('classCarousel');
+            carousel.addEventListener('slide.bs.carousel', function (event) {
+                counter.textContent = `${event.to + 1} / ${lectureThumbnails.length}`;
+            });
+
+            // 클래스 소개 대표 이미지도 첫 썸네일로 설정
+            const introImage = document.getElementById("class-intro-image");
+            introImage.src = lectureThumbnails[0] || "/images/default-image.png";
+        })();
+    </script>
     <div class="container d-flex mt-2">
         <!-- 왼쪽: 스크롤스파이 + 본문 콘텐츠 -->
         <div class="w-100 w-lg-60 me-lg-5">
@@ -163,14 +189,12 @@
                     <li class="nav-item"><a class="nav-link" href="#creator">크리에이터</a></li>
                 </ul>
             </nav>
-
             <!-- 본문 콘텐츠 -->
             <section id="intro" class="mb-5">
                 <h5 class="fw-bold">클래스 소개</h5>
                 <p id="class-description">로딩 중...</p>
-                <img id="class-intro-image" src="/images/default-image.png" class="img-fluid rounded" alt="소개 이미지">
+                <img id="class-intro-image" src="/images/default-image.png" class="w-100 rounded" alt="소개 이미지">
             </section>
-
             <section id="curriculum" class="mb-5">
                 <h5 class="fw-bold pb-2">클래스 커리큘럼</h5>
 
@@ -206,12 +230,6 @@
                 <!-- 커리큘럼 JS 렌더링 영역 -->
                 <div id="curriculum-wrapper" class="border"></div>
             </section>
-
-            <!--        <section id="reviews" class="mb-5">-->
-            <!--            <h5 class="fw-bold">수강 후기</h5>-->
-            <!--            <p class="text-muted">실제 수강생들의 리뷰가 들어갑니다.</p>-->
-            <!--        </section>-->
-
             <section id="creator" class="mb-5" style="padding-bottom: 30px;">
                 <h5 class="fw-bold mb-3">크리에이터 소개</h5>
                 <div class="d-flex align-items-center">
@@ -221,6 +239,30 @@
                 </div>
                 <div style="padding-left: 0.5rem; padding-top: 0.8rem;">
                     <small id="creator-bio" class="text-muted" style="word-break: keep-all;">로딩 중...</small>
+                </div>
+            </section>
+            <hr>
+            <!-- 브레드크럼 -->
+            <section class="mb-5">
+                <!-- 브레드크럼 -->
+                <nav aria-label="breadcrumb" class="mb-3 small">
+                    <ol class="breadcrumb bg-white px-0 mb-2">
+                        <li class="breadcrumb-item"><a href="/">홈</a></li>
+                        <li class="breadcrumb-item"><a id="breadcrumb-category" href="#">카테고리명</a></li>
+                        <li class="breadcrumb-item"><a id="breadcrumb-subcategory" href="#">서브카테고리명</a></li>
+                        <li class="breadcrumb-item active" id="breadcrumb-class" aria-current="page">클래스명</li>
+                    </ol>
+                </nav>
+            </section>
+            <hr>
+            <!-- 저작권 안내 -->
+            <section class="mb-5">
+                <div class="text-muted small">
+                    <strong>저작권 보호 안내</strong>
+                    <ul class="mt-2 ps-3">
+                        <li>클래스를 구성하는 영상 및 자료 일체는 저작권이 인정되는 저작물로서 관련 법령에 따라 보호됩니다.</li>
+                        <li>저작권자의 허락 없이 영상 또는 자료를 복제·배포 또는 전송하거나 변경·편집하는 경우 관련 법령에 따라 처벌 받을 수 있습니다.</li>
+                    </ul>
                 </div>
             </section>
         </div>
@@ -294,7 +336,6 @@
             const likeCountMobile = document.getElementById("like-count-mobile");
             const classId = location.pathname.split("/").pop();
 
-            // ✅ 초기 찜 상태 조회
             (async () => {
                 const res = await fetch(`/api/class-like/status/${classId}`, {
                     credentials: "same-origin"
@@ -317,7 +358,6 @@
                 }
             })();
 
-            // ✅ 공통 찜 토글 함수
             async function toggleLike() {
                 const res = await fetch(`/api/class-like/${classId}`, {
                     method: "POST",
@@ -344,7 +384,6 @@
                 likeCountMobile.textContent = result.likeCount;
             }
 
-            // ✅ 이벤트 연결
             likeIcon.addEventListener("click", toggleLike);
             likeIconMobile.addEventListener("click", toggleLike);
         </script>
@@ -364,10 +403,7 @@
                     });
             }
 
-            // 공유 아이콘 클릭 이벤트 연결
             document.getElementById("share-icon").addEventListener("click", copyCurrentUrlToClipboard);
-
-            // (선택) 모바일용 공유 아이콘도 처리하고 싶다면 아래도 추가
             document.getElementById("share-icon-mobile").addEventListener("click", copyCurrentUrlToClipboard);
         </script>
         <script>
@@ -375,7 +411,6 @@
             const likeCount = document.getElementById("like-count");
             const classId = location.pathname.split("/").pop();
 
-            // 초기 찜 상태 조회 (선택사항: 서버에서 liked 상태 제공 시)
             (async () => {
                 const res = await fetch(`/api/class-like/status/${classId}`, {
                     credentials: "same-origin"
@@ -390,7 +425,6 @@
                 }
             })();
 
-            // 찜 토글 클릭
             likeIcon.addEventListener("click", async () => {
                 const res = await fetch(`/api/class-like/${classId}`, {
                     method: "POST",
@@ -413,7 +447,6 @@
                 likeCount.textContent = result.likeCount;
             });
         </script>
-
         <script>
             (async () => {
                 const classId = location.pathname.split("/").pop();
@@ -421,13 +454,18 @@
                 const res = await fetch(`/api/classes/${classId}`);
                 const data = await res.json();
                 const {class: classInfo, lectureCurriculum} = data;
+
                 const {
                     classTitle,
                     classDescription,
                     thumbnailUrl,
                     creatorName,
                     creatorDescription,
-                    creatorProfileImg
+                    creatorProfileImg,
+                    createdAt,
+                    categoryName,
+                    categoryIdx,
+                    subCategoryName
                 } = classInfo;
 
                 // 클래스 및 크리에이터 정보 렌더링
@@ -443,12 +481,20 @@
                 document.querySelector("#sidebar-creator-name").textContent = creatorName || "크리에이터명";
                 document.querySelector("#sidebar-creator-img").src = creatorProfileImg || "/images/default-image.png";
 
-                const createdAt = classInfo.createdAt;
                 if (createdAt) {
                     const date = new Date(createdAt);
                     const formatted = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 수강 시작`;
                     document.querySelector("#created-at-date").textContent = formatted;
                 }
+
+                // ✅ 브레드크럼 렌더링
+                document.getElementById("breadcrumb-category").textContent = categoryName || "카테고리";
+                document.getElementById("breadcrumb-category").href = `/classes/category/${categoryIdx}`;
+
+                document.getElementById("breadcrumb-subcategory").textContent = subCategoryName || "서브카테고리";
+                document.getElementById("breadcrumb-subcategory").href = `/classes/category/${categoryIdx}?sub=${encodeURIComponent(subCategoryName)}`;
+
+                document.getElementById("breadcrumb-class").textContent = classTitle;
 
                 // 총 시간 및 강의 수 계산
                 let totalMinutes = 0;
@@ -477,12 +523,11 @@
                 document.querySelector("#total-duration").textContent = `총 ${hours}시간 ${minutes}분`;
                 document.querySelector("#lecture-count").textContent = `영상 ${totalLectureCount}개`;
 
-                // 커리큘럼 + 썸네일 렌더링
+                // 커리큘럼 렌더링
                 const wrapper = document.getElementById("curriculum-wrapper");
                 const curriculumEntries = Object.entries(lectureCurriculum);
 
-                curriculumEntries.forEach(([section, lectures], idx) => {
-                    // 썸네일 이미지 가로 스크롤
+                curriculumEntries.forEach(([section, lectures]) => {
                     const scrollRow = document.createElement("div");
                     scrollRow.className = "scroll-row d-flex overflow-auto gap-2 px-3 pb-2 mt-3";
                     lectures.forEach(lec => {
@@ -490,18 +535,16 @@
                         thumb.style.flex = "0 0 auto";
                         thumb.style.width = "130px";
                         thumb.innerHTML = `
-                    <div class="overflow-hidden" style="aspect-ratio: 16 / 9; border-radius: 5px;">
-                        <img src="${lec.thumbnailUrl || '/images/default-image.png'}"
-                             class="w-100 h-100 object-fit-cover"
-                             alt="강의 썸네일"
-                             onerror="this.onerror=null; this.src='/images/default-image.png';">
-                    </div>`;
+                <div class="overflow-hidden" style="aspect-ratio: 16 / 9; border-radius: 5px;">
+                    <img src="${lec.thumbnailUrl || '/images/default-image.png'}"
+                         class="w-100 h-100 object-fit-cover"
+                         alt="강의 썸네일"
+                         onerror="this.onerror=null; this.src='/images/default-image.png';">
+                </div>`;
                         scrollRow.appendChild(thumb);
                     });
-
                     wrapper.appendChild(scrollRow);
 
-                    // 섹션 제목 및 강의 목록
                     const sectionBlock = document.createElement("div");
                     sectionBlock.classList.add("my-4");
 
@@ -512,16 +555,15 @@
 
                     const ul = document.createElement("ul");
                     ul.className = "list-group px-3";
-
                     lectures.forEach((lec, i) => {
                         const li = document.createElement("li");
                         li.className = "list-group-item d-flex justify-content-between border-0 px-0 py-1";
                         li.innerHTML = `
-                    <span>${i + 1}. ${lec.title}</span>
-                    <span>
-                        <span>${lec.duration}</span>
-                        <i class="bi bi-lock-fill text-muted"></i>
-                    </span>`;
+                <span>${i + 1}. ${lec.title}</span>
+                <span>
+                    <span>${lec.duration}</span>
+                    <i class="bi bi-lock-fill text-muted"></i>
+                </span>`;
                         ul.appendChild(li);
                     });
 

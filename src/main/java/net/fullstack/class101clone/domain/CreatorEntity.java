@@ -3,8 +3,6 @@ package net.fullstack.class101clone.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +24,9 @@ public class CreatorEntity extends BaseEntity {
 
     @Column(name = "creator_name", columnDefinition = "varchar(100) not null comment '크리에이터 이름'")
     private String creatorName;
+
+    @Column(name = "creator_banner_img", columnDefinition = "varchar(255) null comment '크리에이터 배너 이미지 경로'")
+    private String creatorBannerImg;
 
     @Column(name = "creator_profile_img", columnDefinition = "varchar(255) null comment '프로필 이미지 경로'")
     private String creatorProfileImg;

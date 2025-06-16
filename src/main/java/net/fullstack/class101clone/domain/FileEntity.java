@@ -32,4 +32,8 @@ public class FileEntity {
 
     @Column(name = "file_org_name",columnDefinition = "varchar(200) not null comment '원본 파일 이름'")
     private String fileOrgName;
+
+    public String getFullUrl() {
+        return "/" + filePath + fileName + "." + fileExt;
+    }
 }

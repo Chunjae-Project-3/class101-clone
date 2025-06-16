@@ -139,13 +139,18 @@
             const socket = new SockJS("/ws-chat");
             stompClient = Stomp.over(socket);
 
-            stompClient.connect({}, () => {
-                stompClient.subscribe("/user/queue/messages", (message) => {
+            stompClient.connect({}, function (frame) {
+                console.log("STOMP 연결 성공", frame);
+
+                // 연결 완료 후 구독
+                stompClient.subscribe("/topic/admin", (message) => {
                     const msg = JSON.parse(message.body);
                     if (msg.sender === selectedUserId) {
                         renderMessage(msg.sender, msg.content, msg.timestamp, false);
                     }
                 });
+            }, function (error) {
+                console.error("WebSocket 연결 실패:", error);
             });
         }
 

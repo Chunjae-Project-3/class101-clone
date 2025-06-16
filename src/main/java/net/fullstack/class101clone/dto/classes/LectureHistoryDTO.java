@@ -12,13 +12,8 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class LectureDTO {
-    private int lectureIdx;
-    private int lectureRefIdx;
-    private String lectureTitle;
-    private int lectureVideoIdx;
-    private int lectureDuration;
-    private int lectureOrder;
-
-    private LectureHistoryDTO lectureHistory;
+public class LectureHistoryDTO {
+	private int lastPosition;			// 마지막 본 위치
+	private int totalWatchTime; 		// 시청한 총 시간(초)
+	private LocalDateTime lastWatchDate;	// 마지막 시청 날짜
 }

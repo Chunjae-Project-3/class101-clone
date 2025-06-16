@@ -30,11 +30,11 @@ public class LectureHistoryEntity {
             foreignKey = @ForeignKey(name = "FK_tbl_lecture_history_tbl_lecture"))
     private LectureEntity lectureHistoryRef;
 
-    @Column(name = "lecture_history_last_position",columnDefinition = "time null default null comment '마지막 본 위치'")
-    private LocalTime lectureHistoryLastPosition;
+    @Column(name = "lecture_history_last_position",columnDefinition = "int null default null comment '마지막 본 위치'")
+    private int lectureHistoryLastPosition;
 
-    @Column(name = "lecture_history_total_watch_time",columnDefinition = "time null default null comment '시청한 총 시간'")
-    private LocalTime lectureHistoryTotalWatchTime;
+    @Column(name = "lecture_history_total_watch_time",columnDefinition = "int null default null comment '시청한 총 시간'")
+    private int lectureHistoryTotalWatchTime;
 
     @Column(name = "lecture_history_last_watch_date",columnDefinition = "datetime null default null comment '마지막 시청 날짜'")
     private LocalDateTime lectureHistoryLastWatchDate;

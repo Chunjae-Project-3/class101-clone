@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @SuperBuilder(toBuilder = true)
 @Getter
@@ -20,4 +23,8 @@ public class CategoryEntity {
 
     @Column(name = "category_name", columnDefinition = "varchar(100) not null comment '카테고리 이름'")
     private String categoryName;
+
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SubCategoryEntity> subCategories = new ArrayList<>();
+
 }

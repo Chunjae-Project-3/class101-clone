@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.chat;
 
 import jakarta.servlet.http.HttpSession;
 import net.fullstack.class101clone.domain.UserEntity;
@@ -56,8 +56,15 @@ public class ChatController {
     @MessageMapping("/chat.send")
     public void sendMessage(@Payload ChatDTO message, Principal principal) {
         chatMessageService.saveMessage(message); // DB 저장
-        messagingTemplate.convertAndSend("/topic/admin", message);
 
+        // 관리자(admin) 페이지에서 전체 감시용 채널로도 보냄
+//        messagingTemplate.convertAndSend("/topic/admin", message);
+        messagingTemplate.convertAndSendToUser("master", "/queue/messages", message);
+
+        // 1:1 채팅 대상에게 직접 전송
+        messagingTemplate.convertAndSendToUser(message.getReceiver(), "/queue/messages", message);
+
+        // 내가 보낸 내 메시지를 돌려받을 필요는 없지만, 필요하다면 이것도 가능
+        // messagingTemplate.convertAndSendToUser(message.getSender(), "/queue/messages", message);
     }
-
 }

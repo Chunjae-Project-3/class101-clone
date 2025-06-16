@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +39,10 @@ public class ClassEntity extends BaseEntity {
     private CategoryEntity classCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "class_sub_category_idx", foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_sub_category"))
+    private SubCategoryEntity classSubCategory;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false,
             foreignKey = @ForeignKey(name = "FK_tbl_class_tbl_creator"))
     private CreatorEntity creator;
@@ -51,4 +53,5 @@ public class ClassEntity extends BaseEntity {
 
     @OneToMany(mappedBy = "classLikeRef", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClassLikeEntity> classLikeList = new ArrayList<>();
+
 }

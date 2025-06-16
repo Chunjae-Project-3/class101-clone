@@ -91,6 +91,24 @@
             text-overflow: ellipsis;
         }
 
+        #subCategoryList li a {
+            display: block;
+            padding: 6px 4px;
+            font-weight: 500;
+            color: #111;
+            text-decoration: none;
+            transition: color 0.2s ease-in-out;
+        }
+
+        #subCategoryList li a:hover {
+            color: #fe5d01;
+        }
+
+        #subCategoryList li a.active {
+            color: #fe5d01 !important;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -99,30 +117,9 @@
         <div class="row">
             <!-- 왼쪽 사이드 카테고리 -->
             <aside class="col-md-2">
-                <h3 class="fw-bold mb-3">[[${categoryName}]]</h3>
-                <!--                <ul class="list-unstyled">-->
-                <!--                    <li>-->
-                <!--                        <a th:href="@{/classes(categoryIdx=${categoryIdx})}"-->
-                <!--                           th:classappend="${#strings.isEmpty(sub)} ? 'fw-bold text-orange' : ''">-->
-                <!--                            전체-->
-                <!--                        </a>-->
-                <!--                    </li>-->
-                <!--                    <li>-->
-                <!--                        <a th:href="@{/classes(categoryIdx=${categoryIdx}, sub='주식')}"-->
-                <!--                           th:classappend="${sub == '주식'} ? 'fw-bold text-orange' : ''">-->
-                <!--                            주식-->
-                <!--                        </a>-->
-                <!--                    </li>-->
-                <!--                    <li>-->
-                <!--                        <a th:href="@{/classes(categoryIdx=${categoryIdx}, sub='부동산')}"-->
-                <!--                           th:classappend="${sub == '부동산'} ? 'fw-bold text-orange' : ''">-->
-                <!--                            부동산-->
-                <!--                        </a>-->
-                <!--                    </li>-->
-                <!--                    <li>-->
-                <!--                        <a href="#">더 새로운 [[${categoryName}]]</a>-->
-                <!--                    </li>-->
-                <!--                </ul>-->
+                <h3 class="fw-bold mb-3" id="categoryTitle"></h3>
+                <ul class="list-unstyled" id="subCategoryList">
+                </ul>
             </aside>
 
             <!-- 오른쪽 본문 -->
@@ -150,8 +147,13 @@
                 <nav class="mt-4 d-flex justify-content-center">
                     <ul id="pagination" class="pagination pagination-sm"></ul>
                 </nav>
-
                 <script th:inline="javascript">
+                    let categoryIdx = /*[[${categoryIdx}]]*/ 0;
+                    let categoryName = /*[[${categoryName}]]*/ '';
+                    let selectedSubCategoryName = null;
+                    let pageSize = parseInt(document.getElementById("pageSizeOption").value);
+                    let currentPage = 0;
+                    let currentSort = 'recent';
                     let latestCreators = [];
                     let currentCreatorMode = window.innerWidth >= 992 ? 'carousel' : 'scroll';
 
@@ -163,88 +165,83 @@
                         }
                     });
 
-                    function loadCreators(categoryIdx) {
-                        fetch(`/api/classes/creators/category/${categoryIdx}`)
-                            .then(res => res.json())
-                            .then(creators => {
-                                console.log("🎨 크리에이터 목록", creators);
-                                latestCreators = creators;
-                                renderCreators(creators);
-                            })
-                            .catch(err => console.error("크리에이터 로드 실패", err));
-                    }
+                    window.addEventListener("DOMContentLoaded", () => {
+                        document.getElementById("categoryTitle").textContent = categoryName;
+                        loadSubCategories(categoryIdx);
+                        loadCreators(categoryIdx);
+                        loadClasses(0);
+                    });
 
-                    function renderCreators(creators) {
-                        if (!creators || !creators.length) return;
-
-                        const sectionId = `creator-carousel`;
-                        const isWideScreen = window.innerWidth >= 992;
-
-                        if (isWideScreen) {
-                            const slides = [];
-                            for (let i = 0; i < creators.length; i += 5) {
-                                const group = creators.slice(i, i + 5);
-                                while (group.length < 5) group.push(null);
-                                slides.push(group);
-                            }
-
-                            const slideItemsHtml = slides.map((group, idx) => `
-            <div class="carousel-item ${idx === 0 ? 'active' : ''}">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
-                    ${group.map(creator => {
-                                if (!creator) return `<div class="col"></div>`;
-                                return `
-                            <div class="col">
-                                <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
-                                    <img src="${creator.profileImage}" alt="프로필"
-                                         class="rounded-circle mb-2"
-                                         style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
-                                    <p class="fw-bold small mb-1">${creator.name}</p>
-                                    <p class="text-muted small mb-0 text-truncate">${creator.description}</p>
-                                </div>
-                            </div>
-                        `;
-                            }).join('')}
-                </div>
-            </div>
-        `).join('');
-
-                            document.getElementById("creatorSectionContainer").innerHTML = `
-            <section class="mb-5">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="fw-bold mb-0">크리에이터</h5>
-                    <div>
-                        <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
-                            <i class="bi bi-chevron-left fs-5 text-dark"></i>
-                        </button>
-                        <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
-                            <i class="bi bi-chevron-right fs-5 text-dark"></i>
-                        </button>
-                    </div>
-                </div>
-                <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
-                    <div class="carousel-inner">
-                        ${slideItemsHtml}
-                    </div>
-                </div>
-            </section>
-        `;
-                        }
-                    }
-
-                    const categoryIdx = /*[[${categoryIdx}]]*/ 0;
-                    let pageSize = parseInt(document.getElementById("pageSizeOption").value);
-                    let currentPage = 0;
-                    let currentSort = 'recent';
-
-                    // 클래스 목록 불러오기
-                    function loadClasses(page) {
-                        currentPage = page;
-
-                        fetch(`/api/classes/category/${categoryIdx}?page=${page}&size=${pageSize}&sort=${currentSort}`)
+                    function loadSubCategories(categoryIdx) {
+                        fetch(`/api/classes/sub-categories/${categoryIdx}`)
                             .then(res => res.json())
                             .then(data => {
-                                renderClassList(data.content);
+                                renderSubCategoryList(data);
+                            })
+                            .catch(err => console.error("서브카테고리 로딩 실패:", err));
+                    }
+
+                    function renderSubCategoryList(subCategories) {
+                        const container = document.getElementById("subCategoryList");
+                        container.innerHTML = "";
+
+                        const allItem = document.createElement("li");
+                        allItem.innerHTML = `
+        <a href="javascript:void(0)" data-sub-id="all"
+           class="sub-category-item"
+           onclick="selectSubCategoryByName(null)">
+           전체
+        </a>`;
+                        container.appendChild(allItem);
+
+                        subCategories.forEach(sub => {
+                            const li = document.createElement("li");
+                            li.innerHTML = `
+            <a href="javascript:void(0)"
+               data-sub-id="${sub.subCategoryName}"
+               class="sub-category-item"
+               onclick="selectSubCategoryByName('${sub.subCategoryName}')">
+               ${sub.subCategoryName}
+            </a>`;
+                            container.appendChild(li);
+                        });
+
+                        highlightSelectedSubCategory();
+                    }
+
+                    function selectSubCategoryByName(name) {
+                        selectedSubCategoryName = (name === "null" || name === null) ? null : name;
+                        currentPage = 0;
+                        highlightSelectedSubCategory();
+                        loadClasses(0);
+                    }
+
+                    function highlightSelectedSubCategory() {
+                        document.querySelectorAll(".sub-category-item").forEach(el => {
+                            el.classList.remove("fw-bold", "text-orange", "active");
+
+                            const subId = el.getAttribute("data-sub-id");
+                            const isAll = subId === "all";
+                            const isMatch = subId === selectedSubCategoryName;
+
+                            if ((isAll && selectedSubCategoryName === null) || isMatch) {
+                                el.classList.add("fw-bold", "text-orange", "active");
+                            }
+                        });
+                    }
+
+                    function loadClasses(page) {
+                        currentPage = page;
+                        const params = new URLSearchParams({page, size: pageSize, sort: currentSort});
+
+                        fetch(`/api/classes/category/${categoryIdx}?` + params.toString())
+                            .then(res => res.json())
+                            .then(data => {
+                                let filtered = selectedSubCategoryName
+                                    ? data.content.filter(cls => cls.subCategoryName === selectedSubCategoryName)
+                                    : data.content;
+
+                                renderClassList(filtered);
                                 renderPagination(data.totalPages, data.number);
                             })
                             .catch(err => console.error("클래스 목록 로드 실패", err));
@@ -252,17 +249,14 @@
 
                     document.getElementById("pageSizeOption").addEventListener("change", (e) => {
                         pageSize = parseInt(e.target.value);
-                        loadCreators(categoryIdx);
-                        loadClasses(0); // 첫 페이지로 이동
+                        loadClasses(0);
                     });
 
                     document.getElementById("sortOption").addEventListener("change", (e) => {
                         currentSort = e.target.value;
-                        loadClasses(0); // 첫 페이지로 이동
+                        loadClasses(0);
                     });
 
-
-                    // 클래스 목록 렌더링
                     function renderClassList(classList) {
                         const container = document.getElementById("classListContainer");
                         container.innerHTML = "";
@@ -296,7 +290,10 @@
                             bookmark.className = "card-bookmark" + (cls.liked ? " active" : "");
                             bookmark.innerHTML = `<i class="bi ${cls.liked ? "bi-bookmark-fill" : "bi-bookmark"}"></i>`;
                             bookmark.style.cursor = "pointer";
-                            bookmark.addEventListener("click", () => toggleBookmark(bookmark, cls.classIdx));
+                            bookmark.addEventListener("click", (e) => {
+                                e.stopPropagation();
+                                toggleBookmark(bookmark, cls.classIdx);
+                            });
 
                             const body = document.createElement("div");
                             body.className = "card-body";
@@ -307,11 +304,10 @@
 
                             const subtitle = document.createElement("p");
                             subtitle.className = "card-subtitle";
-                            subtitle.textContent = `${cls.categoryName} │ ${cls.creatorName || ""}`;
+                            subtitle.textContent = `${cls.categoryName} │ ${cls.subCategoryName || '전체'} │ ${cls.creatorName || ""}`;
 
                             body.appendChild(title);
                             body.appendChild(subtitle);
-
                             card.appendChild(img);
                             card.appendChild(bookmark);
                             card.appendChild(body);
@@ -320,7 +316,6 @@
                         });
                     }
 
-                    // 페이지네이션 렌더링
                     function renderPagination(totalPages, currentPage) {
                         const pagination = document.getElementById("pagination");
                         pagination.innerHTML = "";
@@ -330,21 +325,14 @@
                         const startPage = currentGroup * groupSize;
                         const endPage = Math.min(startPage + groupSize, totalPages);
 
-                        // <<
                         if (currentPage > 0) appendPageItem("<<", 0);
-
-                        // <
                         if (startPage > 0) appendPageItem("<", startPage - 1);
 
-                        // 페이지 숫자
                         for (let i = startPage; i < endPage; i++) {
                             appendPageItem(i + 1, i, i === currentPage);
                         }
 
-                        // >
                         if (endPage < totalPages) appendPageItem(">", endPage);
-
-                        // >>
                         if (currentPage < totalPages - 1) appendPageItem(">>", totalPages - 1);
 
                         function appendPageItem(label, pageIndex, isActive = false) {
@@ -365,14 +353,75 @@
                         }
                     }
 
-                    // 초기 로딩
-                    window.addEventListener("DOMContentLoaded", () => {
-                        loadCreators(categoryIdx);
-                        loadClasses(0);
-                    });
+                    function loadCreators(categoryIdx) {
+                        fetch(`/api/classes/creators/category/${categoryIdx}`)
+                            .then(res => res.json())
+                            .then(creators => {
+                                latestCreators = creators;
+                                renderCreators(creators);
+                            })
+                            .catch(err => console.error("크리에이터 로드 실패", err));
+                    }
 
-                    // 찜 토글 기능
-                    const toggleBookmark = async (bookmarkEl, classId) => {
+                    function renderCreators(creators) {
+                        if (!creators || !creators.length) return;
+
+                        const sectionId = `creator-carousel`;
+                        const isWideScreen = window.innerWidth >= 992;
+
+                        if (isWideScreen) {
+                            const slides = [];
+                            for (let i = 0; i < creators.length; i += 5) {
+                                const group = creators.slice(i, i + 5);
+                                while (group.length < 5) group.push(null);
+                                slides.push(group);
+                            }
+
+                            const slideItemsHtml = slides.map((group, idx) => `
+                <div class="carousel-item ${idx === 0 ? 'active' : ''}">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
+                        ${group.map(creator => {
+                                if (!creator) return `<div class="col"></div>`;
+                                return `
+                                <div class="col">
+                                    <div class="creator-card border rounded text-center p-3 h-100" style="background-color: white;">
+                                        <img src="${creator.profileImage}" alt="프로필"
+                                             class="rounded-circle mb-2"
+                                             style="width: 60px; height: 60px; object-fit: cover; border: 2px solid white;">
+                                        <p class="fw-bold small mb-1">${creator.name}</p>
+                                        <p class="text-muted small mb-0 text-truncate">${creator.description}</p>
+                                    </div>
+                                </div>
+                            `;
+                            }).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+                            document.getElementById("creatorSectionContainer").innerHTML = `
+                <section class="mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold mb-0">크리에이터</h5>
+                        <div>
+                            <button class="btn btn-sm me-2" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
+                                <i class="bi bi-chevron-left fs-5 text-dark"></i>
+                            </button>
+                            <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="next">
+                                <i class="bi bi-chevron-right fs-5 text-dark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="${sectionId}" class="carousel slide" data-bs-ride="false">
+                        <div class="carousel-inner">
+                            ${slideItemsHtml}
+                        </div>
+                    </div>
+                </section>
+            `;
+                        }
+                    }
+
+                    async function toggleBookmark(bookmarkEl, classId) {
                         try {
                             const res = await fetch(`/api/class-like/${classId}`, {
                                 method: "POST",
@@ -399,7 +448,7 @@
                         } catch (err) {
                             console.error("찜 상태 변경 실패:", err);
                         }
-                    };
+                    }
                 </script>
 
             </main>

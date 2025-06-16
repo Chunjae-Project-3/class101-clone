@@ -1,10 +1,9 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.chat;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ChatDTO;
 import net.fullstack.class101clone.service.ChatService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

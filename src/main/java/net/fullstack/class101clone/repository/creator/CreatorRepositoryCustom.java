@@ -5,4 +5,6 @@ import java.util.List;
 
 public interface CreatorRepositoryCustom {
     List<ClassEntity> recentClasses(int creatorId);
+
+    List<ClassEntity> allClasses(int creatorId);
 }
