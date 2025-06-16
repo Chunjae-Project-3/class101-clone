@@ -6,16 +6,13 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.fullstack.class101clone.dto.ClassDTO;
-import net.fullstack.class101clone.dto.classes.ClassResponseDTO;
-import net.fullstack.class101clone.dto.classes.LectureResponseDTO;
-import net.fullstack.class101clone.dto.classes.SectionDTO;
+import net.fullstack.class101clone.dto.classes.*;
 import net.fullstack.class101clone.service.classes.ClassService;
+import net.fullstack.class101clone.service.classes.LectureHistoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -26,6 +23,7 @@ import java.util.List;
 public class LectureApiController {
 
     private final ClassService classService;
+    private final LectureHistoryService lectureHistoryService;
 
     @GetMapping("/curriculum/{classId}")
     @Operation(summary = "강의 목록(커리큘럼) 조회 (썸네일 이미지 미포함)")
@@ -43,5 +41,31 @@ public class LectureApiController {
                 .build();
 
         return ResponseEntity.ok().body(responseDTO);
+    }
+
+    @PostMapping("/history")
+    @Operation(summary = "영상 시청 내역 기록")
+    public ResponseEntity<?> saveLectureHistory(
+            @RequestBody LectureHistoryRequestDTO reqDTO,
+            HttpSession session
+    ) {
+        String userId = (String) session.getAttribute("loginId");
+
+        // 비회원: 세션에 저장
+        if (userId == null) {
+            List<LectureHistoryRequestDTO> guestHistory = (List<LectureHistoryRequestDTO>) session.getAttribute("guestHistory");
+            if (guestHistory == null) guestHistory = new ArrayList<>();
+
+            // 중복 제거
+            guestHistory.removeIf(history -> history.getLectureIdx() == reqDTO.getLectureIdx());
+            guestHistory.add(reqDTO);
+            session.setAttribute("guestHistory", guestHistory);
+
+            return ResponseEntity.ok().build();
+        }
+
+        // 회원: DB에 저장
+        lectureHistoryService.save(userId, reqDTO);
+        return ResponseEntity.ok().build();
     }
 }

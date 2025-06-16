@@ -602,7 +602,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
         QLectureEntity lectureQ = QLectureEntity.lectureEntity;
         QFileEntity fileQ = QFileEntity.fileEntity;
 
-        List<LectureDTO> result = queryFactory
+        return queryFactory
                 .select(Projections.bean(LectureDTO.class,
                         lectureQ.lectureIdx,
                         lectureQ.lectureRef.sectionIdx.as("lectureRefIdx"),
@@ -616,8 +616,6 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .where(lectureQ.lectureRef.sectionIdx.eq(sectionIdx))
                 .orderBy(lectureQ.lectureOrder.asc())
                 .fetch();
-
-        return result;
     }
 
     @Override
@@ -626,7 +624,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
         QLectureHistoryEntity historyQ = QLectureHistoryEntity.lectureHistoryEntity;
         QFileEntity fileQ = QFileEntity.fileEntity;
 
-        List<LectureDTO> result = queryFactory
+        return queryFactory
                 .select(Projections.bean(LectureDTO.class,
                         lectureQ.lectureIdx,
                         lectureQ.lectureRef.sectionIdx.as("lectureRefIdx"),
@@ -649,12 +647,6 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .where(lectureQ.lectureRef.sectionIdx.eq(sectionIdx))
                 .orderBy(lectureQ.lectureOrder.asc())
                 .fetch();
-
-        if (result.isEmpty()) {
-            throw new NotFoundException("Lectures not found. id: " + sectionIdx);
-        }
-
-        return result;
     }
 
     @Override
