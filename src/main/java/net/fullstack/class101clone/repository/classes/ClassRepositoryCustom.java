@@ -4,6 +4,7 @@ import net.fullstack.class101clone.domain.CreatorEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.LectureDTO;
+import net.fullstack.class101clone.dto.classes.LectureHistoryResponseDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.dto.file.FileDTO;
 import org.springframework.data.domain.Page;
@@ -37,5 +38,5 @@ public interface ClassRepositoryCustom {
     public List<LectureDTO> findLecturesBySectionIdx(Integer sectionIdx);
     public List<LectureDTO> findLecturesBySectionIdx(String userId, Integer sectionIdx);
 
-    public List<LectureDTO> findLectureHistory(String userId);
+    public List<LectureHistoryResponseDTO> findLectureHistory(String userId);
 }

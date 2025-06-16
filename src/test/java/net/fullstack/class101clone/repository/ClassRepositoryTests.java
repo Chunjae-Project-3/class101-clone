@@ -2,6 +2,7 @@ package net.fullstack.class101clone.repository;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import net.fullstack.class101clone.repository.classes.ClassRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

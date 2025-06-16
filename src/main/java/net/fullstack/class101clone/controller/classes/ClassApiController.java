@@ -8,7 +8,7 @@ import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.ClassResponseDTO;
-import net.fullstack.class101clone.dto.classes.LectureDTO;
+import net.fullstack.class101clone.dto.classes.LectureHistoryResponseDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.service.classes.ClassService;
 import org.springframework.data.domain.Page;
@@ -116,9 +116,9 @@ public class ClassApiController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<List<LectureDTO>> getHistory(HttpSession session) {
+    public ResponseEntity<List<LectureHistoryResponseDTO>> getHistory(HttpSession session) {
         String userId = (String) session.getAttribute("loginId");
-        List<LectureDTO> history = classService.getLectureHistory(userId);
+        List<LectureHistoryResponseDTO> history = classService.getLectureHistory(userId);
         return ResponseEntity.ok(history);
     }
 }

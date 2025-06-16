@@ -29,7 +29,7 @@ export default class Controller {
 
     // 볼륨 조절 버튼
     setVolume(volumeBtnEl, volumeSliderEl, volumeProgressEl) {
-        this.volume = new Volume(this.video, this.panel, volumeBtnEl, volumeSliderEl, volumeProgressEl);
+        this.volume = new Volume(this.video, volumeBtnEl, volumeSliderEl, volumeProgressEl);
     }
 
     // 화질 설정

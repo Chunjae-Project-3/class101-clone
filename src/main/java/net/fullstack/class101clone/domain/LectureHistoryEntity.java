@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "tbl_lecture_history")
 public class LectureHistoryEntity {
     @Id

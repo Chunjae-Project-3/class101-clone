@@ -39,6 +39,6 @@ public class MainController {
 
     @GetMapping("/video")
     public String video() {
-        return "video/videoPlayer";
+        return "class/videoPlayer";
     }
 }

@@ -16,6 +16,6 @@ public class FFprobeResult {
     }
 
     public AudioStream toAudioStream() {
-        return new AudioStream();
+        return new AudioStream(hasAudio);
     }
 }
