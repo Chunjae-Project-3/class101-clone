@@ -60,17 +60,17 @@ export default class Video {
 
         this.playButton.addEventListener('click', () => {
             this.#initPlayButtonEvent();
-        }, { once: true })
+        }, { once: true });
     }
 
     #initPlayButtonEvent() {
         this.thumbnail.remove();
         this.controller.panel.classList.remove('disabled');
 
+        this.video.muted = true; // 자동 재생 정책 우회 (음소거)
+
         this.hls.loadSource(this.playlistUrl);
         this.hls.attachMedia(this.video);
-
-        this.video.muted = true; // 자동 재생 정책 우회 (음소거)
 
         this.play();
     }

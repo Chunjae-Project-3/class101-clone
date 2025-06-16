@@ -250,6 +250,19 @@
                 document.querySelector('.play-pause'),
                 document.querySelector('.play-pause-event')
             );
+            video.controller.setVolume(
+                document.querySelector('.volume-btn'),
+                document.querySelector('.volume-slider'),
+                document.querySelector('.volume-progress')
+            );
+            video.controller.setFullScreen(
+                document.querySelector('.fullscreen')
+            );
+            video.controller.setQuality(
+                document.querySelector('.quality-btn'),
+                document.querySelector('.quality-options')
+            );
+
             video.controller.setKeyShortCuts();
             video.setCurrentTime(lastPosition);
             video.initialEventListener();
