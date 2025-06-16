@@ -75,7 +75,7 @@ a {
 
 /* 탭 전체 스크롤 적용 */
 .tab-pane .d-flex.flex-column.gap-2.p-3 {
-    max-height: 20rem;
+    max-height: 30rem;
     overflow-y: auto;
 }
 .tab-pane .d-flex.flex-column.gap-2.p-3::-webkit-scrollbar {
@@ -118,7 +118,7 @@ a {
     display: none;
 }
 
-.curriculum-item {
+.section {
     width: 100%;
     background: #fff;
     transition: background 0.2s;
@@ -128,11 +128,11 @@ a {
     padding: 3px;
 }
 
-.curriculum-item:hover, .curriculum-item.active {
+.lecture:hover, .lecture.active {
     background: #e1e1e1;
 }
 
-.curriculum-title {
+.section-title {
     font-size: 1.08rem;
     font-weight: 600;
     color: #222;
@@ -140,11 +140,11 @@ a {
     padding: 3px;
 }
 
-.curriculum-title > div {
+.section-title > div {
     padding: 2px;
 }
 
-.curriculum-meta {
+.lecture {
     font-size: 0.92rem;
     color: #888;
     padding: 2px;
