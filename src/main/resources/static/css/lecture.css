@@ -11,7 +11,7 @@ a {
 }
 
 /* 헤더 */
-#desktopMenu  a {
+#desktopMenu a {
     color: #0c0c0c;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -44,4 +44,124 @@ a {
         overflow-y: auto;
         scrollbar-gutter: stable;
     }
+}
+
+/* 섹션/강의 제목 영역 비율 및 스타일 */
+#content-title-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+}
+
+#content-section-title {
+    flex: 2;
+    font-size: 1.3rem;
+    padding: 3px;
+    display: flex;
+    margin-bottom: 0 !important;
+    align-items: center;
+    font-weight: 600;
+}
+
+#content-lecture-title {
+    flex: 1;
+    font-size: 1rem;
+    padding: 3px;
+    display: flex;
+    margin-bottom: 0 !important;
+    align-items: center;
+    font-weight: 400;
+}
+
+/* 탭 전체 스크롤 적용 */
+.tab-content {
+    max-height: 30rem;
+    overflow-y: auto;
+}
+.tab-content::-webkit-scrollbar {
+    display: none;
+}
+
+#tabMenu .nav-item .nav-link {
+    font-weight: 600;
+    color: black;
+}
+
+#tabMenu .nav-item .nav-link.active {
+    border: none;
+    border-bottom: 2px solid black;
+}
+
+#tabMenu .nav-item:hover {
+    transition: none !important;
+}
+
+.materials-header {
+    font-weight: 600;
+    margin-top: 3px;
+}
+
+/* 커리큘럼 내부 */
+#curriculum {
+    width: 100%;
+    background: #fff;
+    overflow-y: auto;
+}
+
+#curriculum.tab-pane.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#curriculum::-webkit-scrollbar {
+    display: none;
+}
+
+.section {
+    width: 100%;
+    background: #fff;
+    transition: background 0.2s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+}
+
+.lecture:hover, .lecture.active {
+    background: #e1e1e1;
+}
+
+.section-title {
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 2px;
+    padding: 3px;
+}
+
+.section-title > div {
+    padding: 2px;
+}
+
+.lecture {
+    font-size: 0.92rem;
+    color: #888;
+    padding: 2px;
+}
+
+.curriculum-icon {
+    font-size: 1.1rem;
+    margin-right: 4px;
+    color: rgb(255, 93, 0);
+}
+
+
+/* 커리큘럼 탭 내용만 보이도록*/
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
 }

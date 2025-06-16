@@ -58,12 +58,16 @@
             color: #0c0c0c;
             text-decoration: none;
         }
+        .user-info {
+            border: solid 1px #d2d2d2 ;
+            border-radius: 5px;
+            padding: 15px;
+        }
 
         .user-info:hover {
             transform: none;
             transition: none;
         }
-
     </style>
 </head>
 <body>
@@ -71,8 +75,8 @@
 <div id="container" class="container" layout:fragment="content">
     <div class="row">
         <div class="col-md-3 mb-4">
-            <div class="card user-info mb-3">
-                <div class="card-body">
+            <div class="card mb-3 user-info">
+                <div class="card-body ">
                     <h5 class="card-title">내 정보</h5>
                     <p class="card-text" th:text="${userInfo.userName}">닉네임</p>
                     <p class="card-text" th:text="${userInfo.userId}">아이디</p>

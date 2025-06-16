@@ -10,6 +10,7 @@ import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.LectureDTO;
 import net.fullstack.class101clone.dto.classes.LectureHistoryDTO;
+import net.fullstack.class101clone.dto.classes.LectureHistoryResponseDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.dto.file.FileDTO;
 import net.fullstack.class101clone.exception.NotFoundException;
@@ -645,33 +646,31 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
     }
 
     @Override
-    public List<LectureDTO> findLectureHistory(String userId) {
+    public List<LectureHistoryResponseDTO> findLectureHistory(String userId) {
         if (userId == null) {
             return Collections.emptyList();
         }
-
+        QClassEntity classQ = QClassEntity.classEntity;
         QLectureEntity lectureQ = QLectureEntity.lectureEntity;
         QLectureHistoryEntity historyQ = QLectureHistoryEntity.lectureHistoryEntity;
 
         return queryFactory
-                .select(Projections.bean(LectureDTO.class,
+                .select(Projections.bean(LectureHistoryResponseDTO.class,
+                        classQ.classIdx,
+                        classQ.classTitle,
                         lectureQ.lectureIdx,
-                        lectureQ.lectureRef.sectionIdx.as("lectureRefIdx"),
                         lectureQ.lectureTitle,
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", classQ.classThumbnailImg.filePath, classQ.classThumbnailImg.fileName).as("thumbnailUrl"),
                         historyQ.lectureHistoryLastPosition.as("lastPosition"),
                         historyQ.lectureHistoryLastWatchDate.as("lastWatchDate"),
-                        historyQ.lectureHistoryTotalWatchTime.as("totalWatchTime")
+                        historyQ.lectureHistoryTotalWatchTime.as("totalWatchTime"),
+                        (historyQ.lectureHistoryLastPosition.multiply(100).doubleValue().divide(lectureQ.lectureDuration)).as("progress")
                 ))
                 .from(historyQ)
                 .innerJoin(historyQ.lectureHistoryRef, lectureQ)
+                .innerJoin(lectureQ.lectureRef.sectionRef, classQ)
                 .where(historyQ.lectureHistoryUser.userId.eq(userId))
-                .groupBy(
-                        lectureQ.lectureIdx,
-                        historyQ.lectureHistoryLastPosition,
-                        historyQ.lectureHistoryLastWatchDate,
-                        historyQ.lectureHistoryTotalWatchTime
-                )
-                .orderBy(historyQ.lectureHistoryLastWatchDate.max().desc())
+                .orderBy(historyQ.lectureHistoryLastWatchDate.desc())
                 .fetch();
     }
 }

@@ -63,10 +63,7 @@ public class ClassViewController {
     }
 
     @GetMapping("/lecture")
-    public String showLectureByClassIdx(
-            @RequestParam Integer classIdx,
-            @RequestParam Integer lectureIdx
-    ) {
+    public String showLectureByClassIdx() {
         return "class/lecture";
     }
 }

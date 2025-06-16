@@ -39,28 +39,40 @@ export default class Video {
         this.playButton = playButtonEl;
     }
 
+    setCurrentTime(seconds) {
+        if (!this.video || isNaN(seconds)) return;
+
+        this.video.addEventListener('loadedmetadata', () => {
+            this.video.currentTime = seconds;
+        }, { once: true });
+
+        if (this.video.readyState >= 1) {
+            this.video.currentTime = seconds;
+        }
+    }
+
     initialEventListener() {
         this.controller.initialDependenciesEventListener();
+    }
+
+    initialPlayButton() {
+        if (!this.playButton || !this.thumbnail) return;
+
+        this.playButton.addEventListener('click', () => {
+            this.#initPlayButtonEvent();
+        }, { once: true });
     }
 
     #initPlayButtonEvent() {
         this.thumbnail.remove();
         this.controller.panel.classList.remove('disabled');
-        this.play();
-    }
 
-    async autoPlay() {
+        this.video.muted = true; // 자동 재생 정책 우회 (음소거)
+
         this.hls.loadSource(this.playlistUrl);
         this.hls.attachMedia(this.video);
 
-        if (await this.play()) {
-            this.thumbnail.remove();
-            this.controller.panel.classList.remove('disabled');
-        } else {
-            this.playButton.addEventListener('click', () => {
-                this.#initPlayButtonEvent();
-            }, {once : true})
-        }
+        this.play();
     }
 
     async play() {
@@ -69,5 +81,9 @@ export default class Video {
 
     pause() {
         this.controller.playPause.pause();
+    }
+
+    autoPlay() {
+        this.#initPlayButtonEvent();
     }
 }
