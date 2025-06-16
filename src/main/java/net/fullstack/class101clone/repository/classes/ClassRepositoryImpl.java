@@ -1,5 +1,6 @@
 package net.fullstack.class101clone.repository.classes;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,9 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
@@ -44,7 +43,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -87,7 +86,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -122,7 +121,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -155,7 +154,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -188,7 +187,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -262,7 +261,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -298,7 +297,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         creatorQ.creatorId,
@@ -394,7 +393,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         subCategoryQ.subCategoryIdx,
@@ -462,7 +461,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                         classQ.classIdx,
                         classQ.classTitle,
                         classQ.classDescription,
-                        Expressions.stringTemplate("CONCAT({0}, {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
+                        Expressions.stringTemplate("CONCAT({0}, '/', {1})", fileQ.filePath, fileQ.fileName).as("thumbnailUrl"),
                         categoryQ.categoryIdx,
                         categoryQ.categoryName,
                         creatorQ.creatorId,
@@ -528,40 +527,78 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
         QSectionFileEntity sectionFileQ = QSectionFileEntity.sectionFileEntity;
         QFileEntity fileQ = QFileEntity.fileEntity;
 
-        List<SectionDTO> result = queryFactory
+        List<Tuple> tuples = queryFactory
+                .select(sectionQ, fileQ)
                 .from(sectionQ)
                 .leftJoin(sectionQ.sectionFileList, sectionFileQ)
                 .leftJoin(sectionFileQ.file, fileQ)
                 .where(sectionQ.sectionRef.classIdx.eq(classIdx))
                 .orderBy(sectionQ.sectionOrder.asc(), sectionFileQ.ord.asc())
-                .transform(
-                        groupBy(sectionQ.sectionIdx).list(
-                              Projections.bean(SectionDTO.class,
-                                      sectionQ.sectionIdx,
-                                      sectionQ.sectionRef.classIdx.as("sectionRefIdx"),
-                                      sectionQ.sectionTitle,
-                                      sectionQ.sectionOrder,
-                                      list(Projections.bean(FileDTO.class,
-                                              fileQ.fileIdx,
-                                              fileQ.fileName,
-                                              fileQ.fileExt,
-                                              fileQ.filePath,
-                                              fileQ.fileSize,
-                                              fileQ.fileOrgName
-                                      )).as("sectionThumbnailList")
-                              )
-                        )
-                );
+                .fetch();
 
-        if (result.isEmpty()) {
+        if (tuples.isEmpty()) {
             throw new NotFoundException("Sections not found. id: " + classIdx);
         }
 
-        return result;
+        Map<Integer, SectionDTO> sectionMap = new LinkedHashMap<>();
+
+        for (Tuple tuple : tuples) {
+            SectionEntity sectionEntity = tuple.get(sectionQ);
+            FileEntity fileEntity = tuple.get(fileQ);
+
+            Integer sectionIdx = sectionEntity.getSectionIdx();
+
+            // 이미 만들어진 sectionDTO 가 있는지
+            SectionDTO sectionDTO = sectionMap.get(sectionIdx);
+
+            // 없을 경우, sectionIdx 로 DTO 생성
+            if (sectionDTO == null) {
+                sectionDTO = SectionDTO.builder()
+                        .sectionIdx(sectionEntity.getSectionIdx())
+                        .sectionRefIdx(sectionEntity.getSectionRef().getClassIdx())
+                        .sectionTitle(sectionEntity.getSectionTitle())
+                        .sectionOrder(sectionEntity.getSectionOrder())
+                        .sectionThumbnailUrls(new ArrayList<>())
+                        .build();
+                sectionMap.put(sectionIdx, sectionDTO);
+            }
+
+            // 파일이 있으면 DTO 안에 추가
+            if (fileEntity != null) {
+                String thumbnailUrl = fileEntity.getFilePath() + "/" + fileEntity.getFileName();
+                sectionDTO.getSectionThumbnailUrls().add(thumbnailUrl);
+            }
+        }
+
+        // Map -> List 로 변환 후 반환
+        return new ArrayList<>(sectionMap.values());
     }
 
     @Override
-    public List<LectureDTO> getLecturesBySectionIdx(Integer sectionIdx) {
+    public List<FileDTO> findFilesByClassIdx(Integer classIdx) {
+        QSectionEntity sectionQ = QSectionEntity.sectionEntity;
+        QSectionFileEntity sectionFileQ = QSectionFileEntity.sectionFileEntity;
+        QFileEntity fileQ = QFileEntity.fileEntity;
+
+        return queryFactory
+                .select(Projections.bean(FileDTO.class,
+                        fileQ.fileIdx,
+                        fileQ.fileName,
+                        fileQ.fileOrgName,
+                        fileQ.fileExt,
+                        fileQ.fileSize,
+                        fileQ.filePath
+                ))
+                .from(sectionFileQ)
+                .innerJoin(sectionFileQ.section, sectionQ)
+                .innerJoin(sectionFileQ.file, fileQ)
+                .where(sectionQ.sectionRef.classIdx.eq(classIdx))
+                .orderBy(sectionQ.sectionOrder.asc(), sectionFileQ.ord.asc())
+                .fetch();
+    }
+
+    @Override
+    public List<LectureDTO> findLecturesBySectionIdx(Integer sectionIdx) {
         QLectureEntity lectureQ = QLectureEntity.lectureEntity;
         QFileEntity fileQ = QFileEntity.fileEntity;
 
@@ -580,15 +617,11 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .orderBy(lectureQ.lectureOrder.asc())
                 .fetch();
 
-        if (result.isEmpty()) {
-            throw new NotFoundException("Lectures not found. id: " + sectionIdx);
-        }
-
         return result;
     }
 
     @Override
-    public List<LectureDTO> getLecturesBySectionIdx(String userId, Integer sectionIdx) {
+    public List<LectureDTO> findLecturesBySectionIdx(String userId, Integer sectionIdx) {
         QLectureEntity lectureQ = QLectureEntity.lectureEntity;
         QLectureHistoryEntity historyQ = QLectureHistoryEntity.lectureHistoryEntity;
         QFileEntity fileQ = QFileEntity.fileEntity;
@@ -625,7 +658,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
     }
 
     @Override
-    public List<LectureDTO> getLectureHistory(String userId) {
+    public List<LectureDTO> findLectureHistory(String userId) {
         if (userId == null) {
             return Collections.emptyList();
         }

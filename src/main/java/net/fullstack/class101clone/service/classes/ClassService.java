@@ -3,7 +3,6 @@ package net.fullstack.class101clone.service.classes;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.CreatorEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.CreatorDTO;
@@ -94,7 +93,7 @@ public class ClassService {
         if (userId == null) {
             throw new IllegalArgumentException("로그인이 필요합니다.");
         }
-        return classRepository.getLectureHistory(userId);
+        return classRepository.findLectureHistory(userId);
     }
 
     public List<SubCategoryDTO> getSubCategoriesByCategory(Integer categoryIdx) {
@@ -112,9 +111,9 @@ public class ClassService {
                 .map(section -> {
                     List<LectureDTO> lectureList;
                     if (userId != null) {
-                        lectureList = classRepository.getLecturesBySectionIdx(userId, section.getSectionIdx());
+                        lectureList = classRepository.findLecturesBySectionIdx(userId, section.getSectionIdx());
                     } else {
-                        lectureList = classRepository.getLecturesBySectionIdx(section.getSectionIdx());
+                        lectureList = classRepository.findLecturesBySectionIdx(section.getSectionIdx());
                     }
                     section.setLectureList(lectureList);
                     return section;
@@ -125,5 +124,11 @@ public class ClassService {
                 .classInfo(classDTO)
                 .sectionList(sectionList)
                 .build();
+    }
+
+    public List<String> getSectionThumbnailUrlsByClassIdx(Integer classIdx) {
+        return classRepository.findFilesByClassIdx(classIdx).stream()
+                .map(file -> file.getFilePath() + "/" + file.getFileName())
+                .collect(Collectors.toList());
     }
 }
