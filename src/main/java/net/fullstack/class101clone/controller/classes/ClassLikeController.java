@@ -7,7 +7,7 @@ import net.fullstack.class101clone.domain.UserEntity;
 import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import net.fullstack.class101clone.repository.login.UserRepositoryIf;
-import net.fullstack.class101clone.service.ClassLikeService;
+import net.fullstack.class101clone.service.classes.ClassLikeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

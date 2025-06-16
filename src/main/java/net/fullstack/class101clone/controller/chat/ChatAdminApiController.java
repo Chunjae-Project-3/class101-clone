@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.chat;
 
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ChatDTO;

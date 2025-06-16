@@ -20,6 +20,7 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_idx", columnDefinition = "int(11) not null comment '카테고리 인덱스'")
     private int categoryIdx;
+
     @Column(name = "category_name", columnDefinition = "varchar(100) not null comment '카테고리 이름'")
     private String categoryName;
 

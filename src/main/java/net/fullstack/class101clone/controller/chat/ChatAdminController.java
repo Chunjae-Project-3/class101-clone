@@ -1,4 +1,4 @@
-package net.fullstack.class101clone.controller;
+package net.fullstack.class101clone.controller.chat;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;

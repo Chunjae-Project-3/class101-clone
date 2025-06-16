@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-@ToString(exclude = "classList")
+@ToString(exclude = { "classList" })
 public class CreatorEntity extends BaseEntity {
 
     @Id
@@ -24,15 +25,16 @@ public class CreatorEntity extends BaseEntity {
     @Column(name = "creator_name", columnDefinition = "varchar(100) not null comment '크리에이터 이름'")
     private String creatorName;
 
+    @Column(name = "creator_banner_img", columnDefinition = "varchar(255) null comment '크리에이터 배너 이미지 경로'")
+    private String creatorBannerImg;
+
     @Column(name = "creator_profile_img", columnDefinition = "varchar(255) null comment '프로필 이미지 경로'")
     private String creatorProfileImg;
 
     @Column(name = "creator_description", columnDefinition = "text null comment '크리에이터 소개'")
     private String creatorDescription;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
-    private List<ClassEntity> classList;
-
-    @Column(name = "creator_banner_img", columnDefinition = "varchar(255) null comment '크리에이터 배너 이미지 경로'")
-    private String creatorBannerImg;
+    // 양방향 관계 설정
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClassEntity> classList = new ArrayList<>();
 }
