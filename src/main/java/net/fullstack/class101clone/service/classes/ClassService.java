@@ -32,15 +32,36 @@ public class ClassService {
     private final ClassLikeRepository classLikeRepository;
 
     public List<ClassDTO> getClasses(String category, String userId) {
-        return classRepository.getClasses(category, userId);
+        List<ClassDTO> classList = classRepository.getClasses(category, userId);
+        if (userId != null) {
+            for (ClassDTO dto : classList) {
+                boolean liked = classLikeRepository.existsByClassLikeUser_UserIdAndClassLikeRef_ClassIdx(userId, dto.getClassIdx());
+                dto.setLiked(liked);
+            }
+        }
+        return classList;
     }
 
-    public List<ClassDTO> getTopLikedClasses(int limit) {
-        return classRepository.getTopLikedClasses(limit);
+    public List<ClassDTO> getTopLikedClasses(int limit, String userId) {
+        List<ClassDTO> list = classRepository.getTopLikedClasses(limit);
+        if (userId != null) {
+            for (ClassDTO dto : list) {
+                boolean liked = classLikeRepository.existsByClassLikeUser_UserIdAndClassLikeRef_ClassIdx(userId, dto.getClassIdx());
+                dto.setLiked(liked);
+            }
+        }
+        return list;
     }
 
-    public List<ClassDTO> getRecentClasses(int limit) {
-        return classRepository.getRecentClasses(limit);
+    public List<ClassDTO> getRecentClasses(int limit, String userId) {
+        List<ClassDTO> list = classRepository.getRecentClasses(limit);
+        if (userId != null) {
+            for (ClassDTO dto : list) {
+                boolean liked = classLikeRepository.existsByClassLikeUser_UserIdAndClassLikeRef_ClassIdx(userId, dto.getClassIdx());
+                dto.setLiked(liked);
+            }
+        }
+        return list;
     }
 
     public List<ClassDTO> getClassesByCategoryIdx(Integer categoryIdx) {

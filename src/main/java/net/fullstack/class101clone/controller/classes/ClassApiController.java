@@ -37,13 +37,21 @@ public class ClassApiController {
     }
 
     @GetMapping("/top-liked")
-    public ResponseEntity<List<ClassDTO>> getTopLikedClasses() {
-        return ResponseEntity.ok(classService.getTopLikedClasses(10));
+    public ResponseEntity<List<ClassDTO>> getTopLikedClasses(
+            @RequestParam(defaultValue = "10") int limit,
+            HttpSession session
+    ) {
+        String userId = (String) session.getAttribute("loginId");
+        return ResponseEntity.ok(classService.getTopLikedClasses(limit, userId));
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<ClassDTO>> getRecentClasses() {
-        return ResponseEntity.ok(classService.getRecentClasses(10));
+    public ResponseEntity<List<ClassDTO>> getRecentClasses(
+            @RequestParam(defaultValue = "10") int limit,
+            HttpSession session
+    ) {
+        String userId = (String) session.getAttribute("loginId");
+        return ResponseEntity.ok(classService.getRecentClasses(limit, userId));
     }
 
     @GetMapping("/{id}")
