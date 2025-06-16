@@ -8,15 +8,14 @@ import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.ClassResponseDTO;
-import net.fullstack.class101clone.dto.classes.CurriculumDTO;
 import net.fullstack.class101clone.dto.classes.LectureDTO;
+import net.fullstack.class101clone.dto.classes.SectionDTO;
 import net.fullstack.class101clone.service.classes.ClassService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,12 +49,13 @@ public class ClassApiController {
     @GetMapping("/{id}")
     @Operation(summary = "클래스 상세 전체 조회", description = "클래스, 이미지, 커리큘럼까지 포함된 정보를 반환합니다.")
     public ResponseEntity<ClassResponseDTO> getClassAllDetail(@PathVariable Integer id) {
+        ClassDTO classInfo = classService.getClassByIdx(id);
+        List<SectionDTO> curriculum = classService.getCurriculum(id, null, true);
         List<String> thumbnailUrls = classService.getSectionThumbnailUrlsByClassIdx(id);
-        CurriculumDTO curriculum = classService.getCurriculum(id, null, true);
 
         ClassResponseDTO responseDTO = ClassResponseDTO.builder()
-                .classInfo(curriculum.getClassInfo())
-                .curriculum(curriculum.getSectionList())
+                .classInfo(classInfo)
+                .curriculum(curriculum)
                 .thumbnailUrls(thumbnailUrls)
                 .build();
 
