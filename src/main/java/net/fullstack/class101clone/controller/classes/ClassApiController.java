@@ -5,14 +5,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import net.fullstack.class101clone.dto.ClassDTO;
-import net.fullstack.class101clone.dto.LectureDTO;
+import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
-import net.fullstack.class101clone.service.ClassService;
+import net.fullstack.class101clone.dto.classes.ClassResponseDTO;
+import net.fullstack.class101clone.dto.classes.CurriculumDTO;
+import net.fullstack.class101clone.dto.classes.LectureDTO;
+import net.fullstack.class101clone.service.classes.ClassService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,18 +49,17 @@ public class ClassApiController {
 
     @GetMapping("/{id}")
     @Operation(summary = "클래스 상세 전체 조회", description = "클래스, 이미지, 커리큘럼까지 포함된 정보를 반환합니다.")
-    public Map<String, Object> getClassAllDetail(@PathVariable Integer id) {
-        ClassDTO classInfo = classService.getClassDetail(id);
-        List<String> imageList = classService.getClassImageList(id);
-        Map<String, List<Map<String, String>>> curriculum = classService.getLectureCurriculum(id);
-        List<String> lectureThumbnails = classService.getLectureThumbnailList(id);
+    public ResponseEntity<ClassResponseDTO> getClassAllDetail(@PathVariable Integer id) {
+        List<String> thumbnailUrls = classService.getSectionThumbnailUrlsByClassIdx(id);
+        CurriculumDTO curriculum = classService.getCurriculum(id, null, true);
 
-        return Map.of(
-                "class", classInfo,
-                "classImageList", imageList,
-                "lectureCurriculum", curriculum,
-                "lectureThumbnails", lectureThumbnails
-        );
+        ClassResponseDTO responseDTO = ClassResponseDTO.builder()
+                .classInfo(curriculum.getClassInfo())
+                .curriculum(curriculum.getSectionList())
+                .thumbnailUrls(thumbnailUrls)
+                .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     @GetMapping("/category/{categoryIdx}")
@@ -81,8 +84,8 @@ public class ClassApiController {
 
     @GetMapping("/creators/category/{categoryIdx}")
     @Operation(summary = "카테고리별 크리에이터 목록", description = "카테고리에 속한 클래스의 모든 크리에이터 목록을 반환합니다.")
-    public ResponseEntity<List<Map<String, String>>> getCreatorsByCategory(@PathVariable Integer categoryIdx) {
-        List<Map<String, String>> result = classService.getCreatorsByCategory(categoryIdx);
+    public ResponseEntity<List<CreatorDTO>> getCreatorsByCategory(@PathVariable Integer categoryIdx) {
+        List<CreatorDTO> result = classService.getCreatorsByCategoryIdx(categoryIdx);
         return ResponseEntity.ok(result);
     }
 
@@ -93,14 +96,14 @@ public class ClassApiController {
                                                          Pageable pageable,
                                                          HttpSession session) {
         String userId = (String) session.getAttribute("loginId");
-        Map<String, Object> result = classService.searchAll(q, pageable, sort, userId);
+        Map<String, Object> result = classService.searchClassesAndCreators(q, pageable, sort, userId);
         return ResponseEntity.ok(result);
     }
 
     @GetMapping("/wishlist")
     public ResponseEntity<List<ClassDTO>> getWishlist(HttpSession session) {
         String userId = (String) session.getAttribute("loginId");
-        List<ClassDTO> wishlist = classService.getWishlist(userId);
+        List<ClassDTO> wishlist = classService.getWishListByUserId(userId);
         return ResponseEntity.ok(wishlist);
     }
 

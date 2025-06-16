@@ -16,6 +16,9 @@ public class FilePathUtil {
     @Value("${net.fullstack.upload.path}")
     private String basePath;
 
+    @Value("${net.fullstack.upload.relative}")
+    private String relativePath;
+
     public Path getFullPath(FileType type) {
         return Paths.get(basePath, type.getPath());
     }
@@ -25,6 +28,6 @@ public class FilePathUtil {
     }
 
     public String getRelativePath(FileType type) {
-        return type.getPath();
+        return relativePath + type.getPath();
     }
 }

@@ -37,16 +37,20 @@ public class CreatorServiceImpl implements CreatorService {
                         + "." + entity.getClassThumbnailImg().getFileExt();
             }
 
-            return new ClassDTO(
-                    entity.getClassIdx(),
-                    entity.getClassTitle(),
-                    entity.getClassDescription(),
-                    thumbnailUrl,
-                    entity.getClassCategory() != null ? entity.getClassCategory().getCategoryName() : null,
-                    entity.getCreator().getCreatorName(),
-                    entity.getCreator().getCreatorProfileImg(),
-                    entity.getCreator().getCreatorDescription()
-            );
+            return ClassDTO.builder()
+                    .classIdx(entity.getClassIdx())
+                    .classTitle(entity.getClassTitle())
+                    .classDescription(entity.getClassDescription())
+                    .thumbnailUrl(thumbnailUrl)
+                    .categoryIdx(entity.getClassCategory().getCategoryIdx())
+                    .categoryName(entity.getClassCategory().getCategoryName())
+                    .subCategoryIdx(entity.getClassSubCategory().getSubCategoryIdx())
+                    .subCategoryName(entity.getClassSubCategory().getSubCategoryName())
+                    .creatorId(entity.getCreator().getCreatorId())
+                    .creatorName(entity.getCreator().getCreatorName())
+                    .creatorProfileImg(entity.getCreator().getCreatorProfileImg())
+                    .creatorDescription(entity.getCreator().getCreatorDescription())
+                    .build();
         }).toList();
     }
 

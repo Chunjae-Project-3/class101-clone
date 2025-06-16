@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>클래스 제목</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" th:href="@{/css/lecture.css}">
+
+    <!-- 비디오 플레이어 -->
+    <link rel="stylesheet" th:href="@{/css/videoPlayer.css}">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+</head>
+<body>
+    <header class="position-sticky top-0 bg-white" style="z-index: 1020;">
+        <div class="container py-2 py-lg-3 position-relative">
+            <div class="d-lg-none d-flex align-items-center mb-1">
+                <a href="#"><i class="bi bi-chevron-left"></i></a>
+            </div>
+
+            <div id="desktopMenu" class="d-none d-lg-flex justify-content-between align-items-center mb-1">
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/">
+                        <img src="/images/logo_mini.png" alt="로고" style="height: 20px; margin-bottom: 2px;">
+                    </a>
+                    <a id="header-category" href="#">카테고리</a>
+                    <span class="small text-muted">|</span>
+                    <a id="header-title" href="#">클래스 제목&nbsp;<i class="bi bi-chevron-right"></i></a>
+                </div>
+                <div class="d-flex align-items-center gap-2" th:if="${userInfo == null}">
+                    <a href="/login" class="text-dark small fw-bold">로그인</a>
+                    <a href="/signup" class="text-dark small fw-bold">회원가입</a>
+                </div>
+                <div class="d-flex align-items-center gap-2" th:unless="${userInfo == null}">
+                    <a href="/mypage_wishlist" class="text-dark small fw-bold">마이페이지</a>
+                    <a href="/logout" class="text-dark small fw-bold">로그아웃</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="row g-2">
+            <div class="col-lg-8">
+                <div th:include="~{class/videoPlayer}"></div>
+                <div class="row">
+                    <div class="col-8">
+                        <p id="content-section-title">섹션 제목</p>
+                        <p id="content-lecture-title">강의 제목</p>
+                    </div>
+                    <div class="col-4 d-flex flex-row justify-content-center gap-3">
+                        <span class="reaction-btn" id="btn-Like"><i class="bi bi-hand-thumbs-up"></i>좋아요</span>
+                        <span class="reaction-btn" id="btnDislike"><i class="bi bi-hand-thumbs-down"></i>아쉬워요</span>
+                        <span class="reaction-btn" id="btnShare"><i class="bi bi-upload"></i>공유하기</span>
+                    </div>
+<!--                    <div class="d-none d-lg-block">-->
+<!--                        댓글 부분-->
+<!--                    </div>-->
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <ul class="nav nav-tabs" id="tabMenu">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#curriculum">커리큘럼</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#materials">수업자료</a>
+                    </li>
+                    <li class="nav-item d-lg-none">
+                        <a class="nav-link" data-bs-toggle="tab" href="#comment">댓글</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#news">소식</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane active">
+                        <div class="d-flex flex-column gap-2" id="curriculum">
+<!--                            <div class="section-info">-->
+<!--                                <p>섹션 제목</p>-->
+<!--                            </div>-->
+<!--                            <div class="lecture-info">-->
+<!--                                <div class="row gx-0">-->
+<!--                                    <div class="col-11">-->
+<!--                                        <p>강의 제목</p>-->
+<!--                                        <div class="d-flex flex-row gap-2">-->
+<!--                                            <p><i class="bi bi-play-circle-fill"></i> 영상시간</p>-->
+<!--                                            <p><i class="bi bi-chat-dots-fill"></i> 0</p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-1">-->
+<!--                                        <i class="bi bi-play-circle-fill"></i>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="materials">
+                        <div class="d-flex flex-column gap-2">
+                            <p class="materials-header">수업노트</p>
+                            <p class="materials-content">
+                                ⚠️주의<br>
+                                투자에 대한 모든 결정은 투자자의 책임입니다.<br>
+                                콘텐츠에서 언급된 종목의 가격 변동 등에 대해<br>
+                                주간101과 출연자는 어떠한 책임도 지지 않습니다.<br>
+                                주간101과 출연자는 특정 금융투자상품에 대한 투자 조언을 하지 않습니다.
+                            </p>
+                        </div>
+                    </div>
+<!--                    <div class="tab-pane" id="comment">-->
+<!--                        댓글-->
+<!--                    </div>-->
+                    <div class="tab-pane" id="news">
+                        <div class="d-flex flex-column gap-2">
+                            <div id="default-news" class="text-center">
+                                <p>아직 새로운 소식이 없어요</p>
+                                <p>크리에이터님의 소식이 곧 올라올 거에요</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const params = new URLSearchParams(location.search);
+            const classIdx = parseInt(params.get("classIdx"), 10);
+            const lectureIdx = parseInt(params.get("lectureIdx"), 10);
+
+            axios.get('/api/lecture/curriculum/' + classIdx)
+                .then(async response => {
+                    const curriculum = response.data;
+                    console.log("data: " + JSON.stringify(curriculum));
+
+                    // 영상 초기화
+                    let videoId;
+
+                    let currentSection;
+                    let currentLecture;
+                    for (const section of curriculum.sectionList) {
+                        const lecture = section.lectureList.find(lecture => lecture.lectureIdx === lectureIdx);
+                        if (lecture) {
+                            currentSection = section;
+                            currentLecture = lecture;
+                            videoId = currentLecture.lectureVideoIdx;
+                            break;
+                        }
+                    }
+
+                    document.querySelector('#videoPlayer').setAttribute('aria-id', videoId);
+
+                    // 비디오 플레이어 로드
+                    const {default: Video} = await import('/js/Video.js');
+
+                    const video = new Video(
+                        document.querySelector('#videoPlayer'),
+                        document.querySelector('.panel'),
+                        `/api/video/${videoId}/master.m3u8`
+                    );
+
+                    video.setPlayButton(
+                        document.querySelector('.thumbnail-box'),
+                        document.querySelector('#playButton')
+                    );
+                    video.controller.setTimeline(
+                        document.querySelector('.timeline'),
+                        document.querySelector('.progress'),
+                        document.querySelector('.time-display')
+                    );
+                    video.controller.setPlayPauseBtn(
+                        document.querySelector('.play-pause'),
+                        document.querySelector('.play-pause-event')
+                    );
+                    video.controller.setKeyShortCuts();
+                    video.initialEventListener();
+                    video.autoPlay();
+
+                    // 컨텐츠 초기화
+                    document.querySelector('#header-category').textContent = curriculum.classInfo.categoryName;
+                    document.querySelector('#header-title').innerHTML = curriculum.classInfo.classTitle + '&nbsp;<i class="bi bi-chevron-right"></i>';
+                    document.querySelector('#content-section-title').textContent = currentSection.sectionTitle;
+                    document.querySelector('#content-lecture-title').textContent = currentLecture.lectureTitle;
+
+                    // 커리큘럼 초기화
+                    const content = document.querySelector('#curriculum');
+                    for (const section of curriculum.sectionList) {
+
+                        const sectionDiv = document.createElement('div');
+                        sectionDiv.classList.add('section-info');
+                        sectionDiv.textContent = section.sectionTitle;
+
+                        content.appendChild(sectionDiv);
+
+                        for (const lecture of section.lectureList) {
+
+                            const lectureDiv = document.createElement('div');
+                            lectureDiv.classList.add('lecture-info');
+                            const lectureHtml =
+                                '<div class="row gx-0">' +
+                                '<div class="col-11">' +
+                                '<p>' + lecture.lectureTitle + '</p>' +
+                                '<div class="d-flex flex-row gap-2">' +
+                                '<p><i class="bi bi-play-circle-fill"></i>' + lecture.lectureDuration + '</p>' +
+                                '<p><i class="bi bi-chat-dots-fill"></i>' + 0 + '</p>' + // 댓글 개수
+                                '</div>' +
+                                '</div>' +
+                                '<div class="col-1"><i class="bi bi-play-circle-fill"></i></div>' +
+                                '</div>';
+                            lectureDiv.innerHTML = lectureHtml;
+
+                            if (lecture.lectureIdx === currentLecture.lectureIdx)
+                                lectureDiv.classList.add("active");
+
+                            lectureDiv.addEventListener('click', () => {
+                                location.href = '/class/lecture?classIdx=' + classIdx + "&lectureIdx=" + lecture.lectureIdx;
+                            });
+
+                            content.appendChild(lectureDiv);
+                        }
+                    }
+                })
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+            crossorigin="anonymous"></script>
+</body>
+</html>

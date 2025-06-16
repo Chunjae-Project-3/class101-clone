@@ -21,10 +21,10 @@ import java.time.LocalDateTime;
 @SuperBuilder(toBuilder = true)
 public class BaseEntity {
     @CreatedDate
-    @Column(nullable = false, updatable = false, columnDefinition = "datetime not null default current_timestamp()")
+    @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime not null default current_timestamp() comment '생성일'")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(insertable = false, columnDefinition = "datetime null default null on update current_timestamp()")
+    @Column(name = "updated_at", insertable = false, columnDefinition = "datetime null default null on update current_timestamp() comment '수정일'")
     private LocalDateTime updatedAt;
 }

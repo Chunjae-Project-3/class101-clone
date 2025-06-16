@@ -11,25 +11,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ClassDTO {
-    private int classIdx;
-    private String classTitle;
-    private String classDescription;
-
-    private String thumbnailUrl;
-
-    private Integer categoryIdx;
-    private String categoryName;
-    private Integer subCategoryIdx;
-    private String subCategoryName;
-
-    private Integer creatorId;
+public class CreatorDTO {
+    private int creatorId;
     private String creatorName;
+    private String creatorBannerImg;
     private String creatorProfileImg;
     private String creatorDescription;
-
-    @Builder.Default
-    private boolean liked = false;
-
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -3,7 +3,6 @@ package net.fullstack.class101clone.controller.creator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import net.fullstack.class101clone.domain.ClassEntity;
 import net.fullstack.class101clone.domain.CreatorEntity;
 import net.fullstack.class101clone.dto.ClassDTO;
 import net.fullstack.class101clone.service.creator.CreatorCommunityService;
@@ -37,5 +36,6 @@ public class CreatorController {
 
         return "creator/creator";
     }
+
 
 }
