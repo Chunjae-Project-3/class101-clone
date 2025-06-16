@@ -95,7 +95,7 @@
     </div>
 
     <div class="text-muted small text-center py-1" style="font-size: 0.75rem;">
-        ※ 30일 초과 메시지는 자동 삭제됩니다.
+        ※ 1일 초과 메시지는 자동 삭제됩니다.
     </div>
 
     <div class="chat-input-group">
@@ -142,20 +142,25 @@
         const socket = new SockJS("/ws-chat");
         stompClient = Stomp.over(socket);
 
-        stompClient.connect(
-            {userId: myUserId},
-            () => {
-                stompClient.subscribe("/user/queue/messages", (message) => {
-                    const msg = JSON.parse(message.body);
-                    if (msg.sender === myUserId) return;
-                    renderOtherMessage(msg.sender, msg.content, msg.timestamp);
-                    fetch(`/api/chat/unread`);
-                });
-            },
-            (error) => {
-                console.error("WebSocket 연결 실패:", error);
-            }
-        );
+        stompClient.connect({}, () => {
+            // ✅ 연결 성공 후에 구독
+            stompClient.subscribe("/user/queue/messages", (message) => {
+                const msg = JSON.parse(message.body);
+                if (msg.sender === myUserId) return;
+
+                renderOtherMessage(msg.sender, msg.content, msg.timestamp);
+
+                // 배지 제거 요청
+                fetch(`/api/chat/unread`)
+                    .then(res => res.json())
+                    .then(hasUnread => {
+                        if (!hasUnread) {
+                            const badge = document.getElementById("chatAlertBadge");
+                            if (badge) badge.remove();
+                        }
+                    });
+            });
+        });
     }
 
     function loadChatHistory() {

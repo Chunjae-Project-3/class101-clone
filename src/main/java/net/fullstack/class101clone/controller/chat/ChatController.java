@@ -37,9 +37,13 @@ public class ChatController {
             throw new IllegalArgumentException("관리자는 고객센터 채팅을 이용할 수 없습니다.");
         }
 
-        // 채팅방 진입 시 읽음 처리
+        // 1. 메시지 읽음 처리
         chatMessageService.markMessagesAsRead(myUserId);
 
+        // 2. 알림 뱃지 제거를 위한 플래그 설정 (세션 or 모델)
+        session.setAttribute("hasUnread", false); // JS 대신 이걸로 타임리프 뱃지 제어 가능
+
+        // 3. 관리자 계정 존재 확인
         Optional<UserEntity> masterUser = userRepository.findByUserId(otherUserId);
         if (masterUser.isEmpty()) {
             throw new IllegalStateException("관리자 계정이 존재하지 않습니다.");
@@ -47,6 +51,7 @@ public class ChatController {
 
         model.addAttribute("myUserId", myUserId);
         model.addAttribute("otherUserId", otherUserId);
+
         return "main/chat";
     }
 

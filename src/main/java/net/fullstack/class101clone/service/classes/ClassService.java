@@ -10,8 +10,8 @@ import net.fullstack.class101clone.dto.CreatorDTO;
 import net.fullstack.class101clone.dto.SubCategoryDTO;
 import net.fullstack.class101clone.dto.classes.CurriculumDTO;
 import net.fullstack.class101clone.dto.classes.LectureDTO;
-import net.fullstack.class101clone.dto.classes.LectureHistoryDTO;
 import net.fullstack.class101clone.dto.classes.SectionDTO;
+import net.fullstack.class101clone.repository.classes.ClassLikeRepository;
 import net.fullstack.class101clone.repository.classes.ClassRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -30,6 +30,7 @@ public class ClassService {
 
     private final ModelMapper modelMapper;
     private final ClassRepository classRepository;
+    private final ClassLikeRepository classLikeRepository;
 
     public List<ClassDTO> getClasses(String category, String userId) {
         return classRepository.getClasses(category, userId);
@@ -52,9 +53,18 @@ public class ClassService {
         return classRepository.getClassesByCategoryIdx(categoryIdx, pageable, sort);
     }
 
-    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, int page, int size, String sort) {
+    public Page<ClassDTO> getPagedClassesByCategoryAndSub(Integer categoryIdx, Integer subCategoryIdx, int page, int size, String sort, String userId) {
         Pageable pageable = PageRequest.of(page, size);
-        return classRepository.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, pageable, sort);
+        Page<ClassDTO> resultPage = classRepository.getPagedClassesByCategoryAndSub(categoryIdx, subCategoryIdx, pageable, sort);
+
+        if (userId != null) {
+            for (ClassDTO dto : resultPage.getContent()) {
+                boolean liked = classLikeRepository.existsByClassLikeUser_UserIdAndClassLikeRef_ClassIdx(userId, dto.getClassIdx());
+                dto.setLiked(liked);
+            }
+        }
+
+        return resultPage;
     }
 
     public List<CreatorDTO> getCreatorsByCategoryIdx(Integer categoryIdx) {
