@@ -48,23 +48,15 @@ export default class Volume {
 
     #loadLocalVolumeData() {
         const savedVolume = localStorage.getItem('videoVolume');
-        if (savedVolume != null) {
-            const volume = parseFloat(savedVolume);
-            this.video.volume = volume;
+        let volume = parseFloat(savedVolume);
+        this.video.volume = volume;
 
-            // 음소거 상태라면 유지
-            // 아닌 경우, volume 0 일 때 muted 설정
-            if (!this.video.muted) {
-                this.video.muted = volume === 0;
-            }
-
-            this.#drawVolumeProgress(volume);
-            this.updateVolumeIcon(volume);
-        } else {
-            // 초기 상태에도 UI 동기화
-            this.#drawVolumeProgress(this.video.volume);
-            this.updateVolumeIcon(this.video.volume);
+        if (this.video.muted) {
+            volume = 0;
         }
+
+        this.#drawVolumeProgress(volume);
+        this.updateVolumeIcon(volume);
     }
 
     #drawVolumeProgress(volume) {

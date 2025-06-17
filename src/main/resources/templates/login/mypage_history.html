@@ -131,10 +131,12 @@
                                          onerror="this.onerror=null; this.src='/images/default-image.png';"
                                          style="aspect-ratio: 16/9; object-fit: cover;">
                                     <div class="card-body" style="padding: 5px 0;">
-                                        <p class="card-text fw-semibold mb-0">${item.lectureTitle}</p>
+                                        <p class="card-text fw-semibold mb-0"
+                                           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            ${item.lectureTitle}</p>
                                         <p class="card-text text-muted mb-0"
                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                            ${item.classDescription || ''}
+                                            ${item.classTitle || ''}
                                         </p>
                                         <div class="d-flex justify-content-between align-items-center mt-2">
                                             <small class="text-muted">최근 시청: ${new Date(item.lastWatchDate).toLocaleDateString()}</small>

@@ -15,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Log4j2
 @Service
@@ -45,7 +44,7 @@ public class LectureHistoryService {
                         });
 
         history.setLectureHistoryLastPosition(reqDTO.getLastPosition());
-        history.setLectureHistoryTotalWatchTime(reqDTO.getTotalWatchTime());
+        history.setLectureHistoryTotalWatchTime(history.getLectureHistoryTotalWatchTime() + reqDTO.getTotalWatchTime());
         history.setLectureHistoryLastWatchDate(LocalDateTime.now());
         lectureHistoryRepository.save(history);
     }
