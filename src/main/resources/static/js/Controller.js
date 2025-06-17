@@ -55,6 +55,9 @@ export default class Controller {
         // 화질 변경 이벤트
         this.hls.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
             this.quality.updateQualityButton(data.level, data.levels);
+
+            const level = this.hls.levels[data.level];
+            console.log("실제 재생 중인 해상도: ", level.height + "p");
         });
     }
 
