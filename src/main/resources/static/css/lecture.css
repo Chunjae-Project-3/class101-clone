@@ -29,6 +29,26 @@ a {
     align-items: center;
 }
 
+@media (max-width: 991.98px) {
+    #reaction-container {
+        justify-content: flex-end;
+        align-items: flex-end;
+        font-size: 1.2rem;
+    }
+
+    #reaction-container span:hover {
+        cursor: pointer;
+    }
+}
+
+@media (min-width: 992px) {
+    #reaction-container {
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+    }
+}
+
 #default-news {
     padding: 64px 20px;
 }
@@ -55,7 +75,7 @@ a {
 
 #content-section-title {
     flex: 2;
-    font-size: 1.3rem;
+    font-size: 1rem;
     padding: 3px;
     display: flex;
     margin-bottom: 0 !important;
@@ -65,7 +85,7 @@ a {
 
 #content-lecture-title {
     flex: 1;
-    font-size: 1rem;
+    font-size: 1.3rem;
     padding: 3px;
     display: flex;
     margin-bottom: 0 !important;

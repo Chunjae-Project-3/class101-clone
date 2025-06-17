@@ -67,8 +67,6 @@ export default class Video {
         this.thumbnail.remove();
         this.controller.panel.classList.remove('disabled');
 
-        this.video.muted = true; // 자동 재생 정책 우회 (음소거)
-
         this.hls.loadSource(this.playlistUrl);
         this.hls.attachMedia(this.video);
 
@@ -84,6 +82,7 @@ export default class Video {
     }
 
     autoPlay() {
+        // this.video.muted = true; // 자동 재생 정책 우회 (음소거)
         this.#initPlayButtonEvent();
     }
 }
