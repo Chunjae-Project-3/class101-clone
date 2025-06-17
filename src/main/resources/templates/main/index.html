@@ -219,8 +219,9 @@
     <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
          onerror="this.onerror=null; this.src='/images/default-image.png';">
     <div class="card-body" style="padding: 5px 0;">
-<p class="card-text fw-semibold mb-0 ellipsis">${cls.classTitle}</p>
-                                        <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+<p class="card-text fw-semibold mb-0 ellipsis">
+  <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">${cls.classTitle}</a>
+</p>                                        <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${cls.classDescription || ''}
                                         </p>
                                     </div>
@@ -368,8 +369,8 @@
                                     <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
                                          onerror="this.onerror=null; this.src='/images/default-image.png';">
                                     <div class="card-body" style="padding: 5px 0;">
-<p class="card-text fw-semibold mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-    ${cls.classTitle}
+<p class="card-text fw-semibold mb-0 ellipsis">
+  <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">${cls.classTitle}</a>
 </p>
                                         <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${cls.classDescription}</p>
@@ -385,7 +386,7 @@
             return `
         <section>
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h5 class="fw-bold mb-0">🔥 ${category} 인기 클래스</h5>
+                <h5 class="fw-bold mb-0">${category} 인기 클래스</h5>
                 <div>
                     <a href="/class/category/${categoryIdx}" class="btn p-0 me-2 fw-bold text-muted small" style="font-size: 0.8rem;">더 보기</a>
                     <button class="btn btn-sm" type="button" data-bs-target="#${sectionId}" data-bs-slide="prev">
