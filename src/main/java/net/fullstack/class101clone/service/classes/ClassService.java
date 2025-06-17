@@ -99,7 +99,17 @@ public class ClassService {
     }
 
     public Map<String, Object> searchClassesAndCreators(String keyword, Pageable pageable, String sort, String userId) {
-        return classRepository.searchClassesAndCreators(keyword, pageable, sort, userId);
+        Map<String, Object> rawResult = classRepository.searchClassesAndCreators(keyword, pageable, sort, userId);
+
+        List<CreatorEntity> creatorEntities = (List<CreatorEntity>) rawResult.get("creators");
+        List<CreatorDTO> creatorDTOs = creatorEntities.stream()
+                .map(creator -> modelMapper.map(creator, CreatorDTO.class))
+                .toList();
+
+        return Map.of(
+                "classes", rawResult.get("classes"),
+                "creators", creatorDTOs
+        );
     }
 
     public List<ClassDTO> getWishListByUserId(String userId) {

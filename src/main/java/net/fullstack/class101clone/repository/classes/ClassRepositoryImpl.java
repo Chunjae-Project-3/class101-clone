@@ -313,9 +313,10 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .leftJoin(classQ.creator, creatorQ)
                 .where(
                         classQ.classTitle.containsIgnoreCase(keyword)
-                                .or(classQ.classDescription.containsIgnoreCase(keyword))
+                                .or(classQ.classDescription.isNotNull().and(classQ.classDescription.containsIgnoreCase(keyword)))
                                 .or(creatorQ.creatorName.containsIgnoreCase(keyword))
-                                .or(creatorQ.creatorDescription.containsIgnoreCase(keyword))
+                                .or(creatorQ.creatorDescription.isNotNull().and(creatorQ.creatorDescription.containsIgnoreCase(keyword)))
+
                 );
 
         // 정렬 조건 분기

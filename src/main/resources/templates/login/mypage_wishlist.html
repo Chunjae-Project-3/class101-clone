@@ -135,7 +135,9 @@
                                          onerror="this.onerror=null; this.src='/images/default-image.png';"
                                          style="aspect-ratio: 16/9; object-fit: cover;">
                                     <div class="card-body" style="padding: 5px 0;">
-                                        <p class="card-text fw-semibold mb-0">${item.classTitle}</p>
+                                        <p class="card-text fw-semibold mb-0"
+                                           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            ${item.classTitle}</p>
                                         <p class="card-text text-muted mb-0"
                                            style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${item.classDescription || ''}

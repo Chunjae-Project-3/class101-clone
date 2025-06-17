@@ -15,9 +15,9 @@
 </head>
 <body>
     <header class="position-sticky top-0 bg-white" style="z-index: 1020;">
-        <div class="container py-2 py-lg-3 position-relative">
+        <div class="container py-2 py-lg-4 position-relative">
             <div class="d-lg-none d-flex align-items-center mb-1">
-                <a href="#"><i class="bi bi-chevron-left"></i></a>
+                <a th:href="@{/class/{classIdx}(classIdx=${param.classIdx})}"><i class="bi bi-chevron-left"></i></a>
             </div>
 
             <div id="desktopMenu" class="d-none d-lg-flex justify-content-between align-items-center mb-1">
@@ -27,7 +27,7 @@
                     </a>
                     <a id="header-category" href="#">카테고리</a>
                     <span class="small text-muted">|</span>
-                    <a id="header-title" href="#">클래스 제목&nbsp;<i class="bi bi-chevron-right"></i></a>
+                    <a id="header-title" th:href="@{/class/{classIdx}(classIdx=${param.classIdx})}">클래스 제목&nbsp;<i class="bi bi-chevron-right"></i></a>
                 </div>
                 <div class="d-flex align-items-center gap-2" th:if="${userInfo == null}">
                     <a href="/login" class="text-dark small fw-bold">로그인</a>
@@ -50,10 +50,19 @@
                         <p id="content-section-title">섹션 제목</p>
                         <p id="content-lecture-title">강의 제목</p>
                     </div>
-                    <div class="col-4 d-flex flex-row justify-content-center gap-3">
-                        <span class="reaction-btn" id="btn-Like"><i class="bi bi-hand-thumbs-up"></i>좋아요</span>
-                        <span class="reaction-btn" id="btnDislike"><i class="bi bi-hand-thumbs-down"></i>아쉬워요</span>
-                        <span class="reaction-btn" id="btnShare"><i class="bi bi-upload"></i>공유하기</span>
+                    <div id="reaction-container" class="col-4 d-flex flex-row gap-3">
+                        <span class="reaction-btn" id="btn-Like">
+                            <i class="bi bi-hand-thumbs-up"></i>
+                            <span class="d-none d-lg-inline">좋아요</span>
+                        </span>
+                        <span class="reaction-btn" id="btnDislike">
+                            <i class="bi bi-hand-thumbs-down"></i>
+                            <span class="d-none d-lg-inline">아쉬워요</span>
+                        </span>
+                        <span class="reaction-btn" id="btnShare">
+                            <i class="bi bi-upload"></i>
+                            <span class="d-none d-lg-inline">공유하기</span>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -183,33 +192,7 @@
         async function init() {
             const classIdx = parseInt(params.get("classIdx"), 10);
 
-            // 1. 시청 내역 조회
-            const historyRes = await axios.get('/api/lecture/history', { params: { lectureIdx }});
-            const history = historyRes.data;
-            console.log("history: " + JSON.stringify(history).toString());
-
-            let autoPlay = false;
-            if (history.lastPosition) {
-                lastPosition = history.lastPosition;
-
-                const formatTime = seconds => {
-                    const pad = n => n.toString().padStart(2, '0');
-                    const h = Math.floor(seconds / 3600);
-                    const m = Math.floor((seconds % 3600) / 60);
-                    const s = seconds % 60;
-                    return `${pad(h)}:${pad(m)}:${pad(s)}`;
-                };
-
-                const time = formatTime(lastPosition);
-                const resume = confirm(`시청 내역이 있습니다. ${time} 부터 이어서 시청하시겠습니까?`);
-                if (!resume) {
-                    lastPosition = 0;
-                } else {
-                    autoPlay = true;
-                }
-            }
-
-            // 2. 커리큘럼 및 비디오 초기화
+            // 커리큘럼 및 비디오 초기화
             const curriculumRes = await axios.get('/api/lecture/curriculum/' + classIdx);
             const { classInfo, curriculum } = curriculumRes.data;
 
@@ -268,11 +251,36 @@
             video.initialEventListener();
             video.initialPlayButton();
 
-            if (autoPlay) {
-                video.autoPlay();
+            // 시청 내역 조회
+            const historyRes = await axios.get('/api/lecture/history', { params: { lectureIdx }});
+            const history = historyRes.data;
+            console.log("history: " + JSON.stringify(history).toString());
+
+            if (history.lastPosition) {
+                lastPosition = history.lastPosition;
+
+                const formatTime = seconds => {
+                    const pad = n => n.toString().padStart(2, '0');
+                    const h = Math.floor(seconds / 3600);
+                    const m = Math.floor((seconds % 3600) / 60);
+                    const s = seconds % 60;
+                    return `${pad(h)}:${pad(m)}:${pad(s)}`;
+                };
+
+                const time = formatTime(lastPosition);
+                const resume = confirm(`시청 내역이 있습니다. ${time} 부터 이어서 시청하시겠습니까?`);
+                if (!resume) {
+                    lastPosition = 0;
+                } else {
+                    video.setCurrentTime(lastPosition);
+                    video.autoPlay();
+                }
             }
 
             // 컨텐츠 초기화
+            document.querySelector('#header-category').addEventListener('click', () => {
+               location.href = '/class/category/' + classInfo.categoryIdx;
+            });
             document.querySelector('#header-category').textContent = classInfo.categoryName;
             document.querySelector('#header-title').innerHTML = classInfo.classTitle + '&nbsp;<i class="bi bi-chevron-right"></i>';
             document.querySelector('#content-section-title').textContent = currentSection.sectionTitle;
@@ -290,16 +298,18 @@
                         </div>`;
 
                 for (const lecture of section.lectureList) {
+                    const time = formatDuration(lecture.lectureDuration);
+
                     const lectureDiv = document.createElement('div');
                     lectureDiv.classList.add('lecture', 'd-flex', 'flex-column', 'p-1');
                     lectureDiv.innerHTML += `
-                            <div class="d-flex align-items-center">
-                                <div class="lecture-title col-10 p-1">${lecture.lectureTitle}</div>
-                                <div class="col-1 p-1">
+                            <div class="d-flex justify-content-between align-items-center gap-1">
+                                <div class="lecture-title p-1">${lecture.lectureTitle}</div>
+                                <div class="p-1">
                                     <i class="bi bi-play-circle-fill curriculum-icon"></i>
                                 </div>
                             </div>
-                            <div><i class="bi bi-clock"></i> ${lecture.lectureDuration}</div>
+                            <div><i class="bi bi-clock"></i> ${time}</div>
                         `;
 
                     if (lecture.lectureIdx === currentLecture.lectureIdx)
@@ -313,6 +323,18 @@
                 }
                 content.appendChild(sectionDiv);
             }
+        }
+
+        function formatDuration(duration) {
+            const hours = Math.floor(duration / 3600);
+            const minutes = Math.floor((duration % 3600) / 60);
+            const seconds = duration % 60;
+
+            const hh = String(hours).padStart(2, '0');
+            const mm = String(minutes).padStart(2, '0');
+            const ss = String(seconds).padStart(2, '0');
+
+            return hh !== '00' ? `${hh}:${mm}:${ss}` : `${mm}:${ss}`;
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
