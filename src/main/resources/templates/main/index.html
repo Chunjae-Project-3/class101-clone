@@ -15,6 +15,13 @@
             min-width: 0;
         }
 
+        .casper-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
         .ellipsis {
             white-space: nowrap;
             overflow: hidden;
@@ -249,7 +256,50 @@
                 </div>
             </section>`;
 
-            const promoCarouselHtml = ``; // 생략 가능
+            const promoCarouselHtml = `
+                <div id="promoCarousel" class="carousel slide mt-5 mb-5" data-bs-ride="carousel">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active bg-dark"
+                                aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="1" class="bg-dark"
+                                aria-label="Slide 2"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="bg-light rounded p-4">
+                                <div class="d-flex align-items-center mx-auto"
+                                     style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
+                                    <img src="/images/casper.png" class="me-4 casper-img" alt="프로모션 이미지">
+                                        <div>
+                                            <h4 class="fw-bold">클래스 완강자 모여라!</h4>
+                                            <p class="text-muted">재파와 함께 연령대별 투자전략 GO</p>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="bg-light rounded p-4">
+                                <div class="d-flex align-items-center mx-auto"
+                                     style="max-width: 960px; padding-left: 8rem; padding-right: 8rem;">
+                                    <img src="/images/casper.png" class="me-4 casper-img" id="promoImg" alt="프로모션 이미지">
+                                        <div>
+                                            <h4 class="fw-bold">새로운 클래스 오픈!</h4>
+                                            <p class="text-muted">지금 등록하고 빠르게 시작하세요</p>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: invert(1);"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true" style="filter: invert(1);"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>`
+            ;
 
             const container = document.getElementById('classSections');
             container.insertAdjacentHTML('afterbegin', mainCarouselHtml);
