@@ -534,7 +534,7 @@ public class ClassRepositoryImpl implements ClassRepositoryCustom {
                 .fetch();
 
         if (tuples.isEmpty()) {
-            throw new NotFoundException("Sections not found. id: " + classIdx);
+            return Collections.emptyList();
         }
 
         Map<Integer, SectionDTO> sectionMap = new LinkedHashMap<>();
