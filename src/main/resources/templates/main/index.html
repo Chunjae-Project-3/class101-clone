@@ -212,14 +212,13 @@
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3">
                     ${group.map(cls => `
                         <div class="col">
-                            <a href="/class/${cls.classIdx}" class="text-dark text-decoration-none">
                                 <div class="card h-100">
-                                                                            <div class="position-absolute top-0 end-0 p-2 card-bookmark" style="cursor: pointer;" data-class-id="${cls.classIdx}">
+    <div class="position-absolute top-0 end-0 p-2 card-bookmark" style="cursor: pointer;" data-class-id="${cls.classIdx}">
         <i class="bi ${cls.liked ? 'bi-bookmark-fill' : 'bi-bookmark'} text-white"></i>
     </div>
-                                    <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
-                                        onerror="this.onerror=null; this.src='/images/default-image.png';">
-                                    <div class="card-body" style="padding: 5px 0;">
+    <img src="${cls.thumbnailUrl || '/images/default-image.png'}" class="card-img-top" alt="썸네일"
+         onerror="this.onerror=null; this.src='/images/default-image.png';">
+    <div class="card-body" style="padding: 5px 0;">
 <p class="card-text fw-semibold mb-0 ellipsis">${cls.classTitle}</p>
                                         <p class="card-text text-muted mb-0" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                             ${cls.classDescription || ''}
